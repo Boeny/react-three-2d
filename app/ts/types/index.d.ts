@@ -14,6 +14,7 @@ declare namespace JSX {
         mesh: any;
         boxGeometry: any;
         sphereGeometry: any;
+        parametricGeometry: any;
         meshBasicMaterial: any;
         meshPhongMaterial: any;
 	    onUpdate?: () => void;
