@@ -140157,10 +140157,8 @@ exports.Mesh = mobx_react_1.observer(function (props) {
         React.createElement("meshPhongMaterial", { color: 0x00ff00, specular: 0x999999, shading: three_1.FlatShading, vertexColors: three_1.VertexColors, castShadow: true, receiveShadow: true })));
 });
 function radialWave(u, v) {
-    var r = 1;
-    var x = Math.sin(u) * r;
-    var z = Math.sin(v) * 2 * r;
-    return new three_1.Vector3(x, z, 0);
+    var ang = u * 2 * Math.PI;
+    return new three_1.Vector3(v * Math.cos(ang), v * Math.sin(ang), 0);
 }
 
 
