@@ -1,23 +1,27 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
+import { Store } from './store';
 import { Euler, VertexColors, Vector3 } from 'three';
-// import { getColor } from './test/actions';
+import { convertToColor } from '~/utils';
 
 
 interface Props {
-    rotation: number;
+    angle: number;
 }
 
 export const Mesh = observer((props: Props) => {
+    const { angle } = props;
+    const { background } = Store.style;
     return (
-        <mesh rotation={new Euler(0, 0, props.rotation)}>
+        <mesh rotation={new Euler(0, 0, angle)}>
             <parametricGeometry
                 parametricFunction={radialWave}
-                slices={120}
-                stacks={120}
+                slices={40}
+                stacks={1}
             />
             <meshBasicMaterial
-                color={0x00ff00}
+                wireframe={true}
+                color={convertToColor(background)}
                 vertexColors={VertexColors}
             />
         </mesh>
@@ -26,6 +30,6 @@ export const Mesh = observer((props: Props) => {
 
 
 function radialWave(u: number, v: number): Vector3 {
-    const ang = u * 2 * Math.PI;
+    const ang = 2 * u * Math.PI;
     return new Vector3(v * Math.cos(ang), v * Math.sin(ang), 0);
 }

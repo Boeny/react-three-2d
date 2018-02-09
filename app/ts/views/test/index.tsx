@@ -1,35 +1,30 @@
 import * as React from 'react';
-import { Store } from './store';
-import { setColor } from './actions';
+import { Store } from '~/views/planet/store';
+import { setColor } from '~/views/planet/actions';
 import { MountAndInit } from '~/components/mount-and-init';
 
+
+let element: HTMLDivElement | null = null;
 
 interface Props {
     onMount: (check: () => void) => void;
 }
 
-export class Test extends React.Component<Props> {
-
-    element: HTMLDivElement | null = null;
-
-    getBkColor = (): string => {
-        return this.element && this.element.style.backgroundColor || 'white';
-    }
-
-    render() {
-        const { onMount } = this.props;
-        return (
-            <MountAndInit
-                component={(
-                    <div
-                        ref={el => this.element = el}
-                        style={Store.state.mesh}
-                    >mesh</div>
-                )}
-                onMount={() => onMount(
-                    () => setColor(this.getBkColor())
-                )}
-            />
-        );
-    }
+export function Test(props: Props) {
+    const { onMount } = props;
+    const { style } = Store;
+    return (
+        <MountAndInit
+            component={(
+                <div
+                    onChange={() => console.log('something changed!')}
+                    ref={el => element = el}
+                    style={style}
+                >mesh</div>
+            )}
+            onMount={() => onMount(
+                () => setColor(element && element.style.backgroundColor || 'white')
+            )}
+        />
+    );
 }

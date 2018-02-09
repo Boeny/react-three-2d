@@ -25,6 +25,6 @@ export class MountAndInit extends React.Component<Props, State> {
 
     render() {
         const { component, defaultComponent } = this.props;
-        return this.state.ready ? component : (defaultComponent || <noscript />);
+        return this.state.ready ? component : (defaultComponent || null);
     }
 }

@@ -27,3 +27,11 @@ declare namespace JSX {
 }
 
 declare module 'react3';
+
+declare interface MeshStore {
+    style: {
+        background: string;
+    };
+    rotationSpeed: number;
+    angle: number;
+}

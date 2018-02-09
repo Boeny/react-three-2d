@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import * as THREE from 'three';
+import { Vector3 } from 'three';
 
 
-const cameraPosition = new THREE.Vector3(0, 0, 5);
+const cameraPosition = new Vector3(0, 0, 5);
 
 interface Props {
     onUpdate?: () => void;

@@ -4,6 +4,7 @@ import { Loading } from './loading';
 import { Scene } from './scene';
 import { Test } from './test';
 
+
 let checkBkColor = function () {};
 
 export function App() {
