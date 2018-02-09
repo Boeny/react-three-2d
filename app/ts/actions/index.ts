@@ -15,3 +15,8 @@ export const getRotateRightAction = (store: MeshStore) => () => {
 export const getRotateLeftAction = (store: MeshStore) => () => {
     store.angle += store.rotationSpeed;
 };
+
+
+export const getElementSetterAction = (store: ElementStore) => (element: HTMLElement | null) => {
+    store.DOM = element;
+};

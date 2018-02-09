@@ -2,10 +2,8 @@ import * as React from 'react';
 import { MountAndInit } from '~/components/mount-and-init';
 import { Loading } from './loading';
 import { Scene } from './scene';
-import { Test } from './test';
+import { Html } from './html';
 
-
-let checkBkColor = function () {};
 
 export function App() {
     return (
@@ -13,12 +11,8 @@ export function App() {
             defaultComponent={<Loading />}
             component={(
                 <div>
-                    <Test onMount={check => {
-                        checkBkColor = check;
-                    }} />
-                    <Scene onUpdate={() => {
-                        checkBkColor();
-                    }}/>
+                    <Html />
+                    <Scene />
                 </div>
             )}
         />

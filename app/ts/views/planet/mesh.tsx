@@ -7,15 +7,16 @@ import { convertToColor } from '~/utils';
 
 interface Props {
     angle: number;
+    radius: number;
 }
 
 export const Mesh = observer((props: Props) => {
-    const { angle } = props;
+    const { angle, radius } = props;
     const { background } = Store.style;
     return (
         <mesh rotation={new Euler(0, 0, angle)}>
             <parametricGeometry
-                parametricFunction={radialWave}
+                parametricFunction={radialWave(radius)}
                 slices={40}
                 stacks={1}
             />
@@ -29,7 +30,11 @@ export const Mesh = observer((props: Props) => {
 });
 
 
-function radialWave(u: number, v: number): Vector3 {
+const radialWave = (radius: number) => (u: number, v: number): Vector3 => {
     const ang = 2 * u * Math.PI;
-    return new Vector3(v * Math.cos(ang), v * Math.sin(ang), 0);
-}
+    return new Vector3(
+        radius * v * Math.cos(ang),
+        radius * v * Math.sin(ang),
+        0
+    );
+};
