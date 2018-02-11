@@ -5,9 +5,14 @@ import { Store as HtmlStore } from './html/store';
 import { setColor } from './planet/actions';
 import { Planet } from './planet';
 
-import { setZoom } from './camera/actions';
+import { setZoom as setCameraZoom, shiftPosition as moveCamera } from './camera/actions';
 import { Camera } from './camera';
 
+
+type Vector2 = { x: number, y: number };
+let dragStartingPoint: Vector2 | null = null;
+let timer = 0;
+const WHEEL = 1;
 
 export function Scene() {
     const width = window.innerWidth;
@@ -20,7 +25,10 @@ export function Scene() {
             onAnimate={() => {
                 setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
             }}
-            onWheel={(e: any) => setZoom(e.deltaY)}
+            onWheel={(e: any) => setCameraZoom(e.deltaY)}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseMove={onMouseMove}
         >
             <scene>
                 <Camera />
@@ -28,4 +36,37 @@ export function Scene() {
             </scene>
         </React3>
     );
+}
+
+function onMouseDown(e: any) {
+    if (e.button === WHEEL) {
+        onMiddleMouseDown({ x: e.clientX, y: e.clientY });
+    }
+}
+
+function onMouseUp(e: any) {
+    if (e.button === WHEEL) {
+        onMiddleMouseUp();
+    }
+}
+
+function onMouseMove(e: any) {
+    if (dragStartingPoint && timer > 10) {
+        timer = 0;
+        moveCamera(
+            - dragStartingPoint.x - e.clientX,
+            - dragStartingPoint.y - e.clientY
+        );
+        return;
+    }
+    timer += 1;
+}
+
+
+function onMiddleMouseDown(point: Vector2) {
+    dragStartingPoint = point;
+}
+
+function onMiddleMouseUp() {
+    dragStartingPoint = null;
 }

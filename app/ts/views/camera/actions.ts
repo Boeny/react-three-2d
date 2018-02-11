@@ -1,5 +1,6 @@
 import { action } from 'mobx';
 import { Store } from './store';
+import { Vector3 } from 'three';
 import { IStore } from './types';
 
 
@@ -17,3 +18,15 @@ const getElementSetterAction = (store: IStore) => (element: any) => {
     store.DOM = element;
 };
 export const setCamera = action(getElementSetterAction(Store));
+
+
+const getPositionSetterAction = (store: IStore) => (position: Vector3) => {
+    store.position = position;
+};
+export const setPosition = action(getPositionSetterAction(Store));
+
+
+const getShiftPositionAction = (store: IStore) => (x: number, y: number) => {
+    setPosition(store.position.add(new Vector3(x, y, 0)));
+};
+export const shiftPosition = getShiftPositionAction(Store);

@@ -1,16 +1,13 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Vector3 } from 'three';
 import { Store } from './store';
 import { setCamera } from './actions';
 
 
-const cameraPosition = new Vector3(0, 0, 5);
-
 export const Camera = observer(() => {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const { zoom } = Store;
+    const { zoom, position } = Store;
     return (
         <orthographicCamera
             ref={setCamera}
@@ -21,7 +18,7 @@ export const Camera = observer(() => {
             bottom={- height / 2}
             near={0.1}
             far={1000}
-            position={cameraPosition}
+            position={position}
             zoom={zoom}
         />
     );
