@@ -1,0 +1,8 @@
+import { observable } from 'mobx';
+import { IStore } from './types';
+
+
+export const Store: IStore = observable({
+    zoom: 0.5,
+    DOM: null
+});

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import { Vector3 } from 'three';
-import { setColor } from '~/views/planet/actions';
-import { Store as HtmlStore } from '~/views/html/store';
-import { Planet } from '~/views/planet';
+import { Store as HtmlStore } from './html/store';
 
+import { setColor } from './planet/actions';
+import { Planet } from './planet';
 
-const cameraPosition = new Vector3(0, 0, 5);
+import { setZoom } from './camera/actions';
+import { Camera } from './camera';
+
 
 export function Scene() {
     const width = window.innerWidth;
@@ -19,31 +20,12 @@ export function Scene() {
             onAnimate={() => {
                 setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
             }}
+            onWheel={(e: any) => setZoom(e.deltaY)}
         >
             <scene>
-                <orthographicCamera
-                    name={'camera'}
-                    left={- width / 2}
-                    right={width / 2}
-                    top={height / 2}
-                    bottom={- height / 2}
-                    near={0.1}
-                    far={1000}
-                    position={cameraPosition}
-                    zoom={1}
-                />
+                <Camera />
                 <Planet />
             </scene>
         </React3>
     );
 }
-/*
-<perspectiveCamera
-    name={'camera'}
-    fov={75}
-    aspect={width / height}
-    near={0.1}
-    far={1000}
-    position={cameraPosition}
-/>
-*/
