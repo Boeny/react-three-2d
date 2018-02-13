@@ -6,9 +6,9 @@ import { IStore } from './types';
 
 const getZoomSetterAction = (store: IStore) => (zoom: number) => {
     if (zoom > 0) {// farther
-        store.zoom /= 1.5;
+        store.zoom /= 1.1;
     } else {// nearer
-        store.zoom += Math.sqrt(store.zoom) / 100;
+        store.zoom += Math.sqrt(store.zoom) / 10;
     }
 };
 export const setZoom = action(getZoomSetterAction(Store));
@@ -27,6 +27,10 @@ export const setPosition = action(getPositionSetterAction(Store));
 
 
 const getShiftPositionAction = (store: IStore) => (x: number, y: number) => {
-    setPosition(store.position.add(new Vector3(x, y, 0)));
+    setPosition(new Vector3(
+        store.position.x + x / store.zoom,
+        store.position.y + y / store.zoom,
+        0
+    ));
 };
 export const shiftPosition = getShiftPositionAction(Store);

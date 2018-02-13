@@ -13,6 +13,7 @@ type Vector2 = { x: number, y: number };
 let dragStartingPoint: Vector2 | null = null;
 let timer = 0;
 const WHEEL = 1;
+const TIMER_DELAY = 3;
 
 export function Scene() {
     const width = window.innerWidth;
@@ -25,7 +26,7 @@ export function Scene() {
             onAnimate={() => {
                 setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
             }}
-            onWheel={(e: any) => setCameraZoom(e.deltaY)}
+            onWheel={onMouseWheel}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
@@ -36,6 +37,10 @@ export function Scene() {
             </scene>
         </React3>
     );
+}
+
+function onMouseWheel(e: any) {
+    setCameraZoom(e.deltaY);
 }
 
 function onMouseDown(e: any) {
@@ -51,12 +56,13 @@ function onMouseUp(e: any) {
 }
 
 function onMouseMove(e: any) {
-    if (dragStartingPoint && timer > 10) {
+    if (dragStartingPoint && timer > TIMER_DELAY) {
         timer = 0;
         moveCamera(
-            - dragStartingPoint.x - e.clientX,
-            - dragStartingPoint.y - e.clientY
+            dragStartingPoint.x - e.clientX,
+            -dragStartingPoint.y + e.clientY
         );
+        dragStartingPoint = { x: e.clientX, y: e.clientY };
         return;
     }
     timer += 1;
