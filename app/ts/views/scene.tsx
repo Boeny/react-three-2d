@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as React3 from 'react3';
 import { Store as HtmlStore } from './html/store';
+import { setCanvas, setCursor } from './html/actions';
 
 import { setColor } from './planet/actions';
 import { Planet } from './planet';
@@ -26,6 +27,7 @@ export function Scene() {
             onAnimate={() => {
                 setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
             }}
+            canvasRef={setCanvas}
             onWheel={onMouseWheel}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
@@ -70,9 +72,11 @@ function onMouseMove(e: any) {
 
 
 function onMiddleMouseDown(point: Vector2) {
+    setCursor('pointer');
     dragStartingPoint = point;
 }
 
 function onMiddleMouseUp() {
+    setCursor('default');
     dragStartingPoint = null;
 }

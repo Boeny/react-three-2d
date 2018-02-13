@@ -3,5 +3,6 @@ import { IStore } from './types';
 
 
 export const Store: IStore = observable({
-    DOM: null
+    DOM: null,
+    canvas: null
 });
