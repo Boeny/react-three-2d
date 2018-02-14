@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
-// import { WidthRing } from './ring';
 import { Terminal } from './terminal';
 import { Container } from './container';
 import { RollingCircle } from './rolling-circle';
@@ -20,18 +19,20 @@ interface Props {
 }
 
 export function Ship(props: Props) {
-    props.radius;
+    const { radius } = props;
+    const position = props.position || new Vector3();
+    const terminalPos = position.sub(new Vector3());
     return (
-        <RollingCircle radius={100 + 2}>
-            <FirstDeck>
-                <Reactor />
+        <RollingCircle radius={radius + 10} position={position}>
+            <FirstDeck radius={30} position={position}>
+                <Reactor radius={10} position={position} />
             </FirstDeck>
 
-            <Terminal radius={TERMINAL_RADIUS + terminalWidth} position={100 - TERMINAL_RADIUS}>
-                <Container position={new Vector3(0, containerPos, 0)} />
-                <Container position={new Vector3(-containerPos, 0, 0)} />
-                <Container position={new Vector3(0, -containerPos, 0)} />
-                <Container position={new Vector3(containerPos, 0, 0)} />
+            <Terminal radius={TERMINAL_RADIUS + terminalWidth} position={terminalPos}>
+                <Container position={(new Vector3(0, containerPos, 0)).add(position)} />
+                <Container position={(new Vector3(-containerPos, 0, 0)).add(position)} />
+                <Container position={(new Vector3(0, -containerPos, 0)).add(position)} />
+                <Container position={(new Vector3(containerPos, 0, 0)).add(position)} />
             </Terminal>
         </RollingCircle>
     );

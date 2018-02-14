@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function Reactor(props: Props) {
-    return true ? null : (
+    return (
         <scene>
             <WidthRing
                 width={2}
