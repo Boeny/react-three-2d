@@ -8,9 +8,9 @@ interface Props extends CommonProps {
 }
 
 export function BaseRing(props: Props) {
-    const { angle, color, r1, r2 } = props;
+    const { angle, color, r1, r2, position } = props;
     return (
-        <mesh rotation={new Euler(0, 0, angle || 0)}>
+        <mesh rotation={new Euler(0, 0, angle || 0)} position={position}>
             <parametricGeometry
                 parametricFunction={parametric(r1, r2)}
                 slices={40}
@@ -27,6 +27,7 @@ export function BaseRing(props: Props) {
 
 
 interface CommonProps {
+    position?: Vector3;
     angle?: number;
     color?: string;
 }
@@ -56,6 +57,7 @@ export function Circle(props: CircleProps) {
             r2={func}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }
@@ -68,6 +70,7 @@ export function WidthRing(props: WidthRingProps) {
             r2={func}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }
@@ -80,6 +83,7 @@ export function InnerRing(props: InnerRingProps) {
             r2={func}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }
@@ -92,6 +96,7 @@ export function Ellipse(props: EllipseProps) {
             r2={getRadius(props.radius2)}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }
@@ -103,6 +108,7 @@ export function WidthEllipseRing(props: EllipseProps & WidthRingProps) {
             r2={getRadiusByWidth(props.radius2, props.width)}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }
@@ -114,6 +120,7 @@ export function InnerEllipseRing(props: EllipseProps & InnerRingProps) {
             r2={getRadiusByInner(props.radius2, props.innerRadius)}
             angle={props.angle}
             color={props.color}
+            position={props.position}
         />
     );
 }

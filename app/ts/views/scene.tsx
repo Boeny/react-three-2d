@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as React3 from 'react3';
 import { setCanvas, setCursor } from './html/actions';
-import { WidthEllipseRing } from '~/components/ring';
+import { Ship } from '~/components';
 import { setZoom as setCameraZoom, shiftPosition as moveCamera } from './camera/actions';
 import { Camera } from './camera';
 
@@ -29,7 +29,7 @@ export function Scene() {
         >
             <scene>
                 <Camera />
-                <WidthEllipseRing radius={10} radius2={8} width={0.2} />
+                <Ship radius={1000}/>
             </scene>
         </React3>
     );
