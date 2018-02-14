@@ -14,7 +14,7 @@ type Vector2 = { x: number, y: number };
 let dragStartingPoint: Vector2 | null = null;
 let timer = 0;
 const WHEEL = 1;
-const TIMER_DELAY = 3;
+const TIMER_DELAY = 1;
 
 export function Scene() {
     const width = window.innerWidth;

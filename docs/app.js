@@ -127048,7 +127048,7 @@ var camera_1 = __webpack_require__(274);
 var dragStartingPoint = null;
 var timer = 0;
 var WHEEL = 1;
-var TIMER_DELAY = 3;
+var TIMER_DELAY = 1;
 function Scene() {
     var width = window.innerWidth;
     var height = window.innerHeight;
