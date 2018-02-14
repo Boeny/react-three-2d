@@ -2,7 +2,7 @@ import * as React from 'react';
 import { MountAndInit } from '~/components/mount-and-init';
 import { Loading } from './loading';
 import { Scene } from './scene';
-import { Html } from './html';
+// import { Html } from './html';
 
 
 export function App() {
@@ -11,7 +11,6 @@ export function App() {
             defaultComponent={<Loading />}
             component={(
                 <div>
-                    <Html />
                     <Scene />
                 </div>
             )}

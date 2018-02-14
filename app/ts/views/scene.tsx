@@ -1,11 +1,7 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import { Store as HtmlStore } from './html/store';
 import { setCanvas, setCursor } from './html/actions';
-
-import { setColor } from './planet/actions';
-import { Planet } from './planet';
-
+import { WidthEllipseRing } from '~/components/ring';
 import { setZoom as setCameraZoom, shiftPosition as moveCamera } from './camera/actions';
 import { Camera } from './camera';
 
@@ -24,9 +20,7 @@ export function Scene() {
             mainCamera={'camera'} // this points to the perspectiveCamera which has the name set to "camera" below
             width={width}
             height={height}
-            onAnimate={() => {
-                setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
-            }}
+            onAnimate={() => null}
             canvasRef={setCanvas}
             onWheel={onMouseWheel}
             onMouseDown={onMouseDown}
@@ -35,7 +29,7 @@ export function Scene() {
         >
             <scene>
                 <Camera />
-                <Planet />
+                <WidthEllipseRing radius={10} radius2={8} width={0.2} />
             </scene>
         </React3>
     );

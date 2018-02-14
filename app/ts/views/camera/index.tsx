@@ -17,7 +17,7 @@ export const Camera = observer(() => {
             top={height / 2}
             bottom={- height / 2}
             near={0.1}
-            far={1000}
+            far={10}
             zoom={zoom}
             position={position}
         />
