@@ -4,14 +4,15 @@ import { WidthEllipseRing } from './ring';
 
 
 interface Props {
+    radius: number;
     position?: Vector3;
 }
 
 export function Container(props: Props) {
     return (
         <WidthEllipseRing
-            radius={1}
-            radius2={1}
+            radius={props.radius}
+            radius2={props.radius}
             width={0.1}
             position={props.position}
         />

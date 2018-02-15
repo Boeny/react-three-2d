@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
-import { WidthRing } from './ring';
+import { WidthRing } from '../ring';
 
 
 interface Props {
@@ -9,13 +9,14 @@ interface Props {
     children?: any;
 }
 
-export function FirstDeck(props: Props) {
+export function Reactor(props: Props) {
     return (
         <scene>
             <WidthRing
                 width={2}
                 radius={props.radius}
                 position={props.position}
+                color={'red'}
             />
             {props.children}
         </scene>

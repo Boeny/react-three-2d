@@ -147,7 +147,7 @@ const parametric: (r1: GetRadius, r2: GetRadius) => Parametric = (radius1, radiu
     return pointInTheEllipse(radius1(v), radius2(v), 2 * u * Math.PI);
 };
 
-function pointInTheEllipse(r1: number, r2: number, angle: number): Vector3 {
+export function pointInTheEllipse(r1: number, r2: number, angle: number): Vector3 {
     return new Vector3(
         r1 * Math.cos(angle),
         r2 * Math.sin(angle),
