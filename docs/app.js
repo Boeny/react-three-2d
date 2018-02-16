@@ -126017,12 +126017,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(7);
 var React3 = __webpack_require__(123);
 var actions_1 = __webpack_require__(266);
-var components_1 = __webpack_require__(269);
 var actions_2 = __webpack_require__(105);
-var camera_1 = __webpack_require__(278);
+var camera_1 = __webpack_require__(269);
+var components_1 = __webpack_require__(271);
 var dragStartingPoint = null;
 var timer = 0;
-var WHEEL = 1;
+var MOUSE = {
+    left: 0,
+    wheel: 1,
+    right: 2
+};
 var TIMER_DELAY = 1;
 function Scene() {
     var width = window.innerWidth;
@@ -126037,13 +126041,25 @@ function onMouseWheel(e) {
     actions_2.setZoom(e.deltaY);
 }
 function onMouseDown(e) {
-    if (e.button === WHEEL) {
-        onMiddleMouseDown({ x: e.clientX, y: e.clientY });
+    switch (e.button) {
+        case MOUSE.left:
+            actions_1.setCursor('pointer');
+            dragStartingPoint = { x: e.clientX, y: e.clientY };
+            break;
+        case MOUSE.right:
+        case MOUSE.wheel:
+            break;
     }
 }
 function onMouseUp(e) {
-    if (e.button === WHEEL) {
-        onMiddleMouseUp();
+    switch (e.button) {
+        case MOUSE.left:
+            actions_1.setCursor('default');
+            dragStartingPoint = null;
+            break;
+        case MOUSE.right:
+        case MOUSE.wheel:
+            break;
     }
 }
 function onMouseMove(e) {
@@ -126054,14 +126070,6 @@ function onMouseMove(e) {
         return;
     }
     timer += 1;
-}
-function onMiddleMouseDown(point) {
-    actions_1.setCursor('pointer');
-    dragStartingPoint = point;
-}
-function onMiddleMouseUp() {
-    actions_1.setCursor('default');
-    dragStartingPoint = null;
 }
 
 
@@ -140234,195 +140242,8 @@ exports.getElementSetterAction = function (store) { return function (element) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var ship_1 = __webpack_require__(270);
-exports.Ship = ship_1.Ship;
-
-
-/***/ }),
-/* 270 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(7);
-var three_1 = __webpack_require__(27);
-var rolling_circle_1 = __webpack_require__(271);
-var first_deck_1 = __webpack_require__(272);
-var reactor_1 = __webpack_require__(273);
-var terminal_1 = __webpack_require__(274);
-var rapport_1 = __webpack_require__(276);
-var corridor_1 = __webpack_require__(277);
-var TERMINAL_RADIUS = 30;
-var ROLLING_CIRCLE_RADIUS = 500;
-var terminalPos = ROLLING_CIRCLE_RADIUS - TERMINAL_RADIUS;
-var corridorEndPos = terminalPos - TERMINAL_RADIUS;
-var FIRST_DECK_RADIUS = 50;
-var PI2 = Math.PI / 2;
-function Ship(props) {
-    var position = props.position || new three_1.Vector3();
-    return (React.createElement(rolling_circle_1.RollingCircle, { radius: ROLLING_CIRCLE_RADIUS, position: position },
-        React.createElement(Corridors, { position: position }),
-        React.createElement(first_deck_1.FirstDeck, { radius: 50, position: position },
-            React.createElement(reactor_1.Reactor, { radius: 10, position: position })),
-        React.createElement(terminal_1.Terminal, { radius: TERMINAL_RADIUS, position: (new three_1.Vector3(0, terminalPos, 0)).add(position) }),
-        React.createElement(rapport_1.Rapport, { radius: TERMINAL_RADIUS, position: (new three_1.Vector3(0, -terminalPos, 0)).add(position) })));
-}
-exports.Ship = Ship;
-function Corridors(props) {
-    var position = props.position;
-    return (React.createElement("scene", null,
-        React.createElement(corridor_1.Corridor, { position: position, angle: 0, start: FIRST_DECK_RADIUS, end: ROLLING_CIRCLE_RADIUS }),
-        React.createElement(corridor_1.Corridor, { position: position, angle: Math.PI, start: FIRST_DECK_RADIUS, end: ROLLING_CIRCLE_RADIUS }),
-        React.createElement(corridor_1.Corridor, { position: position, angle: PI2, start: FIRST_DECK_RADIUS, end: corridorEndPos }),
-        React.createElement(corridor_1.Corridor, { position: position, angle: -PI2, start: FIRST_DECK_RADIUS, end: corridorEndPos })));
-}
-
-
-/***/ }),
-/* 271 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var ring_1 = __webpack_require__(20);
-function RollingCircle(props) {
-    return (React.createElement("scene", null,
-        React.createElement(ring_1.WidthRing, { width: 10, radius: props.radius + 10, position: props.position }),
-        props.children));
-}
-exports.RollingCircle = RollingCircle;
-
-
-/***/ }),
-/* 272 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var ring_1 = __webpack_require__(20);
-function FirstDeck(props) {
-    return (React.createElement("scene", null,
-        React.createElement(ring_1.WidthRing, { width: 30, radius: props.radius, position: props.position, color: '#f48cfb' }),
-        props.children));
-}
-exports.FirstDeck = FirstDeck;
-
-
-/***/ }),
-/* 273 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var ring_1 = __webpack_require__(20);
-function Reactor(props) {
-    return (React.createElement("scene", null,
-        React.createElement(ring_1.WidthRing, { width: 2, radius: props.radius, position: props.position, color: 'red' }),
-        props.children));
-}
-exports.Reactor = Reactor;
-
-
-/***/ }),
-/* 274 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var three_1 = __webpack_require__(27);
-var ring_1 = __webpack_require__(20);
-var container_1 = __webpack_require__(275);
-var containerRadius = 1;
-var terminalWidth = 5;
-function Terminal(props) {
-    var radius = props.radius;
-    var position = props.position || new three_1.Vector3();
-    var containerPos = radius - terminalWidth - containerRadius;
-    return (React.createElement("scene", null,
-        React.createElement(ring_1.WidthRing, { width: terminalWidth, radius: radius, position: position, color: 'yellow' }),
-        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(0, containerPos, 0)).add(position) }),
-        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(-containerPos, 0, 0)).add(position) }),
-        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(0, -containerPos, 0)).add(position) }),
-        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(containerPos, 0, 0)).add(position) })));
-}
-exports.Terminal = Terminal;
-
-
-/***/ }),
-/* 275 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var ring_1 = __webpack_require__(20);
-function Container(props) {
-    return (React.createElement(ring_1.WidthEllipseRing, { radius: props.radius, radius2: props.radius, width: 0.1, position: props.position }));
-}
-exports.Container = Container;
-
-
-/***/ }),
-/* 276 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(68);
-var React = __webpack_require__(7);
-var ring_1 = __webpack_require__(20);
-var rapportWidth = 5;
-function Rapport(props) {
-    return (React.createElement(ring_1.WidthRing, tslib_1.__assign({}, props, { width: rapportWidth, color: 'blue' })));
-}
-exports.Rapport = Rapport;
-
-
-/***/ }),
-/* 277 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var three_1 = __webpack_require__(27);
-var ring_1 = __webpack_require__(20);
-function Corridor(props) {
-    var start = props.start, end = props.end;
-    if (start > end) {
-        console.warn('start position of the corridor must be less than the end position!');
-        return null;
-    }
-    var radius = (end - start) / 2;
-    var parentRadius = start + radius;
-    var position = props.position || new three_1.Vector3();
-    var angle = props.angle || 0;
-    return (React.createElement(ring_1.WidthEllipseRing, { angle: angle, width: 2, radius: radius, radius2: 7, position: position.add(ring_1.pointInTheEllipse(parentRadius, parentRadius, angle)) }));
-}
-exports.Corridor = Corridor;
-
-
-/***/ }),
-/* 278 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var React = __webpack_require__(7);
-var mobx_react_1 = __webpack_require__(279);
+var mobx_react_1 = __webpack_require__(270);
 var store_1 = __webpack_require__(106);
 var actions_1 = __webpack_require__(105);
 exports.Camera = mobx_react_1.observer(function () {
@@ -140444,7 +140265,7 @@ exports.Camera = mobx_react_1.observer(function () {
 
 
 /***/ }),
-/* 279 */
+/* 270 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -141452,6 +141273,191 @@ if ((typeof __MOBX_DEVTOOLS_GLOBAL_HOOK__ === "undefined" ? "undefined" : _typeo
 }
 
 
+
+
+/***/ }),
+/* 271 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var ship_1 = __webpack_require__(272);
+exports.Ship = ship_1.Ship;
+
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var three_1 = __webpack_require__(27);
+var rolling_circle_1 = __webpack_require__(273);
+var first_deck_1 = __webpack_require__(274);
+var reactor_1 = __webpack_require__(275);
+var terminal_1 = __webpack_require__(276);
+var rapport_1 = __webpack_require__(278);
+var corridor_1 = __webpack_require__(279);
+var TERMINAL_RADIUS = 30;
+var ROLLING_CIRCLE_RADIUS = 500;
+var terminalPos = ROLLING_CIRCLE_RADIUS - TERMINAL_RADIUS;
+var corridorEndPos = terminalPos - TERMINAL_RADIUS;
+var FIRST_DECK_RADIUS = 50;
+var PI2 = Math.PI / 2;
+function Ship(props) {
+    var position = props.position || new three_1.Vector3();
+    return (React.createElement(rolling_circle_1.RollingCircle, { radius: ROLLING_CIRCLE_RADIUS, position: position },
+        React.createElement(Corridors, { position: position }),
+        React.createElement(first_deck_1.FirstDeck, { radius: 50, position: position },
+            React.createElement(reactor_1.Reactor, { radius: 10, position: position })),
+        React.createElement(terminal_1.Terminal, { radius: TERMINAL_RADIUS, position: (new three_1.Vector3(0, terminalPos, 0)).add(position) }),
+        React.createElement(rapport_1.Rapport, { radius: TERMINAL_RADIUS, position: (new three_1.Vector3(0, -terminalPos, 0)).add(position) })));
+}
+exports.Ship = Ship;
+function Corridors(props) {
+    var position = props.position;
+    return (React.createElement("group", { position: position },
+        React.createElement(corridor_1.Corridor, { angle: 0, start: FIRST_DECK_RADIUS, end: ROLLING_CIRCLE_RADIUS }),
+        React.createElement(corridor_1.Corridor, { angle: PI2, start: FIRST_DECK_RADIUS, end: corridorEndPos }),
+        React.createElement(corridor_1.Corridor, { angle: Math.PI, start: FIRST_DECK_RADIUS, end: ROLLING_CIRCLE_RADIUS }),
+        React.createElement(corridor_1.Corridor, { angle: Math.PI + PI2, start: FIRST_DECK_RADIUS, end: corridorEndPos })));
+}
+
+
+/***/ }),
+/* 273 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var ring_1 = __webpack_require__(20);
+function RollingCircle(props) {
+    return (React.createElement("group", null,
+        React.createElement(ring_1.WidthRing, { width: 10, radius: props.radius + 10, position: props.position }),
+        props.children));
+}
+exports.RollingCircle = RollingCircle;
+
+
+/***/ }),
+/* 274 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var ring_1 = __webpack_require__(20);
+function FirstDeck(props) {
+    return (React.createElement("group", null,
+        React.createElement(ring_1.WidthRing, { width: 30, radius: props.radius, position: props.position, color: '#f48cfb' }),
+        props.children));
+}
+exports.FirstDeck = FirstDeck;
+
+
+/***/ }),
+/* 275 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var ring_1 = __webpack_require__(20);
+function Reactor(props) {
+    return (React.createElement(ring_1.WidthRing, { width: 2, radius: props.radius, position: props.position, color: 'red' }));
+}
+exports.Reactor = Reactor;
+
+
+/***/ }),
+/* 276 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var three_1 = __webpack_require__(27);
+var ring_1 = __webpack_require__(20);
+var container_1 = __webpack_require__(277);
+var containerRadius = 1;
+var terminalWidth = 5;
+function Terminal(props) {
+    var radius = props.radius;
+    var position = props.position || new three_1.Vector3();
+    var containerPos = radius - terminalWidth - containerRadius;
+    return (React.createElement("group", null,
+        React.createElement(ring_1.WidthRing, { width: terminalWidth, radius: radius, position: position, color: 'yellow' }),
+        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(0, containerPos, 0)).add(position) }),
+        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(-containerPos, 0, 0)).add(position) }),
+        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(0, -containerPos, 0)).add(position) }),
+        React.createElement(container_1.Container, { radius: containerRadius, position: (new three_1.Vector3(containerPos, 0, 0)).add(position) })));
+}
+exports.Terminal = Terminal;
+
+
+/***/ }),
+/* 277 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var ring_1 = __webpack_require__(20);
+function Container(props) {
+    return (React.createElement(ring_1.WidthEllipseRing, { radius: props.radius, radius2: props.radius, width: 0.1, position: props.position }));
+}
+exports.Container = Container;
+
+
+/***/ }),
+/* 278 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(68);
+var React = __webpack_require__(7);
+var ring_1 = __webpack_require__(20);
+var rapportWidth = 5;
+function Rapport(props) {
+    return (React.createElement(ring_1.WidthRing, tslib_1.__assign({}, props, { width: rapportWidth, color: 'blue' })));
+}
+exports.Rapport = Rapport;
+
+
+/***/ }),
+/* 279 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(7);
+var three_1 = __webpack_require__(27);
+var ring_1 = __webpack_require__(20);
+function Corridor(props) {
+    var start = props.start, end = props.end;
+    if (start > end) {
+        console.warn('start position of the corridor must be less than the end position!');
+        return null;
+    }
+    var radius = (end - start) / 2;
+    var parentRadius = start + radius;
+    var position = props.position || new three_1.Vector3();
+    var angle = props.angle || 0;
+    return (React.createElement(ring_1.WidthEllipseRing, { angle: angle, width: 2, radius: radius, radius2: 7, position: position.add(ring_1.pointInTheEllipse(parentRadius, parentRadius, angle)) }));
+}
+exports.Corridor = Corridor;
 
 
 /***/ }),

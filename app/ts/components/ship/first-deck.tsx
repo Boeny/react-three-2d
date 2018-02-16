@@ -11,7 +11,7 @@ interface Props {
 
 export function FirstDeck(props: Props) {
     return (
-        <scene>
+        <group>
             <WidthRing
                 width={30}
                 radius={props.radius}
@@ -19,6 +19,6 @@ export function FirstDeck(props: Props) {
                 color={'#f48cfb'}
             />
             {props.children}
-        </scene>
+        </group>
     );
 }

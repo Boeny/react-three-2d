@@ -50,23 +50,23 @@ interface CorridorsProps {
 function Corridors(props: CorridorsProps) {
     const { position } = props;
     return (
-        <scene>
+        <group position={position}>
             <Corridor
-                position={position} angle={0}
+                angle={0}
                 start={FIRST_DECK_RADIUS} end={ROLLING_CIRCLE_RADIUS}
             />
             <Corridor
-                position={position} angle={Math.PI}
+                angle={PI2}
+                start={FIRST_DECK_RADIUS} end={corridorEndPos}
+            />
+            <Corridor
+                angle={Math.PI}
                 start={FIRST_DECK_RADIUS} end={ROLLING_CIRCLE_RADIUS}
             />
             <Corridor
-                position={position} angle={PI2}
+                angle={Math.PI + PI2}
                 start={FIRST_DECK_RADIUS} end={corridorEndPos}
             />
-            <Corridor
-                position={position} angle={-PI2}
-                start={FIRST_DECK_RADIUS} end={corridorEndPos}
-            />
-        </scene>
+        </group>
     );
 }

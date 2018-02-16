@@ -17,7 +17,7 @@ export function Terminal(props: Props) {
     const position = props.position || new Vector3();
     const containerPos = radius - terminalWidth - containerRadius;
     return (
-        <scene>
+        <group>
             <WidthRing
                 width={terminalWidth}
                 radius={radius}
@@ -28,6 +28,6 @@ export function Terminal(props: Props) {
             <Container radius={containerRadius} position={(new Vector3(-containerPos, 0, 0)).add(position)} />
             <Container radius={containerRadius} position={(new Vector3(0, -containerPos, 0)).add(position)} />
             <Container radius={containerRadius} position={(new Vector3(containerPos, 0, 0)).add(position)} />
-        </scene>
+        </group>
     );
 }

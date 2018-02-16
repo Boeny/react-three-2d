@@ -15,6 +15,7 @@ declare namespace JSX {
         axisHelper: any;
         color: any;
         mesh: any;
+        group: any;
 
         boxGeometry: any;
         sphereGeometry: any;

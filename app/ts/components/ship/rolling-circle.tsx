@@ -11,13 +11,13 @@ interface Props {
 
 export function RollingCircle(props: Props) {
     return (
-        <scene>
+        <group>
             <WidthRing
                 width={10}
                 radius={props.radius + 10}
                 position={props.position}
             />
             {props.children}
-        </scene>
+        </group>
     );
 }
