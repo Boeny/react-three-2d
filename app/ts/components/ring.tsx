@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { pointInTheEllipse } from '~/utils';
 import { Parametric } from './parametric';
 
 
@@ -128,11 +129,11 @@ const getRadius: (r: number) => GetRadius = radius => coo => {
 
 type GetRadiusBy = (radius: number, param: number) => GetRadius;
 
-export const getRadiusByInner: GetRadiusBy  = (radius, innerRadius) => coo => {
+const getRadiusByInner: GetRadiusBy  = (radius, innerRadius) => coo => {
     return (radius - innerRadius) * coo + innerRadius;
 };
 
-export const getRadiusByWidth: GetRadiusBy = (radius, width) => coo => {
+const getRadiusByWidth: GetRadiusBy = (radius, width) => coo => {
     return width * coo + radius - width;
 };
 
@@ -142,19 +143,3 @@ type Parametric = (u: number, v: number) => Vector3;
 const parametric: (r1: GetRadius, r2: GetRadius) => Parametric = (radius1, radius2) => (u, v) => {
     return pointInTheEllipse(radius1(v), radius2(v), 2 * u * Math.PI);
 };
-
-export function pointInTheEllipse(r1: number, r2: number, angle: number): Vector3 {
-    return new Vector3(
-        r1 * Math.cos(angle),
-        r2 * Math.sin(angle),
-        0
-    );
-}
-
-export function pointInTheCircle(radius: number, angle: number): Vector3 {
-    return new Vector3(
-        radius * Math.cos(angle),
-        radius * Math.sin(angle),
-        0
-    );
-}

@@ -1,14 +1,10 @@
 import * as React from 'react';
 import { Vector3, Euler } from 'three';
-import { pointInTheCircle, WidthRing } from '../ring';
-import { Parametric } from '../parametric';
+import { pointInTheCircle } from '~/utils';
+import { WidthRing, Parametric } from '~/components';
+import { ARRAY_9 } from '~/constants';
+import { CORRIDOR_DEPTH, depth2, CABIN_RADIUS, cabinPos } from '../constants';
 
-
-const CORRIDOR_DEPTH = 10;
-const depth2 = CORRIDOR_DEPTH / 2;
-const CABIN_RADIUS = 8;
-const cabinPos = CORRIDOR_DEPTH + CABIN_RADIUS;
-const ARRAY_9 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 interface Props extends PositionProps {
     start: number;
@@ -53,7 +49,7 @@ function BerthCabin(props: PositionProps) {
     return (
         <WidthRing
             width={1}
-            radius={10}
+            radius={CABIN_RADIUS}
             {...props}
         />
     );

@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { WidthRing } from '../ring';
+import { WidthRing } from '~/components';
+import { ROLLING_CIRCLE_WIDTH } from '../constants';
 
-
-const ROLLING_CIRCLE_WIDTH = 15;
 
 interface Props extends PositionProps {
     radius: number;

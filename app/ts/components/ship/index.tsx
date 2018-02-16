@@ -1,26 +1,14 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
-import { ExternalHull } from './external-hull';
-import { SecondDeck } from './second-deck';
-import { RollingCircle } from './rolling-circle';
-import { FirstDeck } from './first-deck';
-import { Reactor } from './reactor';
-import { Terminal } from './terminal';
-import { Rapport } from './rapport';
-import { Corridor } from './corridor';
+import {
+    ExternalHull, SecondDeck, RollingCircle, FirstDeck, Reactor, Terminal, Rapport, Corridor
+} from './components';
+import { PI2, PI4, ARRAY_4 } from '~/constants';
+import {
+    SHIP_RADIUS, ROLLING_CIRCLE_WIDTH, TERMINAL_RADIUS, ROLLING_CIRCLE_RADIUS, terminalPos,
+    corridorEndPos, FIRST_DECK_RADIUS
+} from './constants';
 
-
-const SHIP_RADIUS = 800;
-const ROLLING_CIRCLE_WIDTH = 15;
-
-const TERMINAL_RADIUS = 30;
-const ROLLING_CIRCLE_RADIUS = 500;
-const terminalPos = ROLLING_CIRCLE_RADIUS - TERMINAL_RADIUS;
-const corridorEndPos = terminalPos - TERMINAL_RADIUS;
-const FIRST_DECK_RADIUS = 50;
-const PI2 = Math.PI / 2;
-const PI4 = PI2 / 2;
-const ARRAY_4 = [1,2,3,4];
 
 export function Ship(props: PositionProps) {
     return (

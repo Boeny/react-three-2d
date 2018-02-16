@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { WidthRing } from '../ring';
+import { WidthRing } from '~/components';
 
 
 interface Props extends PositionProps {
