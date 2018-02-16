@@ -7,27 +7,24 @@ import { Container } from '../container';
 const containerRadius = 1;
 const terminalWidth = 5;
 
-interface Props {
+interface Props extends PositionProps {
     radius: number;
-    position?: Vector3;
 }
 
 export function Terminal(props: Props) {
     const { radius } = props;
-    const position = props.position || new Vector3();
     const containerPos = radius - terminalWidth - containerRadius;
     return (
-        <group>
+        <group position={props.position}>
             <WidthRing
                 width={terminalWidth}
                 radius={radius}
-                position={position}
                 color={'yellow'}
             />
-            <Container radius={containerRadius} position={(new Vector3(0, containerPos, 0)).add(position)} />
-            <Container radius={containerRadius} position={(new Vector3(-containerPos, 0, 0)).add(position)} />
-            <Container radius={containerRadius} position={(new Vector3(0, -containerPos, 0)).add(position)} />
-            <Container radius={containerRadius} position={(new Vector3(containerPos, 0, 0)).add(position)} />
+            <Container radius={containerRadius} position={(new Vector3(0, containerPos, 0))} />
+            <Container radius={containerRadius} position={(new Vector3(-containerPos, 0, 0))} />
+            <Container radius={containerRadius} position={(new Vector3(0, -containerPos, 0))} />
+            <Container radius={containerRadius} position={(new Vector3(containerPos, 0, 0))} />
         </group>
     );
 }

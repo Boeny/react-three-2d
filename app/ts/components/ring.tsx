@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Euler, Color, VertexColors, Vector3 } from 'three';
+import { Vector3 } from 'three';
+import { Parametric } from './parametric';
 
 
 interface Props extends CommonProps {
@@ -8,27 +9,19 @@ interface Props extends CommonProps {
 }
 
 export function BaseRing(props: Props) {
-    const { angle, color, r1, r2, position } = props;
+    const { r1, r2, ...common } = props;
     return (
-        <mesh rotation={new Euler(0, 0, angle || 0)} position={position}>
-            <parametricGeometry
-                parametricFunction={parametric(r1, r2)}
-                slices={40}
-                stacks={1}
-            />
-            <meshBasicMaterial
-                wireframe={true}
-                color={new Color(color || 'white')}
-                vertexColors={VertexColors}
-            />
-        </mesh>
+        <Parametric
+            {...common}
+            slices={40}
+            stacks={1}
+            parametricFunction={parametric(r1, r2)}
+        />
     );
 }
 
 
-interface CommonProps {
-    position?: Vector3;
-    angle?: number;
+interface CommonProps extends PositionProps {
     color?: string;
 }
 
@@ -132,11 +125,14 @@ const getRadius: (r: number) => GetRadius = radius => coo => {
     return radius * coo;
 };
 
-const getRadiusByInner: (r: number, inner: number) => GetRadius = (radius, innerRadius) => coo => {
+
+type GetRadiusBy = (radius: number, param: number) => GetRadius;
+
+export const getRadiusByInner: GetRadiusBy  = (radius, innerRadius) => coo => {
     return (radius - innerRadius) * coo + innerRadius;
 };
 
-const getRadiusByWidth: (r: number, width: number) => GetRadius = (radius, width) => coo => {
+export const getRadiusByWidth: GetRadiusBy = (radius, width) => coo => {
     return width * coo + radius - width;
 };
 
@@ -151,6 +147,14 @@ export function pointInTheEllipse(r1: number, r2: number, angle: number): Vector
     return new Vector3(
         r1 * Math.cos(angle),
         r2 * Math.sin(angle),
+        0
+    );
+}
+
+export function pointInTheCircle(radius: number, angle: number): Vector3 {
+    return new Vector3(
+        radius * Math.cos(angle),
+        radius * Math.sin(angle),
         0
     );
 }

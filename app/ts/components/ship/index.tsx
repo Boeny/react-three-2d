@@ -1,5 +1,7 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { ExternalHull } from './external-hull';
+import { SecondDeck } from './second-deck';
 import { RollingCircle } from './rolling-circle';
 import { FirstDeck } from './first-deck';
 import { Reactor } from './reactor';
@@ -8,46 +10,48 @@ import { Rapport } from './rapport';
 import { Corridor } from './corridor';
 
 
+const SHIP_RADIUS = 800;
+const ROLLING_CIRCLE_WIDTH = 15;
+
 const TERMINAL_RADIUS = 30;
 const ROLLING_CIRCLE_RADIUS = 500;
 const terminalPos = ROLLING_CIRCLE_RADIUS - TERMINAL_RADIUS;
 const corridorEndPos = terminalPos - TERMINAL_RADIUS;
 const FIRST_DECK_RADIUS = 50;
 const PI2 = Math.PI / 2;
+const PI4 = PI2 / 2;
+const ARRAY_4 = [1,2,3,4];
 
-interface Props {
-    radius: number;
-    position?: Vector3;
-}
-
-export function Ship(props: Props) {
-    const position = props.position || new Vector3();
+export function Ship(props: PositionProps) {
     return (
-        <RollingCircle radius={ROLLING_CIRCLE_RADIUS} position={position}>
-            <Corridors position={position} />
+        <ExternalHull radius={SHIP_RADIUS} {...props}>
+            <SecondDeck
+                radius={(SHIP_RADIUS + ROLLING_CIRCLE_RADIUS) / 2 + ROLLING_CIRCLE_WIDTH}
+                width={ROLLING_CIRCLE_WIDTH}
+            >
+                <RollingCircle radius={ROLLING_CIRCLE_RADIUS}>
+                    <Corridors />
 
-            <FirstDeck radius={50} position={position}>
-                <Reactor radius={10} position={position} />
-            </FirstDeck>
+                    <FirstDeck radius={50}>
+                        <Reactor radius={10} />
+                    </FirstDeck>
 
-            <Terminal
-                radius={TERMINAL_RADIUS}
-                position={(new Vector3(0, terminalPos, 0)).add(position)}
-            />
-            <Rapport
-                radius={TERMINAL_RADIUS}
-                position={(new Vector3(0, -terminalPos, 0)).add(position)}
-            />
-        </RollingCircle>
+                    <Terminal
+                        radius={TERMINAL_RADIUS}
+                        position={(new Vector3(0, terminalPos, 0))}
+                    />
+                    <Rapport
+                        radius={TERMINAL_RADIUS}
+                        position={(new Vector3(0, -terminalPos, 0))}
+                    />
+                </RollingCircle>
+            </SecondDeck>
+        </ExternalHull>
     );
 }
 
 
-interface CorridorsProps {
-    position: Vector3;
-}
-
-function Corridors(props: CorridorsProps) {
+function Corridors(props: PositionProps) {
     const { position } = props;
     return (
         <group position={position}>
@@ -64,9 +68,16 @@ function Corridors(props: CorridorsProps) {
                 start={FIRST_DECK_RADIUS} end={ROLLING_CIRCLE_RADIUS}
             />
             <Corridor
-                angle={Math.PI + PI2}
+                angle={-PI2}
                 start={FIRST_DECK_RADIUS} end={corridorEndPos}
             />
+            {ARRAY_4.map(i => (
+                <Corridor
+                    key={i}
+                    angle={PI4 + PI2 * i}
+                    start={FIRST_DECK_RADIUS} end={ROLLING_CIRCLE_RADIUS}
+                />
+            ))}
         </group>
     );
 }

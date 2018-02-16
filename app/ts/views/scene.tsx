@@ -33,7 +33,7 @@ export function Scene() {
         >
             <scene>
                 <Camera />
-                <Ship radius={1000}/>
+                <Ship />
             </scene>
         </React3>
     );

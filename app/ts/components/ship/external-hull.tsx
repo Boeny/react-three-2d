@@ -7,13 +7,12 @@ interface Props extends PositionProps {
     children?: any;
 }
 
-export function FirstDeck(props: Props) {
+export function ExternalHull(props: Props) {
     return (
         <group position={props.position}>
             <WidthRing
-                width={30}
+                width={10}
                 radius={props.radius}
-                color={'#f48cfb'}
             />
             {props.children}
         </group>

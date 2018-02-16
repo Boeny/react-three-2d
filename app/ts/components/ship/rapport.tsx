@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { Vector3 } from 'three';
 import { WidthRing } from '../ring';
 
 
 const rapportWidth = 5;
 
-interface Props {
+interface Props extends PositionProps {
     radius: number;
-    position?: Vector3;
 }
 
 export function Rapport(props: Props) {
