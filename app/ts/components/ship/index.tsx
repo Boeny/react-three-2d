@@ -5,8 +5,8 @@ import {
 } from './components';
 import { PI2, PI4, ARRAY_4 } from '~/constants';
 import {
-    SHIP_RADIUS, ROLLING_CIRCLE_WIDTH, TERMINAL_RADIUS, ROLLING_CIRCLE_RADIUS, terminalPos,
-    corridorEndPos, FIRST_DECK_RADIUS
+    SHIP_RADIUS, TERMINAL_RADIUS, ROLLING_CIRCLE_RADIUS, terminalPos,
+    corridorEndPos, FIRST_DECK_RADIUS, secondDeckWidth, secondDeckRadius
 } from './constants';
 
 
@@ -14,8 +14,8 @@ export function Ship(props: PositionProps) {
     return (
         <ExternalHull radius={SHIP_RADIUS} {...props}>
             <SecondDeck
-                radius={(SHIP_RADIUS + ROLLING_CIRCLE_RADIUS) / 2 + ROLLING_CIRCLE_WIDTH}
-                width={ROLLING_CIRCLE_WIDTH}
+                radius={secondDeckRadius}
+                width={secondDeckWidth}
             >
                 <RollingCircle radius={ROLLING_CIRCLE_RADIUS}>
                     <Corridors />
