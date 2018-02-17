@@ -15,6 +15,7 @@ declare namespace JSX {
         axisHelper: any;
         color: any;
         mesh: any;
+        group: any;
 
         boxGeometry: any;
         sphereGeometry: any;
@@ -44,4 +45,9 @@ declare interface MeshStore {
 
 declare interface ElementStore {
     DOM: HTMLElement | null;
+}
+
+declare interface PositionProps {
+    angle?: number;
+    position?: THREE.Vector3;
 }

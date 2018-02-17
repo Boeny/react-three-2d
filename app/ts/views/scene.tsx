@@ -1,20 +1,20 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import { Store as HtmlStore } from './html/store';
 import { setCanvas, setCursor } from './html/actions';
-
-import { setColor } from './planet/actions';
-import { Planet } from './planet';
-
 import { setZoom as setCameraZoom, shiftPosition as moveCamera } from './camera/actions';
 import { Camera } from './camera';
+import { Ship } from '~/components';
 
 
 type Vector2 = { x: number, y: number };
 let dragStartingPoint: Vector2 | null = null;
 let timer = 0;
-const WHEEL = 1;
-const TIMER_DELAY = 3;
+const MOUSE = {
+    left: 0,
+    wheel: 1,
+    right: 2
+};
+const TIMER_DELAY = 1;
 
 export function Scene() {
     const width = window.innerWidth;
@@ -24,9 +24,7 @@ export function Scene() {
             mainCamera={'camera'} // this points to the perspectiveCamera which has the name set to "camera" below
             width={width}
             height={height}
-            onAnimate={() => {
-                setColor(HtmlStore.DOM && HtmlStore.DOM.style.backgroundColor || 'white');
-            }}
+            onAnimate={() => null}
             canvasRef={setCanvas}
             onWheel={onMouseWheel}
             onMouseDown={onMouseDown}
@@ -35,7 +33,7 @@ export function Scene() {
         >
             <scene>
                 <Camera />
-                <Planet />
+                <Ship />
             </scene>
         </React3>
     );
@@ -46,14 +44,26 @@ function onMouseWheel(e: any) {
 }
 
 function onMouseDown(e: any) {
-    if (e.button === WHEEL) {
-        onMiddleMouseDown({ x: e.clientX, y: e.clientY });
+    switch (e.button) {
+        case MOUSE.left:
+            setCursor('pointer');
+            dragStartingPoint = { x: e.clientX, y: e.clientY };
+            break;
+        case MOUSE.right:
+        case MOUSE.wheel:
+            break;
     }
 }
 
 function onMouseUp(e: any) {
-    if (e.button === WHEEL) {
-        onMiddleMouseUp();
+    switch (e.button) {
+        case MOUSE.left:
+            setCursor('default');
+            dragStartingPoint = null;
+            break;
+        case MOUSE.right:
+        case MOUSE.wheel:
+            break;
     }
 }
 
@@ -68,15 +78,4 @@ function onMouseMove(e: any) {
         return;
     }
     timer += 1;
-}
-
-
-function onMiddleMouseDown(point: Vector2) {
-    setCursor('pointer');
-    dragStartingPoint = point;
-}
-
-function onMiddleMouseUp() {
-    setCursor('default');
-    dragStartingPoint = null;
 }

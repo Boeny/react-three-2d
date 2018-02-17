@@ -4,7 +4,7 @@ import { IStore } from './types';
 
 
 export const Store: IStore = observable({
-    zoom: 0.5,
+    zoom: 22,
     DOM: null,
     position: new Vector3(0, 0, 5)
 });
