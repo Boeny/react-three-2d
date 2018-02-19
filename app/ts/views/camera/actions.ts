@@ -1,7 +1,8 @@
 import { action } from 'mobx';
 import { Store } from './store';
-import { Vector3 } from 'three';
+import { Vector3, Vector2 } from 'three';
 import { IStore } from './types';
+import { isMoving } from '~/views/camera/utils';
 
 
 const getZoomSetterAction = (store: IStore) => (zoom: number) => {
@@ -26,11 +27,30 @@ const getPositionSetterAction = (store: IStore) => (position: Vector3) => {
 export const setPosition = action(getPositionSetterAction(Store));
 
 
-const getShiftPositionAction = (store: IStore) => (x: number, y: number) => {
-    setPosition(new Vector3(
-        store.position.x + x / store.zoom,
-        store.position.y + y / store.zoom,
-        0
-    ));
+const getShiftPositionAction = (store: IStore) => (v: Vector2) => {
+    setPosition(store.position.add(new Vector3(v.x / store.zoom, -v.y / store.zoom, 0)));
 };
 export const shiftPosition = getShiftPositionAction(Store);
+
+
+const getDecreseSpeedAction = (store: IStore) => () => {
+    if (isMoving(store.speed)) {
+        setSpeed(store.speed.multiplyScalar(0.5));
+    }
+};
+export const decSpeed = getDecreseSpeedAction(Store);
+
+
+const getSpeedSetterAction = (store: IStore) => (speed: Vector2) => {
+    store.speed.x = speed.x;
+    store.speed.y = speed.y;
+};
+export const setSpeed = action(getSpeedSetterAction(Store));
+
+
+const getMoveBySpeedAction = (store: IStore) => () => {
+    if (isMoving(store.speed)) {
+        shiftPosition(store.speed);
+    }
+};
+export const moveBySpeed = action(getMoveBySpeedAction(Store));

@@ -1,4 +1,4 @@
-import { Color, Vector3 } from 'three';
+import { Color, Vector3, Vector2 } from 'three';
 
 
 export function convertToColor(color: string): Color {
@@ -19,4 +19,8 @@ export function pointInTheCircle(radius: number, angle: number): Vector3 {
         radius * Math.sin(angle),
         0
     );
+}
+
+export function getMouseVector(e: any): Vector2 {
+    return new Vector2(e.clientX, e.clientY);
 }
