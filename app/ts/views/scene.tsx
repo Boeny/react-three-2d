@@ -3,7 +3,7 @@ import * as React3 from 'react3';
 import { Vector2 } from 'three';
 import { setCanvas, setCursor } from './html/actions';
 import {
-    setZoom as setCameraZoom, shiftPosition as moveCamera, decSpeed as decreaseCameraSpeed,
+    setZoom as setCameraZoom, shiftPosition as moveCamera, decreaseSpeed as decreaseCameraSpeed,
     setSpeed as setCameraSpeed, moveBySpeed as moveCameraWithSpeed
 } from './camera/actions';
 import { getMouseVector } from '~/utils';
@@ -52,6 +52,7 @@ function onMouseDown(e: any) {
         case MOUSE.left:
             setCursor('pointer');
             dragStartingPoint = getMouseVector(e);
+            setCameraSpeed(null);
             break;
         case MOUSE.right:
         case MOUSE.wheel:

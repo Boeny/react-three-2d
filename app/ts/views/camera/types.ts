@@ -5,5 +5,5 @@ export interface IStore {
     zoom: number;
     DOM: any;
     position: Vector3;
-    speed: Vector2;
+    speed: Vector2 | null;
 }

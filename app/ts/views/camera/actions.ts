@@ -33,23 +33,22 @@ const getShiftPositionAction = (store: IStore) => (v: Vector2) => {
 export const shiftPosition = getShiftPositionAction(Store);
 
 
-const getDecreseSpeedAction = (store: IStore) => () => {
-    if (isMoving(store.speed)) {
-        setSpeed(store.speed.multiplyScalar(0.5));
+const getDecreaseSpeedAction = (store: IStore) => () => {
+    if (store.speed !== null) {
+        setSpeed(isMoving(store.speed) ? store.speed.multiplyScalar(0.5) : null);
     }
 };
-export const decSpeed = getDecreseSpeedAction(Store);
+export const decreaseSpeed = getDecreaseSpeedAction(Store);
 
 
-const getSpeedSetterAction = (store: IStore) => (speed: Vector2) => {
-    store.speed.x = speed.x;
-    store.speed.y = speed.y;
+const getSpeedSetterAction = (store: IStore) => (speed: Vector2 | null) => {
+    store.speed = speed;
 };
 export const setSpeed = action(getSpeedSetterAction(Store));
 
 
 const getMoveBySpeedAction = (store: IStore) => () => {
-    if (isMoving(store.speed)) {
+    if (store.speed !== null) {
         shiftPosition(store.speed);
     }
 };
