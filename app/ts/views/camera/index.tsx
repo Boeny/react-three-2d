@@ -12,10 +12,10 @@ export const Camera = observer(() => {
         <orthographicCamera
             ref={setCamera}
             name={'camera'}
-            left={- width / 2}
+            left={-width / 2}
             right={width / 2}
             top={height / 2}
-            bottom={- height / 2}
+            bottom={-height / 2}
             near={0.1}
             far={10}
             zoom={zoom}

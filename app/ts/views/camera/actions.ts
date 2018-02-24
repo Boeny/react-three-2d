@@ -2,16 +2,18 @@ import { action } from 'mobx';
 import { Store } from './store';
 import { Vector3, Vector2 } from 'three';
 import { IStore, State } from './types';
+import { ZOOM_SHIFT } from './constants';
 
 
-const getZoomSetterAction = (store: State) => (zoom: number) => {
-    if (zoom > 0) {// farther
-        store.zoom /= 1.1;
-    } else {// nearer
-        store.zoom += Math.sqrt(store.zoom) / 10;
+const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
+    const width = window.innerWidth;
+    if (newZoom < 0 && width - 2 * ZOOM_SHIFT * store.state.zoom < 1) {
+        return;
     }
+    store.state.zoom *= width / (width + 2 * ZOOM_SHIFT * store.state.zoom * (newZoom > 0 ? 1 : -1));
+    console.log(store.state.zoom);
 };
-export const setZoom = action(getZoomSetterAction(Store.state));
+export const setZoom = action(getZoomSetterAction(Store));
 
 
 const getPositionSetterAction = (store: State) => (v: Vector3) => {
