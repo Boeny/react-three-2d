@@ -1,55 +1,34 @@
 import { action } from 'mobx';
 import { Store } from './store';
 import { Vector3, Vector2 } from 'three';
-import { IStore } from './types';
-import { isMoving } from '~/views/camera/utils';
+import { IStore, State } from './types';
 
 
-const getZoomSetterAction = (store: IStore) => (zoom: number) => {
+const getZoomSetterAction = (store: State) => (zoom: number) => {
     if (zoom > 0) {// farther
         store.zoom /= 1.1;
     } else {// nearer
         store.zoom += Math.sqrt(store.zoom) / 10;
     }
 };
-export const setZoom = action(getZoomSetterAction(Store));
+export const setZoom = action(getZoomSetterAction(Store.state));
 
 
-const getElementSetterAction = (store: IStore) => (element: any) => {
-    store.DOM = element;
+const getPositionSetterAction = (store: State) => (v: Vector3) => {
+    store.position = v;
 };
-export const setCamera = action(getElementSetterAction(Store));
+export const setPosition = action(getPositionSetterAction(Store.state));
 
 
-const getPositionSetterAction = (store: IStore) => (position: Vector3) => {
-    store.position = position;
+const getShiftPosition = (store: State) => (v: Vector2) => {
+    setPosition(store.position.clone().add(new Vector3(v.x / store.zoom, - v.y / store.zoom, 0)));
 };
-export const setPosition = action(getPositionSetterAction(Store));
+export const shiftPosition = getShiftPosition(Store.state);
 
 
-const getShiftPositionAction = (store: IStore) => (v: Vector2) => {
-    setPosition(store.position.add(new Vector3(v.x / store.zoom, -v.y / store.zoom, 0)));
-};
-export const shiftPosition = getShiftPositionAction(Store);
-
-
-const getDecreaseSpeedAction = (store: IStore) => () => {
-    if (store.speed !== null) {
-        setSpeed(isMoving(store.speed) ? store.speed.multiplyScalar(0.5) : null);
-    }
-};
-export const decreaseSpeed = getDecreaseSpeedAction(Store);
-
-
-const getSpeedSetterAction = (store: IStore) => (speed: Vector2 | null) => {
-    store.speed = speed;
-};
-export const setSpeed = action(getSpeedSetterAction(Store));
-
-
-const getMoveBySpeedAction = (store: IStore) => () => {
+const getMoveBySpeed = (store: IStore) => () => {
     if (store.speed !== null) {
         shiftPosition(store.speed);
     }
 };
-export const moveBySpeed = action(getMoveBySpeedAction(Store));
+export const moveBySpeed = getMoveBySpeed(Store);

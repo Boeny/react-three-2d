@@ -1,4 +1,4 @@
-import { MIN_SPEED2 } from './constants';
+import { MIN_SPEED2 } from '../constants';
 import { Vector2 } from 'three';
 
 

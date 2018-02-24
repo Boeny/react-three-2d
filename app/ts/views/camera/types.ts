@@ -1,9 +1,12 @@
 import { Vector3, Vector2 } from 'three';
 
+export interface State {
+    zoom: number;
+    position: Vector3;
+}
 
 export interface IStore {
-    zoom: number;
+    state: State;
     DOM: any;
-    position: Vector3;
     speed: Vector2 | null;
 }

@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { setCamera } from './actions';
+import { setCamera } from './utils/store';
 
 
 export const Camera = observer(() => {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const { zoom, position } = Store;
+    const { zoom, position } = Store.state;
     return (
         <orthographicCamera
             ref={setCamera}

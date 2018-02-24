@@ -1,17 +1,19 @@
 import * as React from 'react';
 import * as React3 from 'react3';
 import { Vector2 } from 'three';
+import { Store as CameraStore } from './camera/store';
 import { setCanvas, setCursor } from './html/actions';
 import {
-    setZoom as setCameraZoom, shiftPosition as moveCamera, decreaseSpeed as decreaseCameraSpeed,
-    setSpeed as setCameraSpeed, moveBySpeed as moveCameraWithSpeed
+    setZoom as setCameraZoom, shiftPosition as moveCamera, moveBySpeed as moveCameraWithSpeed
 } from './camera/actions';
 import { getMouseVector } from '~/utils';
-import { Camera } from './camera';
+import { decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed } from './camera/utils/store';
 import { Ship } from '~/components';
+import { Camera } from './camera';
 
 
-let dragStartingPoint: Vector2 | null = null;
+let mode: 'idle' | 'drag' | 'inertia' = 'idle';
+let dragStartPoint: Vector2 | null = null;
 let timer = 0;
 const MOUSE = {
     left: 0,
@@ -50,9 +52,12 @@ function onMouseWheel(e: any) {
 function onMouseDown(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            setCursor('pointer');
-            dragStartingPoint = getMouseVector(e);
-            setCameraSpeed(null);
+            if (mode === 'idle' || mode === 'inertia') {
+                mode = 'drag';
+                setCursor('pointer');
+                dragStartPoint = getMouseVector(e);
+                setCameraSpeed(null);
+            }
             break;
         case MOUSE.right:
         case MOUSE.wheel:
@@ -63,10 +68,14 @@ function onMouseDown(e: any) {
 function onMouseUp(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            setCursor('default');
-            if (dragStartingPoint) {
-                setCameraSpeed(getMouseVector(e).sub(dragStartingPoint));
-                dragStartingPoint = null;
+            if (mode === 'drag') {
+                if (dragStartPoint === null) {
+                    return;
+                }
+                mode = 'inertia';
+                setCursor('default');
+                setCameraSpeed(dragStartPoint.sub(getMouseVector(e)));
+                dragStartPoint = null;
             }
             break;
         case MOUSE.right:
@@ -76,17 +85,27 @@ function onMouseUp(e: any) {
 }
 
 function onMouseMove(e: any) {
-    if (dragStartingPoint && timer > TIMER_DELAY) {
-        timer = 0;
-        const v = getMouseVector(e);
-        moveCamera(dragStartingPoint.sub(v));
-        dragStartingPoint = v;
-        return;
+    if (mode === 'drag') {
+        if (dragStartPoint === null) {
+            return;
+        }
+        if (timer > TIMER_DELAY) {
+            timer = 0;
+            const v = getMouseVector(e);
+            moveCamera(dragStartPoint.sub(v));
+            dragStartPoint = v;
+        } else {
+            timer += 1;
+        }
     }
-    timer += 1;
 }
 
 function onUpdate() {
-    decreaseCameraSpeed();
-    moveCameraWithSpeed();
+    if (mode === 'inertia') {
+        moveCameraWithSpeed();
+        decreaseCameraSpeed();
+        if (CameraStore.speed === null) {
+            mode = 'idle';
+        }
+    }
 }

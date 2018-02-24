@@ -3,9 +3,11 @@ import { Vector3 } from 'three';
 import { IStore } from './types';
 
 
-export const Store: IStore = observable({
-    zoom: 1,
+export const Store: IStore = {
+    state: observable({
+        zoom: 1,
+        position: new Vector3(0, 0, 5)
+    }),
     DOM: null,
-    position: new Vector3(0, 0, 5),
     speed: null
-});
+};
