@@ -101672,7 +101672,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MIN_SPEED = 1;
 exports.MIN_SPEED2 = exports.MIN_SPEED * exports.MIN_SPEED;
 exports.SPEED_DECREASE = 0.8;
-exports.ZOOM_SHIFT = 20;
+exports.ZOOM_SHIFT = 30;
 
 
 /***/ }),
@@ -140398,11 +140398,18 @@ var three_1 = __webpack_require__(19);
 var constants_1 = __webpack_require__(63);
 var getZoomSetterAction = function (store) { return function (newZoom) {
     var width = window.innerWidth;
-    var dz = constants_1.ZOOM_SHIFT * store.state.zoom;
-    if (newZoom < 0 && width - 2 * dz * store.state.zoom < 1) {
-        return;
+    var dz = constants_1.ZOOM_SHIFT;
+    if (newZoom < 0) {
+        if (store.state.zoom <= 1) {
+            store.state.zoom *= width / (width - 2 * dz * store.state.zoom);
+        }
+        else {
+            store.state.zoom += Math.sqrt(store.state.zoom / 10);
+        }
     }
-    store.state.zoom *= width / (width + 2 * dz * store.state.zoom * (newZoom > 0 ? 1 : -1));
+    else {
+        store.state.zoom *= width / (width + 2 * dz * store.state.zoom);
+    }
     console.log(store.state.zoom);
 }; };
 exports.setZoom = mobx_1.action(getZoomSetterAction(store_1.Store));

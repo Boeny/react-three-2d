@@ -8,10 +8,15 @@ import { ZOOM_SHIFT } from './constants';
 const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     const width = window.innerWidth;
     const dz = ZOOM_SHIFT;
-    if (newZoom < 0 && width - 2 * dz * store.state.zoom < 1) {
-        return;
+    if (newZoom < 0) {
+        if (store.state.zoom <= 1) {
+            store.state.zoom *= width / (width - 2 * dz * store.state.zoom);
+        } else {
+            store.state.zoom += Math.sqrt(store.state.zoom / 10);
+        }
+    } else {
+        store.state.zoom *= width / (width + 2 * dz * store.state.zoom);
     }
-    store.state.zoom *= width / (width + 2 * dz * store.state.zoom * (newZoom > 0 ? 1 : -1));
     console.log(store.state.zoom);
 };
 export const setZoom = action(getZoomSetterAction(Store));
