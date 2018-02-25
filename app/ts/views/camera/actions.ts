@@ -7,10 +7,11 @@ import { ZOOM_SHIFT } from './constants';
 
 const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     const width = window.innerWidth;
-    if (newZoom < 0 && width - 2 * ZOOM_SHIFT * store.state.zoom < 1) {
+    const dz = ZOOM_SHIFT * store.state.zoom;
+    if (newZoom < 0 && width - 2 * dz * store.state.zoom < 1) {
         return;
     }
-    store.state.zoom *= width / (width + 2 * ZOOM_SHIFT * store.state.zoom * (newZoom > 0 ? 1 : -1));
+    store.state.zoom *= width / (width + 2 * dz * store.state.zoom * (newZoom > 0 ? 1 : -1));
     console.log(store.state.zoom);
 };
 export const setZoom = action(getZoomSetterAction(Store));
