@@ -7,7 +7,7 @@ import { ZOOM_SHIFT } from './constants';
 
 const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     const width = window.innerWidth;
-    const dz = ZOOM_SHIFT * store.state.zoom;
+    const dz = ZOOM_SHIFT;
     if (newZoom < 0 && width - 2 * dz * store.state.zoom < 1) {
         return;
     }

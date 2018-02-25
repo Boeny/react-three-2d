@@ -140398,10 +140398,11 @@ var three_1 = __webpack_require__(19);
 var constants_1 = __webpack_require__(63);
 var getZoomSetterAction = function (store) { return function (newZoom) {
     var width = window.innerWidth;
-    if (newZoom < 0 && width - 2 * constants_1.ZOOM_SHIFT * store.state.zoom < 1) {
+    var dz = constants_1.ZOOM_SHIFT * store.state.zoom;
+    if (newZoom < 0 && width - 2 * dz * store.state.zoom < 1) {
         return;
     }
-    store.state.zoom *= width / (width + 2 * constants_1.ZOOM_SHIFT * store.state.zoom * (newZoom > 0 ? 1 : -1));
+    store.state.zoom *= width / (width + 2 * dz * store.state.zoom * (newZoom > 0 ? 1 : -1));
     console.log(store.state.zoom);
 }; };
 exports.setZoom = mobx_1.action(getZoomSetterAction(store_1.Store));
