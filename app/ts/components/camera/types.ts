@@ -1,4 +1,4 @@
-import { Vector3, Vector2 } from 'three';
+import { Vector3, Vector2, OrthographicCamera } from 'three';
 
 export interface State {
     zoom: number;
@@ -7,6 +7,6 @@ export interface State {
 
 export interface IStore {
     state: State;
-    DOM: any;
+    DOM: OrthographicCamera | null;
     speed: Vector2 | null;
 }

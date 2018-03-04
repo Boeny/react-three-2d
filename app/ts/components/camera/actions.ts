@@ -17,7 +17,6 @@ const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     } else {
         store.state.zoom *= width / (width + 2 * dz * store.state.zoom);
     }
-    console.log(store.state.zoom);
 };
 export const setZoom = action(getZoomSetterAction(Store));
 

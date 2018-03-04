@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Store as PlanetStore } from '~/views/planet/store';
+import { Store as PlanetStore } from '~/components/planet/store';
 import { setPlanet } from './actions';
 
 

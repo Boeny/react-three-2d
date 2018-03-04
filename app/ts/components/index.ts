@@ -1,5 +1,7 @@
 
 
+export { Camera } from './camera';
+export { Planet } from './planet';
 export { Ship } from './ship';
 export { Parametric } from './parametric';
 export { WidthRing } from './ring';
