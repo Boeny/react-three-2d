@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import { Vector2, ShaderPass, EffectComposer, WebGLRenderer, RenderPass, Scene } from 'three';
+import { Vector2 } from 'three';
 import { Store as CameraStore } from '~/components/camera/store';
 import { setCanvas, setCursor } from './html/actions';
 import {
@@ -10,7 +10,7 @@ import { getMouseVector } from '~/utils';
 import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed
 } from '~/components/camera/utils/store';
-import { Camera, Ship } from '~/components';
+import { Camera, Plane } from '~/components';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -37,11 +37,10 @@ export function App() {
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
             onMouseMove={onMouseMove}
-            onUpdateRenderer={(renderer: WebGLRenderer) => composer = createComposer(renderer)}
         >
-            <scene ref={(s: Scene) => scene = s}>
+            <scene>
                 <Camera />
-                <Ship />
+                <Plane />
             </scene>
         </React3>
     );
@@ -110,47 +109,4 @@ function onUpdate() {
             mode = 'idle';
         }
     }
-    if (composer !== null) {
-        composer.render();
-    }
-}
-
-let composer: EffectComposer | null = null;
-let scene: Scene | null = null;
-
-function createComposer(renderer: WebGLRenderer): EffectComposer | null {
-    if (scene === null || CameraStore.DOM === null) {
-        console.warn(scene === null ? 'scene is null' : 'camera is null');
-        return null;
-    }
-    const composer = new EffectComposer(renderer);
-    const renderPass = new RenderPass(scene, CameraStore.DOM);
-    composer.addPass(renderPass);
-    const customPass = new ShaderPass({
-        uniforms: {
-            tDiffuse: { value: null },
-            amount: { value: 1.0 }
-        },
-        vertexShader: [
-            'varying vec2 xy;',
-            'void main() {',
-            'xy = uv;',
-            'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-            '}'
-        ].join('\n'),
-        fragmentShader: [
-            'uniform float amount;',
-            'uniform sampler2D tDiffuse;',
-            'varying vec2 xy;',
-            'void main() {',
-            'float radius = distance(xy, vec2(0.5, 0.5));',
-            'vec4 color = texture2D( tDiffuse, xy );',
-            'float c = 0.2 / radius;',
-            'gl_FragColor = vec4(c, c, c, 1.0);',
-            '}'
-        ].join('\n')
-    });
-    customPass.renderToScreen = true;
-    composer.addPass(customPass);
-    return composer;
 }

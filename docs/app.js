@@ -45831,10 +45831,6 @@ var THREEElementDescriptor = function () {
   return THREEElementDescriptor;
 }();
 
-function getName(owner) {
-  return owner && owner.getName && owner.getName() || '';
-}
-
 if (process.env.NODE_ENV !== 'production') {
   // @see ReactElementValidator
 
@@ -45842,7 +45838,7 @@ if (process.env.NODE_ENV !== 'production') {
 
   var getDeclarationErrorAddendum = function getDeclarationErrorAddendum(owner) {
     if (owner) {
-      var name = getName(owner);
+      var name = owner.getName();
       if (name) {
         return ' Check the render method of `' + name + '`.';
       }
@@ -92904,6 +92900,29 @@ function CanvasRenderer() {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var camera_1 = __webpack_require__(275);
+exports.Camera = camera_1.Camera;
+var planet_1 = __webpack_require__(276);
+exports.Planet = planet_1.Planet;
+var ship_1 = __webpack_require__(279);
+exports.Ship = ship_1.Ship;
+var parametric_1 = __webpack_require__(112);
+exports.Parametric = parametric_1.Parametric;
+var ring_1 = __webpack_require__(113);
+exports.WidthRing = ring_1.WidthRing;
+var container_1 = __webpack_require__(290);
+exports.Container = container_1.Container;
+var plane_1 = __webpack_require__(291);
+exports.Plane = plane_1.Plane;
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 /* WEBPACK VAR INJECTION */(function(process) {/**
  * Copyright 2016-present, Facebook, Inc.
  * All rights reserved.
@@ -92930,7 +92949,7 @@ module.exports = { debugTool: debugTool };
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -92969,27 +92988,6 @@ var ShapeAction = function () {
 }();
 
 module.exports = ShapeAction;
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var camera_1 = __webpack_require__(275);
-exports.Camera = camera_1.Camera;
-var planet_1 = __webpack_require__(276);
-exports.Planet = planet_1.Planet;
-var ship_1 = __webpack_require__(279);
-exports.Ship = ship_1.Ship;
-var parametric_1 = __webpack_require__(112);
-exports.Parametric = parametric_1.Parametric;
-var ring_1 = __webpack_require__(113);
-exports.WidthRing = ring_1.WidthRing;
-var container_1 = __webpack_require__(290);
-exports.Container = container_1.Container;
-
 
 /***/ }),
 /* 20 */
@@ -93264,7 +93262,7 @@ module.exports = ReactInstanceMap;
 
 
 var ReactRef = __webpack_require__(82);
-var ReactInstrumentation = __webpack_require__(17);
+var ReactInstrumentation = __webpack_require__(18);
 
 var warning = __webpack_require__(4);
 
@@ -98095,7 +98093,7 @@ var _shouldUpdateReactComponent = __webpack_require__(60);
 
 var _shouldUpdateReactComponent2 = _interopRequireDefault(_shouldUpdateReactComponent);
 
-var _ReactInstrumentation = __webpack_require__(17);
+var _ReactInstrumentation = __webpack_require__(18);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -98146,47 +98144,37 @@ var staticDebugIdHack = void 0;
 var ReactComponentTreeHook = void 0;
 
 if (process.env.NODE_ENV !== 'production') {
-  /* eslint-disable global-require */
+    /* eslint-disable global-require */
 
-  if (!ReactComponentTreeHook) {
-    ReactComponentTreeHook = __webpack_require__(9);
-  }
+    if (!ReactComponentTreeHook) {
+        ReactComponentTreeHook = __webpack_require__(9);
+    }
 
-  /* eslint-enable global-require */
+    /* eslint-enable global-require */
 }
 
 if (process.env.NODE_ENV !== 'production') {
-  staticDebugIdHack = 0;
-  // prop type helpers
-  // the warnings for propTypes will not say <anonymous>.
-  // Some performance is sacrificed for this.
+    staticDebugIdHack = 0;
+    // prop type helpers
+    // the warnings for propTypes will not say <anonymous>.
+    // Some performance is sacrificed for this.
 
-  // TODO: could have an env variable to disable this?
-  if (!THREE._renamed) {
-    THREE._renamed = true;
+    // TODO: could have an env variable to disable this?
+    if (!THREE._renamed) {
+        THREE._renamed = true;
 
-    THREE.Vector2.displayName = 'THREE.Vector2';
-    THREE.Vector3.displayName = 'THREE.Vector3';
-    THREE.Quaternion.displayName = 'THREE.Quaternion';
-    THREE.Color.displayName = 'THREE.Color';
-    THREE.Shape.displayName = 'THREE.Shape';
-    THREE.Euler.displayName = 'THREE.Euler';
-    THREE.Fog.displayName = 'THREE.Fog';
-  }
-
-  getDeclarationErrorAddendum = function getDeclarationErrorAddendum(owner) {
-    if (owner) {
-      var name = getName(owner);
-      if (name) {
-        return ' Check the render method of `' + name + '`.';
-      }
+        THREE.Vector2.displayName = 'THREE.Vector2';
+        THREE.Vector3.displayName = 'THREE.Vector3';
+        THREE.Quaternion.displayName = 'THREE.Quaternion';
+        THREE.Color.displayName = 'THREE.Color';
+        THREE.Shape.displayName = 'THREE.Shape';
+        THREE.Euler.displayName = 'THREE.Euler';
+        THREE.Fog.displayName = 'THREE.Fog';
     }
-    return '';
-  };
-}
 
-function getName(owner) {
-  return owner && owner.getName && owner.getName() || '';
+    getDeclarationErrorAddendum = function getDeclarationErrorAddendum(owner) {
+        return owner ? ' Check the render method' : '';
+    };
 }
 
 /**
@@ -98200,45 +98188,45 @@ function getName(owner) {
  * @see {ReactMount.unmountComponentAtNode}
  */
 function unmountComponentFromNode(instance, container, safely) {
-  if (process.env.NODE_ENV !== 'production') {
-    _ReactInstrumentation2.default.debugTool.onBeginFlush();
-  }
+    if (process.env.NODE_ENV !== 'production') {
+        _ReactInstrumentation2.default.debugTool.onBeginFlush();
+    }
 
-  _ReactReconciler2.default.unmountComponent(instance, safely);
+    _ReactReconciler2.default.unmountComponent(instance, safely);
 
-  if (process.env.NODE_ENV !== 'production') {
-    _ReactInstrumentation2.default.debugTool.onEndFlush();
-  }
+    if (process.env.NODE_ENV !== 'production') {
+        _ReactInstrumentation2.default.debugTool.onEndFlush();
+    }
 }
 
 /* global __REACT_DEVTOOLS_GLOBAL_HOOK__ */
 
 var TopLevelWrapper = (_temp = _class = function (_ReactComponent) {
-  _inherits(TopLevelWrapper, _ReactComponent);
+    _inherits(TopLevelWrapper, _ReactComponent);
 
-  function TopLevelWrapper() {
-    _classCallCheck(this, TopLevelWrapper);
+    function TopLevelWrapper() {
+        _classCallCheck(this, TopLevelWrapper);
 
-    return _possibleConstructorReturn(this, (TopLevelWrapper.__proto__ || Object.getPrototypeOf(TopLevelWrapper)).apply(this, arguments));
-  }
-
-  _createClass(TopLevelWrapper, [{
-    key: 'render',
-    value: function render() {
-      return this.props.child;
+        return _possibleConstructorReturn(this, (TopLevelWrapper.__proto__ || Object.getPrototypeOf(TopLevelWrapper)).apply(this, arguments));
     }
-  }]);
 
-  return TopLevelWrapper;
+    _createClass(TopLevelWrapper, [{
+        key: 'render',
+        value: function render() {
+            return this.props.child;
+        }
+    }]);
+
+    return TopLevelWrapper;
 }(_ReactBaseClasses.Component), _class.isReactComponent = {}, _class.isReactTopLevelWrapper = true, _temp);
 
 
 if (process.env.NODE_ENV !== 'production') {
-  TopLevelWrapper.displayName = 'TopLevelWrapper';
+    TopLevelWrapper.displayName = 'TopLevelWrapper';
 }
 
 function internalGetID(markup) {
-  return markup && markup[_idPropertyName2.default] || '';
+    return markup && markup[_idPropertyName2.default] || '';
 }
 
 // see ReactMount.js:getReactRootElementInContainer
@@ -98248,13 +98236,13 @@ function internalGetID(markup) {
  * @return {?*} The markup that may have the reactRoot ID, or null.
  */
 function getReactRootMarkupInContainer(container) {
-  if (!container) {
-    return null;
-  }
+    if (!container) {
+        return null;
+    }
 
-  // in ReactMount this is container.firstChild.
+    // in ReactMount this is container.firstChild.
 
-  return container.userData && container.userData.markup && container.userData.markup.childrenMarkup[0] || null;
+    return container.userData && container.userData.markup && container.userData.markup.childrenMarkup[0] || null;
 }
 
 /**
@@ -98265,891 +98253,892 @@ function getReactRootMarkupInContainer(container) {
  * @return {boolean} Returns true if this is a valid internal type.
  */
 function isInternalComponentType(type) {
-  return typeof type === 'function' && typeof type.prototype !== 'undefined' && typeof type.prototype.mountComponent === 'function' && typeof type.prototype.receiveComponent === 'function';
+    return typeof type === 'function' && typeof type.prototype !== 'undefined' && typeof type.prototype.mountComponent === 'function' && typeof type.prototype.receiveComponent === 'function';
 }
 
 var React3Renderer = (_temp2 = _class2 = function () {
-  _createClass(React3Renderer, [{
-    key: 'updateChildren',
+    _createClass(React3Renderer, [{
+        key: 'updateChildren',
 
 
-    /**
-     * @see ReactChildReconciler.updateChildren
-     *
-     * Cloned because it uses
-     * @see React3Renderer.instantiateReactComponent
-     *
-     * Updates the rendered children and returns a new set of children.
-     *
-     * @param {?object} prevChildren Previously initialized set of children.
-     * @param {?object} nextChildren Flat child element maps.
-     * @param mountImages
-     * @param {?object} removedMarkups The map for removed nodes.
-     * @param {ReactReconcileTransaction} transaction
-     * @param hostParent
-     * @param hostContainerInfo
-     * @param {object} context
-     * @param selfDebugID
-     * @return {?object} A new set of child instances.
-     * @internal
-     */
-    value: function updateChildren(prevChildren, nextChildren, mountImages, removedMarkups, transaction, hostParent, hostContainerInfo, context, selfDebugID // 0 in production and for roots
-    ) {
-      // We currently don't have a way to track moves here but if we use iterators
-      // instead of for..in we can zip the iterators and check if an item has
-      // moved.
-      // TODO: If nothing has changed, return the prevChildren object so that we
-      // can quickly bailout.
-      if (!nextChildren && !prevChildren) {
-        return null;
-      }
+        /**
+         * @see ReactChildReconciler.updateChildren
+         *
+         * Cloned because it uses
+         * @see React3Renderer.instantiateReactComponent
+         *
+         * Updates the rendered children and returns a new set of children.
+         *
+         * @param {?object} prevChildren Previously initialized set of children.
+         * @param {?object} nextChildren Flat child element maps.
+         * @param mountImages
+         * @param {?object} removedMarkups The map for removed nodes.
+         * @param {ReactReconcileTransaction} transaction
+         * @param hostParent
+         * @param hostContainerInfo
+         * @param {object} context
+         * @param selfDebugID
+         * @return {?object} A new set of child instances.
+         * @internal
+         */
+        value: function updateChildren(prevChildren, nextChildren, mountImages, removedMarkups, transaction, hostParent, hostContainerInfo, context, selfDebugID // 0 in production and for roots
+        ) {
+            // We currently don't have a way to track moves here but if we use iterators
+            // instead of for..in we can zip the iterators and check if an item has
+            // moved.
+            // TODO: If nothing has changed, return the prevChildren object so that we
+            // can quickly bailout.
+            if (!nextChildren && !prevChildren) {
+                return null;
+            }
 
-      if (nextChildren) {
-        var nextChildrenKeys = Object.keys(nextChildren);
+            if (nextChildren) {
+                var nextChildrenKeys = Object.keys(nextChildren);
 
-        for (var i = 0; i < nextChildrenKeys.length; ++i) {
-          var childName = nextChildrenKeys[i];
+                for (var i = 0; i < nextChildrenKeys.length; ++i) {
+                    var childName = nextChildrenKeys[i];
 
-          var prevChild = prevChildren && prevChildren[childName];
-          var prevElement = prevChild && prevChild._currentElement;
-          var nextElement = nextChildren[childName];
-          if (prevChild !== null && prevChild !== undefined && (0, _shouldUpdateReactComponent2.default)(prevElement, nextElement)) {
-            _ReactReconciler2.default.receiveComponent(prevChild, nextElement, transaction, context);
+                    var prevChild = prevChildren && prevChildren[childName];
+                    var prevElement = prevChild && prevChild._currentElement;
+                    var nextElement = nextChildren[childName];
+                    if (prevChild !== null && prevChild !== undefined && (0, _shouldUpdateReactComponent2.default)(prevElement, nextElement)) {
+                        _ReactReconciler2.default.receiveComponent(prevChild, nextElement, transaction, context);
 
-            if (prevChild._forceRemountOfComponent) {
-              removedMarkups[childName] = prevChild.getHostMarkup();
+                        if (prevChild._forceRemountOfComponent) {
+                            removedMarkups[childName] = prevChild.getHostMarkup();
 
-              _ReactReconciler2.default.unmountComponent(prevChild, false);
-              var nextChildInstance = this.instantiateReactComponent(nextElement, true);
-              nextChildren[childName] = nextChildInstance;
+                            _ReactReconciler2.default.unmountComponent(prevChild, false);
+                            var nextChildInstance = this.instantiateReactComponent(nextElement, true);
+                            nextChildren[childName] = nextChildInstance;
 
-              // Creating mount image now ensures refs are resolved in right order
-              // (see https://github.com/facebook/react/pull/7101 for explanation).
-              var nextChildMountImage = _ReactReconciler2.default.mountComponent(nextChildInstance, transaction, hostParent, hostContainerInfo, context, selfDebugID);
+                            // Creating mount image now ensures refs are resolved in right order
+                            // (see https://github.com/facebook/react/pull/7101 for explanation).
+                            var nextChildMountImage = _ReactReconciler2.default.mountComponent(nextChildInstance, transaction, hostParent, hostContainerInfo, context, selfDebugID);
 
-              mountImages.push(nextChildMountImage);
+                            mountImages.push(nextChildMountImage);
+                        } else {
+                            nextChildren[childName] = prevChild;
+                        }
+                    } else {
+                        if (prevChild) {
+                            removedMarkups[childName] = prevChild.getHostMarkup();
+
+                            _ReactReconciler2.default.unmountComponent(prevChild, false);
+                        }
+                        // The child must be instantiated before it's mounted.
+                        var _nextChildInstance = this.instantiateReactComponent(nextElement, true);
+
+                        nextChildren[childName] = _nextChildInstance;
+
+                        // Creating mount image now ensures refs are resolved in right order
+                        // (see https://github.com/facebook/react/pull/7101 for explanation).
+                        var _nextChildMountImage = _ReactReconciler2.default.mountComponent(_nextChildInstance, transaction, hostParent, hostContainerInfo, context, selfDebugID /* parentDebugID */
+                        );
+
+                        mountImages.push(_nextChildMountImage);
+                    }
+                }
+            }
+
+            if (prevChildren) {
+                // Unmount children that are no longer present.
+                var prevChildrenKeys = Object.keys(prevChildren);
+                for (var _i = 0; _i < prevChildrenKeys.length; ++_i) {
+                    var _childName = prevChildrenKeys[_i];
+
+                    if (!(nextChildren && nextChildren.hasOwnProperty(_childName))) {
+                        var _prevChild = prevChildren[_childName];
+
+                        removedMarkups[_childName] = _prevChild.getHostMarkup();
+
+                        _ReactReconciler2.default.unmountComponent(_prevChild, false);
+                    }
+                }
+            }
+
+            return nextChildren;
+        }
+    }, {
+        key: 'getElementDescriptor',
+        value: function getElementDescriptor(name) {
+            return this.threeElementDescriptors[name];
+        }
+    }], [{
+        key: 'findTHREEObject',
+
+
+        /**
+         * Returns the THREE.js object rendered by this element.
+         *
+         * @param {React.Component|THREE.Object3D|HTMLCanvasElement} componentOrElement
+         * @return {?THREE.Object3D} The root node of this element.
+         */
+        value: function findTHREEObject(componentOrElement) {
+            if (process.env.NODE_ENV !== 'production') {
+                var owner = _ReactCurrentOwner2.default.current;
+                if (owner !== null) {
+                    if (process.env.NODE_ENV !== 'production') {
+                        (0, _warning2.default)(owner._warnedAboutRefsInRender, '%s is accessing findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', owner.getName() || 'A component');
+                    }
+                    owner._warnedAboutRefsInRender = true;
+                }
+            }
+
+            if (componentOrElement === null) {
+                return null;
+            }
+
+            if (componentOrElement instanceof THREE.Object3D || componentOrElement instanceof HTMLCanvasElement) {
+                return componentOrElement;
+            }
+
+            if (_ReactInstanceMap2.default.has(componentOrElement)) {
+                var instance = _ReactInstanceMap2.default.get(componentOrElement);
+
+                instance = (0, _getHostComponentFromComposite2.default)(instance);
+
+                return instance ? _React3ComponentTree2.default.getMarkupFromInstance(instance).threeObject : null;
+            }
+
+            if (!(componentOrElement.render === null || typeof componentOrElement.render !== 'function')) {
+                if (process.env.NODE_ENV !== 'production') {
+                    (0, _invariant2.default)(false, 'Component (with keys: %s) contains `render` method ' + 'but is not mounted', Object.keys(componentOrElement));
+                } else {
+                    (0, _invariant2.default)(false);
+                }
+            }
+
+            if (process.env.NODE_ENV !== 'production') {
+                (0, _invariant2.default)(false, 'Element appears to be neither ReactComponent, ' + 'a THREE.js object, nor a HTMLCanvasElement (keys: %s)', Object.keys(componentOrElement));
             } else {
-              nextChildren[childName] = prevChild;
+                (0, _invariant2.default)(false);
             }
-          } else {
-            if (prevChild) {
-              removedMarkups[childName] = prevChild.getHostMarkup();
 
-              _ReactReconciler2.default.unmountComponent(prevChild, false);
+            return null;
+        }
+        // to be used by modules e.g. mouse input ( see examples )
+
+    }]);
+
+    function React3Renderer() {
+        var _this2 = this;
+
+        _classCallCheck(this, React3Renderer);
+
+        this.instantiateChild = function (childInstances, child, name, selfDebugID) {
+            // We found a component instance.
+            var keyUnique = childInstances[name] === undefined;
+            if (process.env.NODE_ENV !== 'production') {
+                if (!keyUnique) {
+                    (0, _warning2.default)(false, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.%s', _KeyEscapeUtils2.default.unescape(name), ReactComponentTreeHook.getStackAddendumByID(selfDebugID));
+                }
             }
-            // The child must be instantiated before it's mounted.
-            var _nextChildInstance = this.instantiateReactComponent(nextElement, true);
 
-            nextChildren[childName] = _nextChildInstance;
+            if (child !== null && keyUnique) {
+                childInstances[name] = _this2.instantiateReactComponent(child, true);
+            }
+        };
 
-            // Creating mount image now ensures refs are resolved in right order
-            // (see https://github.com/facebook/react/pull/7101 for explanation).
-            var _nextChildMountImage = _ReactReconciler2.default.mountComponent(_nextChildInstance, transaction, hostParent, hostContainerInfo, context, selfDebugID /* parentDebugID */
+        this.findNodeHandle = function (instance) {
+            var inst = _React3ComponentTree2.default.getRenderedHostOrTextFromComponent(instance);
+
+            if (!inst || !inst._threeObject) {
+                return null;
+            }
+
+            var markup = _React3ComponentTree2.default.getMarkupFromInstance(inst);
+
+            _this2._highlightCache = markup;
+            return _this2._highlightElement;
+        };
+
+        this.nativeTagToRootNodeID = function () {
+            return 0;
+        };
+
+        this.hostTagToRootNodeID = function () {
+            return 0;
+        };
+
+        this.batchedMountComponentIntoNode = function (componentInstance, container, shouldReuseMarkup, context) {
+            var transaction = _ReactUpdates2.default.ReactReconcileTransaction.getPooled(!shouldReuseMarkup);
+            transaction.perform(_this2.mountComponentIntoNode, null, componentInstance, container, transaction, shouldReuseMarkup, context);
+            _ReactUpdates2.default.ReactReconcileTransaction.release(transaction);
+        };
+
+        this.mountComponentIntoNode = function (wrapperInstance, container, transaction, shouldReuseMarkup, context) {
+            var markup = _ReactReconciler2.default.mountComponent(wrapperInstance, transaction, null, (0, _React3ContainerInfo2.default)(wrapperInstance, container), context, 0 /* parentDebugID */
             );
 
-            mountImages.push(_nextChildMountImage);
-          }
-        }
-      }
+            wrapperInstance._renderedComponent._topLevelWrapper = wrapperInstance;
+            _this2._mountImageIntoNode(markup, container, wrapperInstance, shouldReuseMarkup, transaction);
+        };
 
-      if (prevChildren) {
-        // Unmount children that are no longer present.
-        var prevChildrenKeys = Object.keys(prevChildren);
-        for (var _i = 0; _i < prevChildrenKeys.length; ++_i) {
-          var _childName = prevChildrenKeys[_i];
-
-          if (!(nextChildren && nextChildren.hasOwnProperty(_childName))) {
-            var _prevChild = prevChildren[_childName];
-
-            removedMarkups[_childName] = _prevChild.getHostMarkup();
-
-            _ReactReconciler2.default.unmountComponent(_prevChild, false);
-          }
-        }
-      }
-
-      return nextChildren;
-    }
-  }, {
-    key: 'getElementDescriptor',
-    value: function getElementDescriptor(name) {
-      return this.threeElementDescriptors[name];
-    }
-  }], [{
-    key: 'findTHREEObject',
-
-
-    /**
-     * Returns the THREE.js object rendered by this element.
-     *
-     * @param {React.Component|THREE.Object3D|HTMLCanvasElement} componentOrElement
-     * @return {?THREE.Object3D} The root node of this element.
-     */
-    value: function findTHREEObject(componentOrElement) {
-      if (process.env.NODE_ENV !== 'production') {
-        var owner = _ReactCurrentOwner2.default.current;
-        if (owner !== null) {
-          if (process.env.NODE_ENV !== 'production') {
-            (0, _warning2.default)(owner._warnedAboutRefsInRender, '%s is accessing findDOMNode inside its render(). ' + 'render() should be a pure function of props and state. It should ' + 'never access something that requires stale data from the previous ' + 'render, such as refs. Move this logic to componentDidMount and ' + 'componentDidUpdate instead.', getName(owner) || 'A component');
-          }
-          owner._warnedAboutRefsInRender = true;
-        }
-      }
-
-      if (componentOrElement === null) {
-        return null;
-      }
-
-      if (componentOrElement instanceof THREE.Object3D || componentOrElement instanceof HTMLCanvasElement) {
-        return componentOrElement;
-      }
-
-      if (_ReactInstanceMap2.default.has(componentOrElement)) {
-        var instance = _ReactInstanceMap2.default.get(componentOrElement);
-
-        instance = (0, _getHostComponentFromComposite2.default)(instance);
-
-        return instance ? _React3ComponentTree2.default.getMarkupFromInstance(instance).threeObject : null;
-      }
-
-      if (!(componentOrElement.render === null || typeof componentOrElement.render !== 'function')) {
+        this._instancesByReactRootID = {};
         if (process.env.NODE_ENV !== 'production') {
-          (0, _invariant2.default)(false, 'Component (with keys: %s) contains `render` method ' + 'but is not mounted', Object.keys(componentOrElement));
-        } else {
-          (0, _invariant2.default)(false);
+            this.rootMarkupsByReactRootID = {};
         }
-      }
+        this.nextMountID = 1;
+        this.globalIdCounter = 1;
+        this.nextReactRootIndex = 0;
 
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _invariant2.default)(false, 'Element appears to be neither ReactComponent, ' + 'a THREE.js object, nor a HTMLCanvasElement (keys: %s)', Object.keys(componentOrElement));
-      } else {
-        (0, _invariant2.default)(false);
-      }
+        this.threeElementDescriptors = new _ElementDescriptorContainer2.default(this).descriptors;
 
-      return null;
-    }
-    // to be used by modules e.g. mouse input ( see examples )
+        this._highlightElement = document.createElement('div');
+        this._highlightCache = null;
 
-  }]);
-
-  function React3Renderer() {
-    var _this2 = this;
-
-    _classCallCheck(this, React3Renderer);
-
-    this.instantiateChild = function (childInstances, child, name, selfDebugID) {
-      // We found a component instance.
-      var keyUnique = childInstances[name] === undefined;
-      if (process.env.NODE_ENV !== 'production') {
-        if (!keyUnique) {
-          (0, _warning2.default)(false, 'flattenChildren(...): Encountered two children with the same key, ' + '`%s`. Child keys must be unique; when two children share a key, only ' + 'the first child will be used.%s', _KeyEscapeUtils2.default.unescape(name), ReactComponentTreeHook.getStackAddendumByID(selfDebugID));
+        if (process.env.NODE_ENV !== 'production') {
+            this._nextDebugID = 1;
+            this._debugIdPrefix = staticDebugIdHack++;
         }
-      }
 
-      if (child !== null && keyUnique) {
-        childInstances[name] = _this2.instantiateReactComponent(child, true);
-      }
-    };
+        if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_REACT_ADDON_HOOKS === 'true') {
+            this._agent = null;
 
-    this.findNodeHandle = function (instance) {
-      var inst = _React3ComponentTree2.default.getRenderedHostOrTextFromComponent(instance);
+            this._onHideHighlightFromInspector = function () {
+                if (_this2._highlightCache && _this2._highlightCache.threeObject.userData.react3internalComponent) {
+                    var internalComponent = _this2._highlightCache.threeObject.userData.react3internalComponent;
 
-      if (!inst || !inst._threeObject) {
-        return null;
-      }
+                    internalComponent.hideHighlight();
 
-      var markup = _React3ComponentTree2.default.getMarkupFromInstance(inst);
+                    _this2._highlightCache = null;
+                }
+            };
 
-      _this2._highlightCache = markup;
-      return _this2._highlightElement;
-    };
+            this._onHighlightFromInspector = function (highlightInfo) {
+                if (highlightInfo.node === _this2._highlightElement) {
+                    if (_this2._highlightCache && _this2._highlightCache.threeObject.userData.react3internalComponent) {
+                        var internalComponent = _this2._highlightCache.threeObject.userData.react3internalComponent;
 
-    this.nativeTagToRootNodeID = function () {
-      return 0;
-    };
+                        internalComponent.highlightComponent();
+                    }
+                }
+            };
 
-    this.hostTagToRootNodeID = function () {
-      return 0;
-    };
+            this._hookAgent = function (agent) {
+                _this2._agent = agent;
 
-    this.batchedMountComponentIntoNode = function (componentInstance, container, shouldReuseMarkup, context) {
-      var transaction = _ReactUpdates2.default.ReactReconcileTransaction.getPooled(!shouldReuseMarkup);
-      transaction.perform(_this2.mountComponentIntoNode, null, componentInstance, container, transaction, shouldReuseMarkup, context);
-      _ReactUpdates2.default.ReactReconcileTransaction.release(transaction);
-    };
+                // agent.on('startInspecting', (...args) => {
+                //   console.log('start inspecting?', args);
+                // });
+                // agent.on('setSelection', (...args) => {
+                //   console.log('set selection?', args);
+                // });
+                // agent.on('selected', (...args) => {
+                //   console.log('selected?', args);
+                // });
+                agent.on('highlight', _this2._onHighlightFromInspector);
+                agent.on('hideHighlight', _this2._onHideHighlightFromInspector);
+                // agent.on('highlightMany', (...args) => {
+                //   console.log('highlightMany?', args);
+                // });
+            };
 
-    this.mountComponentIntoNode = function (wrapperInstance, container, transaction, shouldReuseMarkup, context) {
-      var markup = _ReactReconciler2.default.mountComponent(wrapperInstance, transaction, null, (0, _React3ContainerInfo2.default)(wrapperInstance, container), context, 0 /* parentDebugID */
-      );
+            // Inject the runtime into a devtools global hook regardless of browser.
+            // Allows for debugging when the hook is injected on the page.
+            if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject === 'function') {
+                this._devToolsRendererDefinition = {
+                    ComponentTree: {
+                        getClosestInstanceFromNode: function getClosestInstanceFromNode(node) {
+                            return _React3ComponentTree2.default.getClosestInstanceFromMarkup(node);
+                        },
+                        getNodeFromInstance: function getNodeFromInstance(instInput) {
+                            var inst = instInput;
+                            // inst is an internal instance (but could be a composite)
+                            while (inst._renderedComponent) {
+                                inst = inst._renderedComponent;
+                            }
+                            if (inst) {
+                                return _React3ComponentTree2.default.getMarkupFromInstance(inst);
+                            }
 
-      wrapperInstance._renderedComponent._topLevelWrapper = wrapperInstance;
-      _this2._mountImageIntoNode(markup, container, wrapperInstance, shouldReuseMarkup, transaction);
-    };
+                            return null;
+                        }
+                    },
+                    Mount: this,
+                    Reconciler: _ReactReconciler2.default,
+                    TextComponent: _InternalComponent2.default
+                };
 
-    this._instancesByReactRootID = {};
-    if (process.env.NODE_ENV !== 'production') {
-      this.rootMarkupsByReactRootID = {};
-    }
-    this.nextMountID = 1;
-    this.globalIdCounter = 1;
-    this.nextReactRootIndex = 0;
+                var rendererListener = function rendererListener(info) {
+                    _this2._reactDevtoolsRendererId = info.id;
+                    _this2._rendererListenerCleanup();
 
-    this.threeElementDescriptors = new _ElementDescriptorContainer2.default(this).descriptors;
+                    delete _this2._rendererListenerCleanup;
+                };
 
-    this._highlightElement = document.createElement('div');
-    this._highlightCache = null;
+                this._rendererListenerCleanup = __REACT_DEVTOOLS_GLOBAL_HOOK__.sub('renderer', rendererListener);
+                __REACT_DEVTOOLS_GLOBAL_HOOK__.inject(this._devToolsRendererDefinition);
 
-    if (process.env.NODE_ENV !== 'production') {
-      this._nextDebugID = 1;
-      this._debugIdPrefix = staticDebugIdHack++;
-    }
+                if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent !== 'undefined' && __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
+                    var agent = __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent;
+                    this._hookAgent(agent);
+                } else {
+                    this._devtoolsCallbackCleanup = __REACT_DEVTOOLS_GLOBAL_HOOK__.sub('react-devtools', function (agent) {
+                        _this2._devtoolsCallbackCleanup();
 
-    if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_REACT_ADDON_HOOKS === 'true') {
-      this._agent = null;
-
-      this._onHideHighlightFromInspector = function () {
-        if (_this2._highlightCache && _this2._highlightCache.threeObject.userData.react3internalComponent) {
-          var internalComponent = _this2._highlightCache.threeObject.userData.react3internalComponent;
-
-          internalComponent.hideHighlight();
-
-          _this2._highlightCache = null;
-        }
-      };
-
-      this._onHighlightFromInspector = function (highlightInfo) {
-        if (highlightInfo.node === _this2._highlightElement) {
-          if (_this2._highlightCache && _this2._highlightCache.threeObject.userData.react3internalComponent) {
-            var internalComponent = _this2._highlightCache.threeObject.userData.react3internalComponent;
-
-            internalComponent.highlightComponent();
-          }
-        }
-      };
-
-      this._hookAgent = function (agent) {
-        _this2._agent = agent;
-
-        // agent.on('startInspecting', (...args) => {
-        //   console.log('start inspecting?', args);
-        // });
-        // agent.on('setSelection', (...args) => {
-        //   console.log('set selection?', args);
-        // });
-        // agent.on('selected', (...args) => {
-        //   console.log('selected?', args);
-        // });
-        agent.on('highlight', _this2._onHighlightFromInspector);
-        agent.on('hideHighlight', _this2._onHideHighlightFromInspector);
-        // agent.on('highlightMany', (...args) => {
-        //   console.log('highlightMany?', args);
-        // });
-      };
-
-      // Inject the runtime into a devtools global hook regardless of browser.
-      // Allows for debugging when the hook is injected on the page.
-      if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ !== 'undefined' && typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject === 'function') {
-        this._devToolsRendererDefinition = {
-          ComponentTree: {
-            getClosestInstanceFromNode: function getClosestInstanceFromNode(node) {
-              return _React3ComponentTree2.default.getClosestInstanceFromMarkup(node);
-            },
-            getNodeFromInstance: function getNodeFromInstance(instInput) {
-              var inst = instInput;
-              // inst is an internal instance (but could be a composite)
-              while (inst._renderedComponent) {
-                inst = inst._renderedComponent;
-              }
-              if (inst) {
-                return _React3ComponentTree2.default.getMarkupFromInstance(inst);
-              }
-
-              return null;
+                        _this2._hookAgent(agent);
+                    });
+                }
             }
-          },
-          Mount: this,
-          Reconciler: _ReactReconciler2.default,
-          TextComponent: _InternalComponent2.default
-        };
-
-        var rendererListener = function rendererListener(info) {
-          _this2._reactDevtoolsRendererId = info.id;
-          _this2._rendererListenerCleanup();
-
-          delete _this2._rendererListenerCleanup;
-        };
-
-        this._rendererListenerCleanup = __REACT_DEVTOOLS_GLOBAL_HOOK__.sub('renderer', rendererListener);
-        __REACT_DEVTOOLS_GLOBAL_HOOK__.inject(this._devToolsRendererDefinition);
-
-        if (typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent !== 'undefined' && __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent) {
-          var agent = __REACT_DEVTOOLS_GLOBAL_HOOK__.reactDevtoolsAgent;
-          this._hookAgent(agent);
-        } else {
-          this._devtoolsCallbackCleanup = __REACT_DEVTOOLS_GLOBAL_HOOK__.sub('react-devtools', function (agent) {
-            _this2._devtoolsCallbackCleanup();
-
-            _this2._hookAgent(agent);
-          });
         }
-      }
-    }
-  }
-
-  /**
-   * @see ReactChildReconciler.instantiateChild
-   * Cloned because it uses
-   * @see React3Renderer.instantiateReactComponent
-   *
-   * @param childInstances
-   * @param child
-   * @param name
-   * @param selfDebugID
-   */
-
-
-  _createClass(React3Renderer, [{
-    key: 'instantiateChildren',
-
-
-    /**
-     * @see ReactChildReconciler.instantiateChildren
-     * Cloned because it uses
-     * @see React3Renderer.instantiateChild
-     *
-     * Generates a "mount image" for each of the supplied children. In the case
-     * of `ReactDOMComponent`, a mount image is a string of markup.
-     *
-     * @param {?object} nestedChildNodes Nested child maps.
-     * @param transaction
-     * @param context
-     * @param selfDebugID
-     * @return {?object} A set of child instances.
-     * @internal
-     */
-    value: function instantiateChildren(nestedChildNodes, transaction, context, selfDebugID // 0 in production and for roots
-    ) {
-      var _this3 = this;
-
-      if (nestedChildNodes === null) {
-        return null;
-      }
-
-      var childInstances = {};
-
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _traverseAllChildren2.default)(nestedChildNodes, function (childInsts, child, name) {
-          return _this3.instantiateChild(childInsts, child, name, selfDebugID);
-        }, childInstances);
-      } else {
-        (0, _traverseAllChildren2.default)(nestedChildNodes, this.instantiateChild, childInstances);
-      }
-
-      return childInstances;
-    }
-  }, {
-    key: 'containsChild',
-    value: function containsChild(container, markup) {
-      var childrenMarkup = container.userData.markup.childrenMarkup;
-      for (var i = 0; i < childrenMarkup.length; i++) {
-        if (childrenMarkup[i] === markup) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    // DO NOT RENAME
-    // used by react devtools!
-
-
-    // used by react devtools
-
-  }, {
-    key: '_mountImageIntoNode',
-    value: function _mountImageIntoNode(markup, container, instance, shouldReuseMarkup, transaction) {
-      // eslint-disable-line no-unused-vars
-      // TODO try to do server-side rendering for THREE
-
-      if (!container.userData) {
-        // it has to be a HTMLCanvasElement I guess?
-        (0, _invariant2.default)(container instanceof HTMLCanvasElement, 'The root container can only be a THREE.js object ' + '(with an userData property) or HTMLCanvasElement.');
-        container.userData = {
-          _createdByReact3: true
-        };
-      }
-
-      var rootImage = markup;
-
-      var rootMarkup = {
-        threeObject: container,
-        parentMarkup: null,
-        childrenMarkup: [rootImage],
-        toJSON: function toJSON() {
-          return '---MARKUP---';
-        }
-      };
-
-      Object.assign(container.userData, {
-        object3D: container,
-        toJSON: function toJSON() {
-          return '---USERDATA---';
-        },
-        markup: rootMarkup
-      });
-
-      rootImage.parentMarkup = rootMarkup;
-
-      var descriptorForChild = this.threeElementDescriptors[rootImage.elementType];
-      descriptorForChild.setParent(rootImage.threeObject, rootMarkup.threeObject);
-
-      // all objects now added can be marked as added to scene now!
-
-      rootImage.threeObject.mountedIntoRoot();
-
-      var firstChild = container.userData.markup.childrenMarkup[0];
-      _React3ComponentTree2.default.precacheMarkup(instance, firstChild);
-
-      if (process.env.NODE_ENV !== 'production') {
-        var hostInstance = _React3ComponentTree2.default.getInstanceFromMarkup(firstChild);
-        if (hostInstance._debugID !== 0) {
-          _ReactInstrumentation2.default.debugTool.onHostOperation({
-            instanceID: hostInstance._debugID,
-            type: 'mount',
-            payload: markup.toString()
-          });
-        }
-      }
     }
 
     /**
-     *
-     * @param nextElement A react element
-     * @param container A canvas or a THREE.js object
-     * @param callback The callback function
-     * @returns {*}
-     */
-
-  }, {
-    key: 'render',
-    value: function render(nextElement, container, callback) {
-      return this._renderSubtreeIntoContainer(null, nextElement, container, callback);
-    }
-  }, {
-    key: 'getHostRootInstanceInContainer',
-    value: function getHostRootInstanceInContainer(container) {
-      var rootMarkup = getReactRootMarkupInContainer(container);
-      var prevHostInstance = rootMarkup && _React3ComponentTree2.default.getInstanceFromMarkup(rootMarkup);
-      return prevHostInstance && !prevHostInstance._hostParent ? prevHostInstance : null;
-    }
-  }, {
-    key: 'getTopLevelWrapperInContainer',
-    value: function getTopLevelWrapperInContainer(container) {
-      var root = this.getHostRootInstanceInContainer(container);
-      if (root) {
-        (0, _invariant2.default)(!!root._hostContainerInfo, 'Root should have native container info %s', ' but it does not');
-      }
-      return root ? root._hostContainerInfo._topLevelWrapper : null;
-    }
-  }, {
-    key: '_renderSubtreeIntoContainer',
-    value: function _renderSubtreeIntoContainer(parentComponent, nextElement, container, callback) {
-      if (!_ReactElement2.default.isValidElement(nextElement)) {
-        if (process.env.NODE_ENV !== 'production') {
-          if (typeof nextElement === 'string') {
-            (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' Instead of passing an element string, make sure to instantiate ' + 'it by passing it to React.createElement.');
-          } else if (typeof nextElement === 'function') {
-            (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' Instead of passing a component class, make sure to instantiate ' + 'it by passing it to React.createElement.');
-          } else if (nextElement !== null && nextElement.props !== undefined) {
-            (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' This may be caused by unintentionally loading two independent ' + 'copies of React.');
-          } else {
-            (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.');
-          }
-        } else {
-          (0, _invariant2.default)(false);
-        }
-      }
-
-      var nextWrappedElement = _ReactElement2.default.createElement(TopLevelWrapper, { child: nextElement });
-
-      var nextContext = void 0;
-      if (parentComponent) {
-        var parentInst = _ReactInstanceMap2.default.get(parentComponent);
-        nextContext = parentInst._processChildContext(parentInst._context);
-      } else {
-        nextContext = _emptyObject2.default;
-      }
-
-      var prevComponent = this.getTopLevelWrapperInContainer(container);
-
-      if (prevComponent) {
-        var prevWrappedElement = prevComponent._currentElement;
-        var prevElement = prevWrappedElement.props.child;
-        if ((0, _shouldUpdateReactComponent2.default)(prevElement, nextElement)) {
-          var publicInst = prevComponent._renderedComponent.getPublicInstance();
-          var updatedCallback = callback && function () {
-            callback.call(publicInst);
-          };
-
-          this._updateRootComponent(prevComponent, nextWrappedElement, nextContext, container, updatedCallback);
-
-          return publicInst;
-        }
-
-        this.unmountComponentAtNode(container);
-      }
-
-      // aka first child
-      var reactRootMarkup = getReactRootMarkupInContainer(container);
-      var containerHasReactMarkup = reactRootMarkup && !!internalGetID(reactRootMarkup);
-
-      // containerHasNonRootReactChild not implemented
-
-      var shouldReuseMarkup = containerHasReactMarkup && !prevComponent;
-
-      var component = this._renderNewRootComponent(nextWrappedElement, container, shouldReuseMarkup, nextContext)._renderedComponent.getPublicInstance();
-
-      if (callback) {
-        callback.call(component);
-      }
-
-      return component;
-    }
-  }, {
-    key: 'dispose',
-    value: function dispose() {
-      var rootIds = Object.keys(this._instancesByReactRootID);
-
-      for (var i = 0; i < rootIds.length; ++i) {
-        this.unmountComponentAtNode(this._instancesByReactRootID[rootIds[i]].getHostMarkup().parentMarkup.threeObject);
-      }
-
-      delete this._instancesByReactRootID;
-      if (process.env.NODE_ENV !== 'production') {
-        delete this.rootMarkupsByReactRootID;
-      }
-      delete this._highlightElement;
-      this.nextMountID = 1;
-      this.nextReactRootIndex = 0;
-
-      if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_REACT_ADDON_HOOKS === 'true') {
-        if (this._devtoolsCallbackCleanup) {
-          this._devtoolsCallbackCleanup();
-
-          delete this._devtoolsCallbackCleanup;
-        }
-
-        if (this._rendererListenerCleanup) {
-          this._rendererListenerCleanup();
-
-          delete this._rendererListenerCleanup;
-        }
-
-        if (this._devToolsRendererDefinition) {
-          if (this._agent) {
-            this._agent.onUnmounted(this._devToolsRendererDefinition);
-            this._agent.removeListener('highlight', this._onHighlightFromInspector);
-            this._agent.removeListener('hideHighlight', this._onHideHighlightFromInspector);
-          }
-
-          if (this._reactDevtoolsRendererId) {
-            delete __REACT_DEVTOOLS_GLOBAL_HOOK__._renderers[this._reactDevtoolsRendererId];
-            delete this._reactDevtoolsRendererId;
-          }
-
-          delete this._devToolsRendererDefinition;
-          delete this._agent;
-        }
-
-        delete this._onHighlightFromInspector;
-        delete this._onHideHighlightFromInspector;
-        delete this._hookAgent;
-      }
-    }
-  }, {
-    key: '_updateRootComponent',
-    value: function _updateRootComponent(prevComponent, nextElement, nextContext, container, callback) {
-      _ReactUpdateQueue2.default.enqueueElementInternal(prevComponent, nextElement, nextContext);
-      if (callback) {
-        _ReactUpdateQueue2.default.enqueueCallbackInternal(prevComponent, callback);
-      }
-
-      return prevComponent;
-    }
-
-    /**
-     * True if the supplied DOM node has a direct React-rendered child that is
-     * not a React root element. Useful for warning in `render`,
-     * `unmountComponentAtNode`, etc.
-     *
-     * @param {?*} container The container.
-     * @return {boolean} True if the DOM element contains a direct child that was
-     * rendered by React but is not a root element.
-     * @internal
-     */
-
-  }, {
-    key: 'hasNonRootReactChild',
-    value: function hasNonRootReactChild(container) {
-      var rootMarkup = getReactRootMarkupInContainer(container);
-      if (rootMarkup) {
-        var inst = _React3ComponentTree2.default.getInstanceFromMarkup(rootMarkup);
-        return !!(inst && inst._hostParent);
-      }
-
-      return false;
-    }
-  }, {
-    key: 'unmountComponentAtNode',
-    value: function unmountComponentAtNode(container) {
-      // Various parts of our code (such as ReactCompositeComponent's
-      // _renderValidatedComponent) assume that calls to render aren't nested;
-      // verify that that's the case. (Strictly speaking, unmounting won't cause a
-      // render but we still don't expect to be in a render call here.)
-
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _warning2.default)(_ReactCurrentOwner2.default.current === null, 'unmountComponentAtNode(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from render ' + 'is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', getName(_ReactCurrentOwner2.default.current) || 'ReactCompositeComponent');
-      }
-
-      var prevComponent = this.getTopLevelWrapperInContainer(container);
-      if (!prevComponent) {
-        // Check if the node being unmounted was rendered by React, but isn't a
-        // root node.
-        var containerHasNonRootReactChild = this.hasNonRootReactChild(container);
-
-        // Check if the container itself is a React root node.
-        var isContainerReactRoot = !!(container && container.userData && container.userData.markup && container.userData.markup[_idPropertyName2.default]);
-
-        if (process.env.NODE_ENV !== 'production') {
-          (0, _warning2.default)(!containerHasNonRootReactChild, 'unmountComponentAtNode(): The node you\'re attempting to unmount ' + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.');
-        }
-
-        return false;
-      }
-
-      delete this._instancesByReactRootID[prevComponent._instance.rootID];
-
-      _ReactUpdates2.default.batchedUpdates(unmountComponentFromNode, prevComponent, container, false);
-
-      if (container && container.userData && container.userData._createdByReact3) {
-        delete container.userData;
-      }
-
-      return true;
-    }
-
-    /**
-     * @param {THREE.Object3D|HTMLCanvasElement} container THREE Object
-     *   or HTML Canvas Element that may contain a React component.
-     * @return {?string} A "reactRoot" ID, if a React component is rendered.
-     */
-
-  }, {
-    key: 'getReactRootID',
-    value: function getReactRootID(container) {
-      var rootMarkup = getReactRootMarkupInContainer(container);
-      return rootMarkup && this.getID(rootMarkup);
-    }
-
-    // see instantiateReactComponent.js
-    /**
-     * @see #instantiateReactComponent
-     *
-     * Cloned because it uses
-     * @see InternalComponent
-     *
-     * @param _node ( from createElement )
-     * @param {boolean} shouldHaveDebugID
-     * @return {object} A new instance of the element's constructor.
-     */
-
-  }, {
-    key: 'instantiateReactComponent',
-    value: function instantiateReactComponent(_node, shouldHaveDebugID) {
-      var instance = void 0;
-
-      var node = _node;
-
-      var isEmptyNode = node === null || node === false;
-
-      if (isEmptyNode) {
-        // Create an object3D node so that empty components can be added anywhere
-        instance = new _InternalComponent2.default(_ReactElement2.default.createElement('object3D', {
-          visible: false
-        }), this);
-        // original: instance = new ReactDOMEmptyComponent(this.instantiateReactComponent);
-      } else if ((typeof node === 'undefined' ? 'undefined' : _typeof(node)) === 'object') {
-        var _element = node;
-
-        var type = _element.type;
-        if (typeof type !== 'function' && typeof type !== 'string') {
-          var info = '';
-          if (process.env.NODE_ENV !== 'production') {
-            if (type === undefined || (typeof type === 'undefined' ? 'undefined' : _typeof(type)) === 'object' && type !== null && Object.keys(type).length === 0) {
-              info += ' You likely forgot to export your component from the file ' + 'it\'s defined in.';
-            }
-          }
-          info += getDeclarationErrorAddendum(_element._owner);
-          (0, _invariant2.default)(false, 'Element type is invalid: expected a string (for built-in components) ' + 'or a class/function (for composite components) but got: %s.%s', type === null || type === undefined ? type : typeof type === 'undefined' ? 'undefined' : _typeof(type), info);
-        }
-
-        // Special case string values
-        if (typeof _element.type === 'string') {
-          // original: instance = ReactHostComponent.createInternalComponent(element);
-          instance = new _InternalComponent2.default(_element, this);
-        } else if (isInternalComponentType(_element.type)) {
-          // This is temporarily available for custom components that are not string
-          // representations. I.e. ART. Once those are updated to use the string
-          // representation, we can drop this code path.
-          var Constructor = _element.type;
-
-          instance = new Constructor(_element);
-
-          // We renamed this. Allow the old name for compat. :(
-          if (!instance.getHostNode) {
-            instance.getHostNode = instance.getNativeNode;
-          }
-        } else {
-          instance = new _React3CompositeComponentWrapper2.default(_element, this);
-        }
-      } else if (typeof node === 'string' || typeof node === 'number') {
-        // TODO create instance for text
-        if (process.env.NODE_ENV !== 'production') {
-          (0, _invariant2.default)(false, 'Encountered invalid React node of type %s : %s', typeof node === 'undefined' ? 'undefined' : _typeof(node), node);
-        } else {
-          (0, _invariant2.default)(false);
-        }
-      } else if (process.env.NODE_ENV !== 'production') {
-        (0, _invariant2.default)(false, 'Encountered invalid React node of type %s', typeof element === 'undefined' ? 'undefined' : _typeof(element));
-      } else {
-        (0, _invariant2.default)(false);
-      }
-
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _warning2.default)(typeof instance.mountComponent === 'function' && typeof instance.receiveComponent === 'function' && typeof instance.getHostMarkup === 'function' && typeof instance.unmountComponent === 'function', 'Only React 3 Components can be mounted.');
-      }
-
-      // These two fields are used by the DOM and ART diffing algorithms
-      // respectively. Instead of using expandos on components, we should be
-      // storing the state needed by the diffing algorithms elsewhere.
-      instance._mountIndex = 0;
-      instance._mountImage = null;
-
-      if (process.env.NODE_ENV !== 'production') {
-        if (shouldHaveDebugID) {
-          instance._debugID = 'r3r' + this._debugIdPrefix + '-' + this._nextDebugID++;
-        } else {
-          instance._debugID = 0;
-        }
-      }
-
-      // Internal instances should fully constructed at this point, so they should
-      // not get any new fields added to them at this point.
-      if (process.env.NODE_ENV !== 'production') {
-        if (Object.preventExtensions) {
-          Object.preventExtensions(instance);
-        }
-      }
-
-      return instance;
-    }
-
-    /**
-     * @see ReactMount._renderNewRootComponent
-     *
+     * @see ReactChildReconciler.instantiateChild
      * Cloned because it uses
      * @see React3Renderer.instantiateReactComponent
      *
-     * @param nextElement
-     * @param {THREE.Object3D | HTMLCanvasElement} container
-     * @param shouldReuseMarkup
-     * @param context
-     * @returns {*}
-     * @private
+     * @param childInstances
+     * @param child
+     * @param name
+     * @param selfDebugID
      */
 
-  }, {
-    key: '_renderNewRootComponent',
-    value: function _renderNewRootComponent(nextElement, container, shouldReuseMarkup, context) {
-      // Various parts of our code (such as ReactCompositeComponent's
-      // _renderValidatedComponent) assume that calls to render aren't nested;
-      // verify that that's the case.
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _warning2.default)(_ReactCurrentOwner2.default.current === null, '_renderNewRootComponent(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from ' + 'render is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', getName(_ReactCurrentOwner2.default.current) || 'ReactCompositeComponent');
-      }
 
-      var componentInstance = this.instantiateReactComponent(nextElement, false);
+    _createClass(React3Renderer, [{
+        key: 'instantiateChildren',
 
-      if (!_ReactUpdates2.default.ReactReconcileTransaction) {
-        // If the ReactReconcileTransaction has not been injected
-        // let's just use the defaults from ReactMount.
-        _ReactInjection2.default.Updates.injectReconcileTransaction(_ReactReconcileTransaction2.default);
-        _ReactInjection2.default.Updates.injectBatchingStrategy(_ReactDefaultBatchingStrategy2.default);
-      }
 
-      var devToolRemoved = void 0;
-      if (process.env.NODE_ENV !== 'production') {
-        devToolRemoved = (0, _removeDevTool2.default)();
-      }
+        /**
+         * @see ReactChildReconciler.instantiateChildren
+         * Cloned because it uses
+         * @see React3Renderer.instantiateChild
+         *
+         * Generates a "mount image" for each of the supplied children. In the case
+         * of `ReactDOMComponent`, a mount image is a string of markup.
+         *
+         * @param {?object} nestedChildNodes Nested child maps.
+         * @param transaction
+         * @param context
+         * @param selfDebugID
+         * @return {?object} A set of child instances.
+         * @internal
+         */
+        value: function instantiateChildren(nestedChildNodes, transaction, context, selfDebugID // 0 in production and for roots
+        ) {
+            var _this3 = this;
 
-      // The initial render is synchronous but any updates that happen during
-      // rendering, in componentWillMount or componentDidMount, will be batched
-      // according to the current batching strategy.
+            if (nestedChildNodes === null) {
+                return null;
+            }
 
-      _ReactUpdates2.default.batchedUpdates(this.batchedMountComponentIntoNode, componentInstance, container, shouldReuseMarkup, context);
+            var childInstances = {};
 
-      if (process.env.NODE_ENV !== 'production') {
-        if (devToolRemoved) {
-          _removeDevTool2.default.restore();
+            if (process.env.NODE_ENV !== 'production') {
+                (0, _traverseAllChildren2.default)(nestedChildNodes, function (childInsts, child, name) {
+                    return _this3.instantiateChild(childInsts, child, name, selfDebugID);
+                }, childInstances);
+            } else {
+                (0, _traverseAllChildren2.default)(nestedChildNodes, this.instantiateChild, childInstances);
+            }
+
+            return childInstances;
         }
-      }
+    }, {
+        key: 'containsChild',
+        value: function containsChild(container, markup) {
+            var childrenMarkup = container.userData.markup.childrenMarkup;
+            for (var i = 0; i < childrenMarkup.length; i++) {
+                if (childrenMarkup[i] === markup) {
+                    return true;
+                }
+            }
 
-      var wrapperID = componentInstance._instance.rootID;
-      this._instancesByReactRootID[wrapperID] = componentInstance;
+            return false;
+        }
 
-      return componentInstance;
-    }
-
-    /**
-     * Batched mount.
-     *
-     * @param {ReactComponent} componentInstance The instance to mount.
-     * @param {*} container Container.
-     * @param {boolean} shouldReuseMarkup If true, do not insert markup
-     * @param {*} context que?
-     */
+        // DO NOT RENAME
+        // used by react devtools!
 
 
-    /**
-     * @see #mountComponentIntoNode
-     *
-     * Mounts this component and inserts it into the DOM.
-     *
-     * @param {ReactComponent} wrapperInstance The instance to mount.
-     * @param {*} container container to mount into.
-     * @param {ReactReconcileTransaction} transaction
-     * @param {boolean} shouldReuseMarkup If true, do not insert markup
-     * @param {*} context
-     */
+        // used by react devtools
 
-  }, {
-    key: 'createReactRootID',
-    value: function createReactRootID() {
-      return this.nextReactRootIndex++;
-    }
-  }, {
-    key: 'getID',
-    value: function getID(markup) {
-      return internalGetID(markup);
-    }
-  }]);
+    }, {
+        key: '_mountImageIntoNode',
+        value: function _mountImageIntoNode(markup, container, instance, shouldReuseMarkup, transaction) {
+            // eslint-disable-line no-unused-vars
+            // TODO try to do server-side rendering for THREE
 
-  return React3Renderer;
+            if (!container.userData) {
+                // it has to be a HTMLCanvasElement I guess?
+                (0, _invariant2.default)(container instanceof HTMLCanvasElement, 'The root container can only be a THREE.js object ' + '(with an userData property) or HTMLCanvasElement.');
+                container.userData = {
+                    _createdByReact3: true
+                };
+            }
+
+            var rootImage = markup;
+
+            var rootMarkup = {
+                threeObject: container,
+                parentMarkup: null,
+                childrenMarkup: [rootImage],
+                toJSON: function toJSON() {
+                    return '---MARKUP---';
+                }
+            };
+
+            Object.assign(container.userData, {
+                object3D: container,
+                toJSON: function toJSON() {
+                    return '---USERDATA---';
+                },
+                markup: rootMarkup
+            });
+
+            rootImage.parentMarkup = rootMarkup;
+
+            var descriptorForChild = this.threeElementDescriptors[rootImage.elementType];
+            descriptorForChild.setParent(rootImage.threeObject, rootMarkup.threeObject);
+
+            // all objects now added can be marked as added to scene now!
+
+            rootImage.threeObject.mountedIntoRoot();
+
+            var firstChild = container.userData.markup.childrenMarkup[0];
+            _React3ComponentTree2.default.precacheMarkup(instance, firstChild);
+
+            if (process.env.NODE_ENV !== 'production') {
+                var hostInstance = _React3ComponentTree2.default.getInstanceFromMarkup(firstChild);
+                if (hostInstance._debugID !== 0) {
+                    _ReactInstrumentation2.default.debugTool.onHostOperation({
+                        instanceID: hostInstance._debugID,
+                        type: 'mount',
+                        payload: markup.toString()
+                    });
+                }
+            }
+        }
+
+        /**
+         *
+         * @param nextElement A react element
+         * @param container A canvas or a THREE.js object
+         * @param callback The callback function
+         * @returns {*}
+         */
+
+    }, {
+        key: 'render',
+        value: function render(nextElement, container, callback) {
+            return this._renderSubtreeIntoContainer(null, nextElement, container, callback);
+        }
+    }, {
+        key: 'getHostRootInstanceInContainer',
+        value: function getHostRootInstanceInContainer(container) {
+            var rootMarkup = getReactRootMarkupInContainer(container);
+            var prevHostInstance = rootMarkup && _React3ComponentTree2.default.getInstanceFromMarkup(rootMarkup);
+            return prevHostInstance && !prevHostInstance._hostParent ? prevHostInstance : null;
+        }
+    }, {
+        key: 'getTopLevelWrapperInContainer',
+        value: function getTopLevelWrapperInContainer(container) {
+            var root = this.getHostRootInstanceInContainer(container);
+            if (root) {
+                (0, _invariant2.default)(!!root._hostContainerInfo, 'Root should have native container info %s', ' but it does not');
+            }
+            return root ? root._hostContainerInfo._topLevelWrapper : null;
+        }
+    }, {
+        key: '_renderSubtreeIntoContainer',
+        value: function _renderSubtreeIntoContainer(parentComponent, nextElement, container, callback) {
+            if (!_ReactElement2.default.isValidElement(nextElement)) {
+                if (process.env.NODE_ENV !== 'production') {
+                    if (typeof nextElement === 'string') {
+                        (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' Instead of passing an element string, make sure to instantiate ' + 'it by passing it to React.createElement.');
+                    } else if (typeof nextElement === 'function') {
+                        (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' Instead of passing a component class, make sure to instantiate ' + 'it by passing it to React.createElement.');
+                    } else if (nextElement !== null && nextElement.props !== undefined) {
+                        (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.%s', ' This may be caused by unintentionally loading two independent ' + 'copies of React.');
+                    } else {
+                        (0, _invariant2.default)(false, 'React3Renderer.render(): Invalid component element.');
+                    }
+                } else {
+                    (0, _invariant2.default)(false);
+                }
+            }
+
+            var nextWrappedElement = _ReactElement2.default.createElement(TopLevelWrapper, { child: nextElement });
+
+            var nextContext = void 0;
+            if (parentComponent) {
+                var parentInst = _ReactInstanceMap2.default.get(parentComponent);
+                nextContext = parentInst._processChildContext(parentInst._context);
+            } else {
+                nextContext = _emptyObject2.default;
+            }
+
+            var prevComponent = this.getTopLevelWrapperInContainer(container);
+
+            if (prevComponent) {
+                var prevWrappedElement = prevComponent._currentElement;
+                var prevElement = prevWrappedElement.props.child;
+                if ((0, _shouldUpdateReactComponent2.default)(prevElement, nextElement)) {
+                    var publicInst = prevComponent._renderedComponent.getPublicInstance();
+                    var updatedCallback = callback && function () {
+                        callback.call(publicInst);
+                    };
+
+                    this._updateRootComponent(prevComponent, nextWrappedElement, nextContext, container, updatedCallback);
+
+                    return publicInst;
+                }
+
+                this.unmountComponentAtNode(container);
+            }
+
+            // aka first child
+            var reactRootMarkup = getReactRootMarkupInContainer(container);
+            var containerHasReactMarkup = reactRootMarkup && !!internalGetID(reactRootMarkup);
+
+            // containerHasNonRootReactChild not implemented
+
+            var shouldReuseMarkup = containerHasReactMarkup && !prevComponent;
+
+            var component = this._renderNewRootComponent(nextWrappedElement, container, shouldReuseMarkup, nextContext)._renderedComponent.getPublicInstance();
+
+            if (callback) {
+                callback.call(component);
+            }
+
+            return component;
+        }
+    }, {
+        key: 'dispose',
+        value: function dispose() {
+            var rootIds = Object.keys(this._instancesByReactRootID);
+
+            for (var i = 0; i < rootIds.length; ++i) {
+                this.unmountComponentAtNode(this._instancesByReactRootID[rootIds[i]].getHostMarkup().parentMarkup.threeObject);
+            }
+
+            delete this._instancesByReactRootID;
+            if (process.env.NODE_ENV !== 'production') {
+                delete this.rootMarkupsByReactRootID;
+            }
+            delete this._highlightElement;
+            this.nextMountID = 1;
+            this.nextReactRootIndex = 0;
+
+            if (process.env.NODE_ENV !== 'production' || process.env.ENABLE_REACT_ADDON_HOOKS === 'true') {
+                if (this._devtoolsCallbackCleanup) {
+                    this._devtoolsCallbackCleanup();
+
+                    delete this._devtoolsCallbackCleanup;
+                }
+
+                if (this._rendererListenerCleanup) {
+                    this._rendererListenerCleanup();
+
+                    delete this._rendererListenerCleanup;
+                }
+
+                if (this._devToolsRendererDefinition) {
+                    if (this._agent) {
+                        this._agent.onUnmounted(this._devToolsRendererDefinition);
+                        this._agent.removeListener('highlight', this._onHighlightFromInspector);
+                        this._agent.removeListener('hideHighlight', this._onHideHighlightFromInspector);
+                    }
+
+                    if (this._reactDevtoolsRendererId) {
+                        delete __REACT_DEVTOOLS_GLOBAL_HOOK__._renderers[this._reactDevtoolsRendererId];
+                        delete this._reactDevtoolsRendererId;
+                    }
+
+                    delete this._devToolsRendererDefinition;
+                    delete this._agent;
+                }
+
+                delete this._onHighlightFromInspector;
+                delete this._onHideHighlightFromInspector;
+                delete this._hookAgent;
+            }
+        }
+    }, {
+        key: '_updateRootComponent',
+        value: function _updateRootComponent(prevComponent, nextElement, nextContext, container, callback) {
+            _ReactUpdateQueue2.default.enqueueElementInternal(prevComponent, nextElement, nextContext);
+            if (callback) {
+                _ReactUpdateQueue2.default.enqueueCallbackInternal(prevComponent, callback);
+            }
+
+            return prevComponent;
+        }
+
+        /**
+         * True if the supplied DOM node has a direct React-rendered child that is
+         * not a React root element. Useful for warning in `render`,
+         * `unmountComponentAtNode`, etc.
+         *
+         * @param {?*} container The container.
+         * @return {boolean} True if the DOM element contains a direct child that was
+         * rendered by React but is not a root element.
+         * @internal
+         */
+
+    }, {
+        key: 'hasNonRootReactChild',
+        value: function hasNonRootReactChild(container) {
+            var rootMarkup = getReactRootMarkupInContainer(container);
+            if (rootMarkup) {
+                var inst = _React3ComponentTree2.default.getInstanceFromMarkup(rootMarkup);
+                return !!(inst && inst._hostParent);
+            }
+
+            return false;
+        }
+    }, {
+        key: 'unmountComponentAtNode',
+        value: function unmountComponentAtNode(container) {
+            // Various parts of our code (such as ReactCompositeComponent's
+            // _renderValidatedComponent) assume that calls to render aren't nested;
+            // verify that that's the case. (Strictly speaking, unmounting won't cause a
+            // render but we still don't expect to be in a render call here.)
+
+            if (process.env.NODE_ENV !== 'production') {
+                (0, _warning2.default)(_ReactCurrentOwner2.default.current === null, 'unmountComponentAtNode(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from render ' + 'is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', _ReactCurrentOwner2.default.current && _ReactCurrentOwner2.default.current.getName() || 'ReactCompositeComponent');
+            }
+
+            var prevComponent = this.getTopLevelWrapperInContainer(container);
+            if (!prevComponent) {
+                // Check if the node being unmounted was rendered by React, but isn't a
+                // root node.
+                var containerHasNonRootReactChild = this.hasNonRootReactChild(container);
+
+                // Check if the container itself is a React root node.
+                var isContainerReactRoot = !!(container && container.userData && container.userData.markup && container.userData.markup[_idPropertyName2.default]);
+
+                if (process.env.NODE_ENV !== 'production') {
+                    (0, _warning2.default)(!containerHasNonRootReactChild, 'unmountComponentAtNode(): The node you\'re attempting to unmount ' + 'was rendered by React and is not a top-level container. %s', isContainerReactRoot ? 'You may have accidentally passed in a React root node instead ' + 'of its container.' : 'Instead, have the parent component update its state and ' + 'rerender in order to remove this component.');
+                }
+
+                return false;
+            }
+
+            delete this._instancesByReactRootID[prevComponent._instance.rootID];
+
+            _ReactUpdates2.default.batchedUpdates(unmountComponentFromNode, prevComponent, container, false);
+
+            if (container && container.userData && container.userData._createdByReact3) {
+                delete container.userData;
+            }
+
+            return true;
+        }
+
+        /**
+         * @param {THREE.Object3D|HTMLCanvasElement} container THREE Object
+         *   or HTML Canvas Element that may contain a React component.
+         * @return {?string} A "reactRoot" ID, if a React component is rendered.
+         */
+
+    }, {
+        key: 'getReactRootID',
+        value: function getReactRootID(container) {
+            var rootMarkup = getReactRootMarkupInContainer(container);
+            return rootMarkup && this.getID(rootMarkup);
+        }
+
+        // see instantiateReactComponent.js
+        /**
+         * @see #instantiateReactComponent
+         *
+         * Cloned because it uses
+         * @see InternalComponent
+         *
+         * @param _node ( from createElement )
+         * @param {boolean} shouldHaveDebugID
+         * @return {object} A new instance of the element's constructor.
+         */
+
+    }, {
+        key: 'instantiateReactComponent',
+        value: function instantiateReactComponent(_node, shouldHaveDebugID) {
+            var instance = void 0;
+
+            var node = _node;
+
+            var isEmptyNode = node === null || node === false;
+
+            if (isEmptyNode) {
+                // Create an object3D node so that empty components can be added anywhere
+                instance = new _InternalComponent2.default(_ReactElement2.default.createElement('object3D', {
+                    visible: false
+                }), this);
+                // original: instance = new ReactDOMEmptyComponent(this.instantiateReactComponent);
+            } else if ((typeof node === 'undefined' ? 'undefined' : _typeof(node)) === 'object') {
+                var _element = node;
+
+                var type = _element.type;
+                if (typeof type !== 'function' && typeof type !== 'string') {
+                    var info = '';
+                    if (process.env.NODE_ENV !== 'production') {
+                        if (type === undefined || (typeof type === 'undefined' ? 'undefined' : _typeof(type)) === 'object' && type !== null && Object.keys(type).length === 0) {
+                            info += ' You likely forgot to export your component from the file ' + 'it\'s defined in.';
+                        }
+                    }
+                    info += getDeclarationErrorAddendum(_element._owner);
+                    (0, _invariant2.default)(false, 'Element type is invalid: expected a string (for built-in components) ' + 'or a class/function (for composite components) but got: %s.%s', type === null || type === undefined ? type : typeof type === 'undefined' ? 'undefined' : _typeof(type), info);
+                }
+
+                // Special case string values
+                if (typeof _element.type === 'string') {
+                    // original: instance = ReactHostComponent.createInternalComponent(element);
+                    instance = new _InternalComponent2.default(_element, this);
+                } else if (isInternalComponentType(_element.type)) {
+                    // This is temporarily available for custom components that are not string
+                    // representations. I.e. ART. Once those are updated to use the string
+                    // representation, we can drop this code path.
+                    var Constructor = _element.type;
+
+                    instance = new Constructor(_element);
+
+                    // We renamed this. Allow the old name for compat. :(
+                    if (!instance.getHostNode) {
+                        instance.getHostNode = instance.getNativeNode;
+                    }
+                } else {
+                    instance = new _React3CompositeComponentWrapper2.default(_element, this);
+                }
+            } else if (typeof node === 'string' || typeof node === 'number') {
+                // TODO create instance for text
+                if (process.env.NODE_ENV !== 'production') {
+                    (0, _invariant2.default)(false, 'Encountered invalid React node of type %s : %s', typeof node === 'undefined' ? 'undefined' : _typeof(node), node);
+                } else {
+                    (0, _invariant2.default)(false);
+                }
+            } else if (process.env.NODE_ENV !== 'production') {
+                (0, _invariant2.default)(false, 'Encountered invalid React node of type %s', typeof element === 'undefined' ? 'undefined' : _typeof(element));
+            } else {
+                (0, _invariant2.default)(false);
+            }
+
+            if (process.env.NODE_ENV !== 'production') {
+                (0, _warning2.default)(typeof instance.mountComponent === 'function' && typeof instance.receiveComponent === 'function' && typeof instance.getHostMarkup === 'function' && typeof instance.unmountComponent === 'function', 'Only React 3 Components can be mounted.');
+            }
+
+            // These two fields are used by the DOM and ART diffing algorithms
+            // respectively. Instead of using expandos on components, we should be
+            // storing the state needed by the diffing algorithms elsewhere.
+            instance._mountIndex = 0;
+            instance._mountImage = null;
+
+            if (process.env.NODE_ENV !== 'production') {
+                if (shouldHaveDebugID) {
+                    instance._debugID = 'r3r' + this._debugIdPrefix + '-' + this._nextDebugID++;
+                } else {
+                    instance._debugID = 0;
+                }
+            }
+
+            // Internal instances should fully constructed at this point, so they should
+            // not get any new fields added to them at this point.
+            if (process.env.NODE_ENV !== 'production') {
+                if (Object.preventExtensions) {
+                    Object.preventExtensions(instance);
+                }
+            }
+
+            return instance;
+        }
+
+        /**
+         * @see ReactMount._renderNewRootComponent
+         *
+         * Cloned because it uses
+         * @see React3Renderer.instantiateReactComponent
+         *
+         * @param nextElement
+         * @param {THREE.Object3D | HTMLCanvasElement} container
+         * @param shouldReuseMarkup
+         * @param context
+         * @returns {*}
+         * @private
+         */
+
+    }, {
+        key: '_renderNewRootComponent',
+        value: function _renderNewRootComponent(nextElement, container, shouldReuseMarkup, context) {
+            // Various parts of our code (such as ReactCompositeComponent's
+            // _renderValidatedComponent) assume that calls to render aren't nested;
+            // verify that that's the case.
+            if (process.env.NODE_ENV !== 'production') {
+                (0, _warning2.default)(_ReactCurrentOwner2.default.current === null, '_renderNewRootComponent(): Render methods should be a pure function ' + 'of props and state; triggering nested component updates from ' + 'render is not allowed. If necessary, trigger nested updates in ' + 'componentDidUpdate. Check the render method of %s.', _ReactCurrentOwner2.default.current && _ReactCurrentOwner2.default.current.getName() || 'ReactCompositeComponent');
+            }
+
+            var componentInstance = this.instantiateReactComponent(nextElement, false);
+
+            if (!_ReactUpdates2.default.ReactReconcileTransaction) {
+                // If the ReactReconcileTransaction has not been injected
+                // let's just use the defaults from ReactMount.
+                _ReactInjection2.default.Updates.injectReconcileTransaction(_ReactReconcileTransaction2.default);
+                _ReactInjection2.default.Updates.injectBatchingStrategy(_ReactDefaultBatchingStrategy2.default);
+            }
+
+            var devToolRemoved = void 0;
+            if (process.env.NODE_ENV !== 'production') {
+                devToolRemoved = (0, _removeDevTool2.default)();
+            }
+
+            // The initial render is synchronous but any updates that happen during
+            // rendering, in componentWillMount or componentDidMount, will be batched
+            // according to the current batching strategy.
+
+            _ReactUpdates2.default.batchedUpdates(this.batchedMountComponentIntoNode, componentInstance, container, shouldReuseMarkup, context);
+
+            if (process.env.NODE_ENV !== 'production') {
+                if (devToolRemoved) {
+                    _removeDevTool2.default.restore();
+                }
+            }
+
+            var wrapperID = componentInstance._instance.rootID;
+            this._instancesByReactRootID[wrapperID] = componentInstance;
+
+            return componentInstance;
+        }
+
+        /**
+         * Batched mount.
+         *
+         * @param {ReactComponent} componentInstance The instance to mount.
+         * @param {*} container Container.
+         * @param {boolean} shouldReuseMarkup If true, do not insert markup
+         * @param {*} context que?
+         */
+
+
+        /**
+         * @see #mountComponentIntoNode
+         *
+         * Mounts this component and inserts it into the DOM.
+         *
+         * @param {ReactComponent} wrapperInstance The instance to mount.
+         * @param {*} container container to mount into.
+         * @param {ReactReconcileTransaction} transaction
+         * @param {boolean} shouldReuseMarkup If true, do not insert markup
+         * @param {*} context
+         */
+
+    }, {
+        key: 'createReactRootID',
+        value: function createReactRootID() {
+            return this.nextReactRootIndex++;
+        }
+    }, {
+        key: 'getID',
+        value: function getID(markup) {
+            return internalGetID(markup);
+        }
+    }]);
+
+    return React3Renderer;
 }(), _class2.eventDispatcher = new _EventDispatcher2.default(), _temp2);
 
 
 module.exports = React3Renderer;
+
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
@@ -103679,7 +103668,7 @@ var _prodInvariant = __webpack_require__(7);
 
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactInstanceMap = __webpack_require__(24);
-var ReactInstrumentation = __webpack_require__(17);
+var ReactInstrumentation = __webpack_require__(18);
 var ReactUpdates = __webpack_require__(30);
 
 var invariant = __webpack_require__(3);
@@ -105134,7 +105123,7 @@ var ReactComponentEnvironment = __webpack_require__(57);
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactErrorUtils = __webpack_require__(56);
 var ReactInstanceMap = __webpack_require__(24);
-var ReactInstrumentation = __webpack_require__(17);
+var ReactInstrumentation = __webpack_require__(18);
 var ReactNodeTypes = __webpack_require__(91);
 var ReactReconciler = __webpack_require__(25);
 
@@ -106073,7 +106062,7 @@ var _ReactInstanceMap = __webpack_require__(24);
 
 var _ReactInstanceMap2 = _interopRequireDefault(_ReactInstanceMap);
 
-var _ReactInstrumentation = __webpack_require__(17);
+var _ReactInstrumentation = __webpack_require__(18);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -106441,7 +106430,7 @@ module.exports = React3CompositeComponentWrapper;
 "use strict";
 
 
-var _ReactInstrumentation = __webpack_require__(17);
+var _ReactInstrumentation = __webpack_require__(18);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -108414,7 +108403,7 @@ var _THREEElementDescriptor = __webpack_require__(11);
 
 var _THREEElementDescriptor2 = _interopRequireDefault(_THREEElementDescriptor);
 
-var _ShapeAction = __webpack_require__(18);
+var _ShapeAction = __webpack_require__(19);
 
 var _ShapeAction2 = _interopRequireDefault(_ShapeAction);
 
@@ -108537,7 +108526,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -109807,7 +109796,7 @@ var React = __webpack_require__(5);
 var react_dom_1 = __webpack_require__(67);
 var app_1 = __webpack_require__(126);
 var constants_1 = __webpack_require__(65);
-__webpack_require__(291);
+__webpack_require__(292);
 react_dom_1.render(React.createElement(app_1.App, null), document.getElementById(constants_1.ROOT_ELEMENT_ID));
 
 
@@ -127082,13 +127071,12 @@ module.exports = camelize;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var React3 = __webpack_require__(127);
-var three_1 = __webpack_require__(16);
 var store_1 = __webpack_require__(44);
 var actions_1 = __webpack_require__(270);
 var actions_2 = __webpack_require__(273);
 var utils_1 = __webpack_require__(45);
 var store_2 = __webpack_require__(110);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 var mode = 'idle';
 var dragStartPoint = null;
 var timer = 0;
@@ -127101,10 +127089,10 @@ var TIMER_DELAY = 1;
 function App() {
     var width = window.innerWidth;
     var height = window.innerHeight;
-    return (React.createElement(React3, { mainCamera: 'camera', width: width, height: height, onAnimate: onUpdate, canvasRef: actions_1.setCanvas, onWheel: onMouseWheel, onMouseDown: onMouseDown, onMouseUp: onMouseUp, onMouseMove: onMouseMove, onUpdateRenderer: function (renderer) { return composer = createComposer(renderer); } },
-        React.createElement("scene", { ref: function (s) { return scene = s; } },
+    return (React.createElement(React3, { mainCamera: 'camera', width: width, height: height, onAnimate: onUpdate, canvasRef: actions_1.setCanvas, onWheel: onMouseWheel, onMouseDown: onMouseDown, onMouseUp: onMouseUp, onMouseMove: onMouseMove },
+        React.createElement("scene", null,
             React.createElement(components_1.Camera, null),
-            React.createElement(components_1.Ship, null))));
+            React.createElement(components_1.Plane, null))));
 }
 exports.App = App;
 function onMouseWheel(e) {
@@ -127167,47 +127155,6 @@ function onUpdate() {
             mode = 'idle';
         }
     }
-    if (composer !== null) {
-        composer.render();
-    }
-}
-var composer = null;
-var scene = null;
-function createComposer(renderer) {
-    if (scene === null || store_1.Store.DOM === null) {
-        console.warn(scene === null ? 'scene is null' : 'camera is null');
-        return null;
-    }
-    var composer = new three_1.EffectComposer(renderer);
-    var renderPass = new three_1.RenderPass(scene, store_1.Store.DOM);
-    composer.addPass(renderPass);
-    var customPass = new three_1.ShaderPass({
-        uniforms: {
-            tDiffuse: { value: null },
-            amount: { value: 1.0 }
-        },
-        vertexShader: [
-            'varying vec2 xy;',
-            'void main() {',
-            'xy = uv;',
-            'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-            '}'
-        ].join('\n'),
-        fragmentShader: [
-            'uniform float amount;',
-            'uniform sampler2D tDiffuse;',
-            'varying vec2 xy;',
-            'void main() {',
-            'float radius = distance(xy, vec2(0.5, 0.5));',
-            'vec4 color = texture2D( tDiffuse, xy );',
-            'float c = 0.2 / radius;',
-            'gl_FragColor = vec4(c, c, c, 1.0);',
-            '}'
-        ].join('\n')
-    });
-    customPass.renderToScreen = true;
-    composer.addPass(customPass);
-    return composer;
 }
 
 
@@ -127296,10 +127243,7 @@ var React3 = (_temp = _class = function (_React$Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.react3Renderer = new _React3Renderer2.default();
-      if (this.props.renderEnabled === false) {
-        this.react3Renderer.renderEnabled = false;
-      }
-      this.props.onRendererCreate && this.props.onRendererCreate(this.react3Renderer);
+
       this._render();
     }
   }, {
@@ -127350,6 +127294,8 @@ var React3 = (_temp = _class = function (_React$Component) {
     key: 'render',
     value: function render() {
       var canvasKey = this.state.canvasKey;
+
+
       return _react2.default.createElement('canvas', {onKeyDown: this.props.onKeyDown,onKeyUp: this.props.onKeyUp,onMouseDown: this.props.onMouseDown,onMouseUp: this.props.onMouseUp,onClick: this.props.onClick,onWheel: this.props.onWheel,onMouseMove: this.props.onMouseMove,
         ref: this._canvasRef,
         key: canvasKey,
@@ -127392,6 +127338,7 @@ var React3 = (_temp = _class = function (_React$Component) {
 
 
 module.exports = React3;
+
 
 /***/ }),
 /* 128 */
@@ -130195,7 +130142,7 @@ var CallbackQueue = __webpack_require__(83);
 var PooledClass = __webpack_require__(53);
 var ReactBrowserEventEmitter = __webpack_require__(89);
 var ReactInputSelection = __webpack_require__(158);
-var ReactInstrumentation = __webpack_require__(17);
+var ReactInstrumentation = __webpack_require__(18);
 var Transaction = __webpack_require__(54);
 var ReactUpdateQueue = __webpack_require__(84);
 
@@ -131265,7 +131212,7 @@ var _ReactElement = __webpack_require__(15);
 
 var _ReactElement2 = _interopRequireDefault(_ReactElement);
 
-var _ReactInstrumentation = __webpack_require__(17);
+var _ReactInstrumentation = __webpack_require__(18);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -132195,7 +132142,7 @@ var _prodInvariant = __webpack_require__(7);
 
 var ReactComponentEnvironment = __webpack_require__(57);
 var ReactInstanceMap = __webpack_require__(24);
-var ReactInstrumentation = __webpack_require__(17);
+var ReactInstrumentation = __webpack_require__(18);
 
 var ReactCurrentOwner = __webpack_require__(13);
 var ReactReconciler = __webpack_require__(25);
@@ -134845,7 +134792,6 @@ var OrthographicCameraDescriptor = function (_CameraDescriptorBase) {
     });
 
     _this.propUpdates = _extends({}, _this.propUpdates, {
-
       left: _this._updateAndRefreshProjection.bind(_this, 'left'),
       right: _this._updateAndRefreshProjection.bind(_this, 'right'),
       top: _this._updateAndRefreshProjection.bind(_this, 'top'),
@@ -134871,11 +134817,6 @@ var OrthographicCameraDescriptor = function (_CameraDescriptorBase) {
       threeObject.userData._needsProjectionMatrixUpdate = true;
     }
   }, {
-    key: 'construct',
-    value: function construct(props) {
-      return new THREE.OrthographicCamera(props.left, props.right, props.top, props.bottom, props.near, props.far);
-    }
-  }, {
     key: '_updateZoom',
     value: function _updateZoom(threeObject, zoom) {
       threeObject.zoom = zoom;
@@ -134883,10 +134824,15 @@ var OrthographicCameraDescriptor = function (_CameraDescriptorBase) {
     }
   }, {
     key: '_updatePosition',
-    value: function _updatePosition(threeObject, position) {
+    value: function _updatePos(threeObject, position) {
       threeObject.position.x = position.x;
       threeObject.position.y = position.y;
       threeObject.userData._needsProjectionMatrixUpdate = true;
+    }
+  }, {
+    key: 'construct',
+    value: function construct(props) {
+      return new THREE.OrthographicCamera(props.left, props.right, props.top, props.bottom, props.near, props.far);
     }
   }, {
     key: '_updateAndRefreshProjection',
@@ -134900,6 +134846,7 @@ var OrthographicCameraDescriptor = function (_CameraDescriptorBase) {
 }(_CameraDescriptorBase3.default);
 
 module.exports = OrthographicCameraDescriptor;
+
 
 /***/ }),
 /* 196 */
@@ -138193,7 +138140,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138304,7 +138251,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138423,7 +138370,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138544,7 +138491,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138671,7 +138618,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138808,7 +138755,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -139003,7 +138950,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(18);
+var _ShapeAction2 = __webpack_require__(19);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -141584,7 +141531,7 @@ exports.Corridor = corridor_1.Corridor;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 function ExternalHull(props) {
     return (React.createElement("group", { position: props.position },
         React.createElement(components_1.WidthRing, { width: 10, radius: props.radius }),
@@ -141615,7 +141562,7 @@ exports.SecondDeck = SecondDeck;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 var constants_1 = __webpack_require__(32);
 function RollingCircle(props) {
     return (React.createElement("group", { position: props.position },
@@ -141633,7 +141580,7 @@ exports.RollingCircle = RollingCircle;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 function FirstDeck(props) {
     return (React.createElement("group", { position: props.position },
         React.createElement(components_1.WidthRing, { width: 30, radius: props.radius, color: '#f48cfb' }),
@@ -141650,7 +141597,7 @@ exports.FirstDeck = FirstDeck;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 function Reactor(props) {
     return (React.createElement(components_1.WidthRing, { width: 2, radius: props.radius, position: props.position, color: 'red' }));
 }
@@ -141666,7 +141613,7 @@ exports.Reactor = Reactor;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var three_1 = __webpack_require__(16);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 var constants_1 = __webpack_require__(32);
 function Terminal(props) {
     var radius = props.radius;
@@ -141690,7 +141637,7 @@ exports.Terminal = Terminal;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(46);
 var React = __webpack_require__(5);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 function Rapport(props) {
     return (React.createElement(components_1.WidthRing, tslib_1.__assign({}, props, { width: 5, color: 'blue' })));
 }
@@ -141707,7 +141654,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var three_1 = __webpack_require__(16);
 var utils_1 = __webpack_require__(45);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 var cabins_1 = __webpack_require__(289);
 var constants_1 = __webpack_require__(32);
 function Corridor(props) {
@@ -141739,7 +141686,7 @@ function pointInTheTube(u, v, tubeLength) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var three_1 = __webpack_require__(16);
-var components_1 = __webpack_require__(19);
+var components_1 = __webpack_require__(17);
 var constants_1 = __webpack_require__(65);
 var constants_2 = __webpack_require__(32);
 function BerthCabins(props) {
@@ -141772,6 +141719,25 @@ exports.Container = Container;
 
 /***/ }),
 /* 291 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var React = __webpack_require__(5);
+var three_1 = __webpack_require__(16);
+var components_1 = __webpack_require__(17);
+function Plane() {
+    return (React.createElement(components_1.Parametric, { slices: 1, stacks: 1, parametricFunction: pointOfPlane }));
+}
+exports.Plane = Plane;
+function pointOfPlane(u, v) {
+    return new three_1.Vector3(u * window.innerWidth, v * window.innerHeight / 2, 0);
+}
+
+
+/***/ }),
+/* 292 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
