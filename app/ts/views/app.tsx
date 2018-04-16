@@ -10,7 +10,7 @@ import { getMouseVector } from '~/utils';
 import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed
 } from '~/components/camera/utils/store';
-import { Camera, Plane } from '~/components';
+import { Camera, Particles } from '~/components';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -40,7 +40,7 @@ export function App() {
         >
             <scene>
                 <Camera />
-                <Plane />
+                <Particles />
             </scene>
         </React3>
     );
