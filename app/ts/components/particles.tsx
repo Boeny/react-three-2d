@@ -3,13 +3,14 @@ import { Vector3 } from 'three';
 import { Parametric } from './parametric';
 
 
-const PARTICLES_COUNT = 10;// all
-const PARTICLES_IN_ROW = 10;// count in the row
-const PARTICLES_WIDTH = 10;// units
+const PARTICLES_IN_COLUMN = 10;// all
+const PARTICLES_IN_ROW = 500;// count in the row
+const PARTICLES_WIDTH = 1;// units
+const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 export function Particles() {
     const particles: JSX.Element[] = [];
-    for (let i = 0; i < PARTICLES_COUNT; i += 1) {
+    for (let i = 0; i < count; i += 1) {
         particles.push(
             <Particle key={i} index={i} />
         );
@@ -28,13 +29,13 @@ interface Props {
 
 function Particle(props: Props) {
     const y = Math.floor(props.index / PARTICLES_IN_ROW);
-    const x = props.index * y;
+    const x = props.index % PARTICLES_IN_ROW;
     return (
         <Parametric
-            position={new Vector3(x, y, 0)}
+            position={new Vector3(x * PARTICLES_WIDTH, y * PARTICLES_WIDTH, 0)}
             slices={1}
             stacks={1}
-            parametricFunction={(u, v) => pointInTheQuad(u, v, 10)}
+            parametricFunction={(u, v) => pointInTheQuad(u, v, PARTICLES_WIDTH)}
         />
     );
 }
