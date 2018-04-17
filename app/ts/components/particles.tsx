@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { observer } from 'mobx-react';
+import { observable, action } from 'mobx';
 import { Vector3 } from 'three';
 import { Parametric } from './parametric';
 
@@ -12,28 +14,30 @@ export function Particles() {
     const particles: JSX.Element[] = [];
     for (let i = 0; i < count; i += 1) {
         particles.push(
-            <Particle key={i} index={i} />
+            <Particle
+                key={i}
+                x={i % PARTICLES_IN_ROW}
+                y={Math.floor(i / PARTICLES_IN_ROW)}
+            />
         );
     }
     return (
         <group position={new Vector3(-250 * PARTICLES_WIDTH, -80 * PARTICLES_WIDTH, 0)}>
             {particles}
-            <Body />
         </group>
     );
 }
 
 
 interface Props {
-    index: number;
+    x: number;
+    y: number;
 }
 
 function Particle(props: Props) {
-    const y = Math.floor(props.index / PARTICLES_IN_ROW);
-    const x = props.index % PARTICLES_IN_ROW;
     return (
         <Parametric
-            position={new Vector3(x * PARTICLES_WIDTH, y * PARTICLES_WIDTH, 0)}
+            position={new Vector3(props.x * PARTICLES_WIDTH, props.y * PARTICLES_WIDTH, 0)}
             slices={1}
             stacks={1}
             parametricFunction={(u, v) => pointInTheQuad(u, v, PARTICLES_WIDTH)}
@@ -47,4 +51,33 @@ function pointInTheQuad(u: number, v: number, length: number): Vector3 {
         v * length,
         0
     );
+}
+
+
+@observer
+export class Body extends React.Component {
+
+    @observable
+    x: number = 0;
+
+    @observable
+    y: number = 0;
+
+    @action
+    update() {
+        this.y += 1;
+    }
+
+    componentDidMount() {
+        this.update();
+    }
+
+    render() {
+        return (
+            <Particle
+                x={this.x}
+                y={this.y}
+            />
+        );
+    }
 }
