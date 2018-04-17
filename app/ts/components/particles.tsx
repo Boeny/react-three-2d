@@ -3,9 +3,9 @@ import { Vector3 } from 'three';
 import { Parametric } from './parametric';
 
 
-const PARTICLES_IN_COLUMN = 10;// all
+const PARTICLES_IN_COLUMN = 1;// all
 const PARTICLES_IN_ROW = 500;// count in the row
-const PARTICLES_WIDTH = 1;// units
+const PARTICLES_WIDTH = 5;// units
 const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 export function Particles() {
@@ -16,8 +16,9 @@ export function Particles() {
         );
     }
     return (
-        <group>
+        <group position={new Vector3(-250 * PARTICLES_WIDTH, -80 * PARTICLES_WIDTH, 0)}>
             {particles}
+            <Body />
         </group>
     );
 }
