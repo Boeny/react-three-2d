@@ -10,7 +10,9 @@ import { getMouseVector } from '~/utils';
 import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed
 } from '~/components/camera/utils/store';
-import { Camera, Particles } from '~/components';
+import { Camera } from '~/components';
+import { Particles, particles } from '~/components/particles';
+import { Body, update as updateBody, Store as bodyStore } from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -41,6 +43,7 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
+                <Body />
             </scene>
         </React3>
     );
@@ -108,5 +111,14 @@ function onUpdate() {
         if (CameraStore.speed === null) {
             mode = 'idle';
         }
+    }
+    if (Math.abs(bodyStore.y - bodyStore.state.y) > 1) {
+        updateBody();
+    }
+    if (particles[`${bodyStore.state.x}-${bodyStore.state.y}`] === undefined) {
+        bodyStore.y -= bodyStore.v;
+        bodyStore.v += 0.0001;
+    } else {
+        bodyStore.v = 0;
     }
 }
