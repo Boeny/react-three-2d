@@ -127233,6 +127233,7 @@ function onUpdate() {
         body_1.Store.velocity += 0.001;
     }
     else {
+        console.log('!');
         body_1.Store.velocity = 0;
     }
 }

@@ -122,6 +122,7 @@ function onUpdate() {
         bodyStore.y -= bodyStore.velocity;
         bodyStore.velocity += 0.001;
     } else {
+        console.log('!');
         bodyStore.velocity = 0;
     }
 }
