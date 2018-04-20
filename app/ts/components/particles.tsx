@@ -10,7 +10,9 @@ const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 export const particles: { [key: string]: number } = {};
 for (let i = 0; i < count; i += 1) {
-    particles[`${Math.floor(i % PARTICLES_IN_ROW)}-${Math.floor(i / PARTICLES_IN_ROW)}`] = i;
+    particles[
+        `${Math.floor(i % PARTICLES_IN_ROW) - 250}|${Math.floor(i / PARTICLES_IN_ROW) - 80}`
+    ] = i;
 }
 
 export function Particles() {
@@ -19,8 +21,8 @@ export function Particles() {
             {Object.keys(particles).map((coo, i) => (
                 <Particle
                     key={i}
-                    x={parseInt(coo.split('-')[0], 10)}
-                    y={parseInt(coo.split('-')[1], 10)}
+                    x={parseInt(coo.split('|')[0], 10) + 250}
+                    y={parseInt(coo.split('|')[1], 10) + 80}
                 />
             ))}
         </group>

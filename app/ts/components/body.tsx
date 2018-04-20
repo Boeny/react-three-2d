@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
+import { MountAndInit } from '~/components/mount-and-init';
 import { Particle } from './particles';
 
 
@@ -15,17 +16,25 @@ export const Store = {
 };
 
 
-export const update = action(() => {
-    const { state } = Store;
-    state.y = state.y - 1;
+const init = action((x: number, y: number) => {
+    Store.x = x;
+    Store.y = y;
+    Store.state.x = x;
+    Store.state.y = y;
 });
 
 
-export const Body = observer(() => {
+export const update = action(() => {
+    Store.state.y -= 1;
+});
+
+
+export const Body = observer((props: PositionProps) => {
+    const pos = props.position || { x: 0, y: 0 };
     return (
-        <Particle
-            x={Store.state.x}
-            y={Store.state.y}
+        <MountAndInit
+            component={<Particle {...Store.state} />}
+            onMount={() => init(pos.x, pos.y)}
         />
     );
 });

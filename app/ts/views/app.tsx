@@ -112,17 +112,18 @@ function onUpdate() {
             mode = 'idle';
         }
     }
+    // TODO: if (result force === 0) return;
     actualX = bodyStore.state.x;
     actualY = bodyStore.state.y;
     if (Math.abs(bodyStore.y - actualY) > 1) {
         updateBody();// async
         actualY -= 1;
+        bodyStore.y = actualY;
     }
-    if (particles[`${actualX}-${actualY - 1}`] === undefined) {
+    if (particles[`${actualX}|${actualY - 1}`] === undefined) {
         bodyStore.y -= bodyStore.velocity;
         bodyStore.velocity += 0.001;
     } else {
-        console.log('!');
         bodyStore.velocity = 0;
     }
 }
