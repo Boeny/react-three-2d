@@ -11,12 +11,13 @@ export const Store = {
     }),
     x: 0,
     y: 0,
-    v: 0
+    velocity: 0
 };
 
 
 export const update = action(() => {
-    Store.state.y -= 1;
+    const { state } = Store;
+    state.y = state.y - 1;
 });
 
 

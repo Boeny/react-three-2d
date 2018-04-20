@@ -10,7 +10,7 @@ const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 export const particles: { [key: string]: number } = {};
 for (let i = 0; i < count; i += 1) {
-    particles[`${i % PARTICLES_IN_ROW}-${Math.floor(i / PARTICLES_IN_ROW)}`];
+    particles[`${Math.floor(i % PARTICLES_IN_ROW)}-${Math.floor(i / PARTICLES_IN_ROW)}`] = i;
 }
 
 export function Particles() {

@@ -112,13 +112,19 @@ function onUpdate() {
             mode = 'idle';
         }
     }
-    if (Math.abs(bodyStore.y - bodyStore.state.y) > 1) {
-        updateBody();
+    actualX = bodyStore.state.x;
+    actualY = bodyStore.state.y;
+    if (Math.abs(bodyStore.y - actualY) > 1) {
+        updateBody();// async
+        actualY -= 1;
     }
-    if (particles[`${bodyStore.state.x}-${bodyStore.state.y}`] === undefined) {
-        bodyStore.y -= bodyStore.v;
-        bodyStore.v += 0.0001;
+    if (particles[`${actualX}-${actualY - 1}`] === undefined) {
+        bodyStore.y -= bodyStore.velocity;
+        bodyStore.velocity += 0.001;
     } else {
-        bodyStore.v = 0;
+        bodyStore.velocity = 0;
     }
 }
+
+let actualX = 0;
+let actualY = 0;
