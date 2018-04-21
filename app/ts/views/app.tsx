@@ -12,7 +12,10 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
 import { Particles, particles } from '~/components/particles';
-import { Body, updateY as updateBodyY, updateX as updateBodyX, Store as bodyStore } from '~/components/body';
+import {
+    Body, updateY as updateBodyY, updateX as updateBodyX, Store as bodyStore,
+    setCollision as setBodyCollision
+} from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -125,12 +128,14 @@ function onUpdate() {
         updateBodyY(sign);// async
         actualY += sign;
         bodyStore.y = actualY;
+        setBodyCollision('bottom', false);
     }
     if (particles[`${actualX}|${actualY + sign}`] === undefined) {
         bodyStore.y += bodyStore.velocity;
         bodyStore.velocity += -0.001;
     } else {
         bodyStore.velocity = -bodyStore.velocity;
+        setBodyCollision('bottom', true);
     }
 }
 

@@ -34,6 +34,7 @@ export function Particles() {
 interface Props {
     x: number;
     y: number;
+    color?: string;
 }
 
 export function Particle(props: Props) {
@@ -43,6 +44,7 @@ export function Particle(props: Props) {
             slices={1}
             stacks={1}
             parametricFunction={(u, v) => pointInTheQuad(u, v, PARTICLES_WIDTH)}
+            color={props.color}
         />
     );
 }

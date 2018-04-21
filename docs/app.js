@@ -102777,7 +102777,7 @@ function Particles() {
 }
 exports.Particles = Particles;
 function Particle(props) {
-    return (React.createElement(parametric_1.Parametric, { position: new three_1.Vector3(props.x * PARTICLES_WIDTH, props.y * PARTICLES_WIDTH, 0), slices: 1, stacks: 1, parametricFunction: function (u, v) { return pointInTheQuad(u, v, PARTICLES_WIDTH); } }));
+    return (React.createElement(parametric_1.Parametric, { position: new three_1.Vector3(props.x * PARTICLES_WIDTH, props.y * PARTICLES_WIDTH, 0), slices: 1, stacks: 1, parametricFunction: function (u, v) { return pointInTheQuad(u, v, PARTICLES_WIDTH); }, color: props.color }));
 }
 exports.Particle = Particle;
 function pointInTheQuad(u, v, length) {
@@ -109849,7 +109849,11 @@ var particles_1 = __webpack_require__(68);
 exports.Store = {
     state: mobx_1.observable({
         x: 0,
-        y: 0
+        y: 0,
+        left: false,
+        right: false,
+        top: false,
+        bottom: false
     }),
     x: 0,
     y: 0,
@@ -109867,9 +109871,40 @@ exports.updateX = mobx_1.action(function (sign) {
 exports.updateY = mobx_1.action(function (sign) {
     exports.Store.state.y += sign;
 });
+exports.setCollision = mobx_1.action(function (target, value) {
+    var state = exports.Store.state;
+    switch (target) {
+        case 'left':
+            if (state.left !== value) {
+                state.left = value;
+            }
+            break;
+        case 'right':
+            if (state.right !== value) {
+                state.right = value;
+            }
+            break;
+        case 'top':
+            if (state.top !== value) {
+                state.top = value;
+            }
+            break;
+        case 'bottom':
+            if (state.bottom !== value) {
+                state.bottom = value;
+            }
+            break;
+    }
+});
 exports.Body = mobx_react_1.observer(function (props) {
     var pos = props.position || { x: 0, y: 0 };
-    return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(particles_1.Particle, tslib_1.__assign({}, exports.Store.state)), onMount: function () { return init(pos.x, pos.y); } }));
+    var _a = exports.Store.state, x = _a.x, y = _a.y, left = _a.left, right = _a.right, top = _a.top, bottom = _a.bottom;
+    return (React.createElement(mount_and_init_1.MountAndInit, { component: (React.createElement("group", null,
+            React.createElement(particles_1.Particle, tslib_1.__assign({}, exports.Store.state)),
+            left ? React.createElement(particles_1.Particle, { x: x + 1, y: y, color: 'red' }) : null,
+            right ? React.createElement(particles_1.Particle, { x: x - 1, y: y, color: 'red' }) : null,
+            top ? React.createElement(particles_1.Particle, { x: x, y: y + 1, color: 'red' }) : null,
+            bottom ? React.createElement(particles_1.Particle, { x: x, y: y - 1, color: 'red' }) : null)), onMount: function () { return init(pos.x, pos.y); } }));
 });
 
 
@@ -127259,6 +127294,7 @@ function onUpdate() {
         body_1.updateY(sign); // async
         actualY += sign;
         body_1.Store.y = actualY;
+        body_1.setCollision('bottom', false);
     }
     if (particles_1.particles[actualX + "|" + (actualY + sign)] === undefined) {
         body_1.Store.y += body_1.Store.velocity;
@@ -127266,8 +127302,8 @@ function onUpdate() {
     }
     else {
         body_1.Store.velocity = -body_1.Store.velocity;
+        body_1.setCollision('bottom', true);
     }
-    body_1.Store.x += 0.1;
 }
 var actualX = 0;
 var actualY = 0;
