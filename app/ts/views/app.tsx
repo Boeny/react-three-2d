@@ -12,7 +12,7 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
 import { Particles, particles } from '~/components/particles';
-import { Body, update as updateBody, Store as bodyStore } from '~/components/body';
+import { Body, updateY as updateBodyY, updateX as updateBodyX, Store as bodyStore } from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -116,8 +116,13 @@ function onUpdate() {
     actualX = bodyStore.state.x;
     actualY = bodyStore.state.y;
     sign = bodyStore.velocity > 0 ? 1 : -1;
+    if (Math.abs(bodyStore.x - actualX) > 1) {
+        updateBodyX(sign);// async
+        actualX += sign;
+        bodyStore.x = actualX;
+    }
     if (Math.abs(bodyStore.y - actualY) > 1) {
-        updateBody(sign);// async
+        updateBodyY(sign);// async
         actualY += sign;
         bodyStore.y = actualY;
     }
@@ -127,6 +132,7 @@ function onUpdate() {
     } else {
         bodyStore.velocity = -bodyStore.velocity;
     }
+    bodyStore.x += 0.1;
 }
 
 let actualX = 0;
