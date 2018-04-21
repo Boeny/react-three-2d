@@ -117,8 +117,8 @@ function onUpdate() {
     actualY = bodyStore.state.y;
     sign = bodyStore.velocity > 0 ? 1 : -1;
     if (Math.abs(bodyStore.x - actualX) > 1) {
-        updateBodyX(sign);// async
-        actualX += sign;
+        updateBodyX(1);// async
+        actualX += 1;
         bodyStore.x = actualX;
     }
     if (Math.abs(bodyStore.y - actualY) > 1) {
@@ -132,7 +132,6 @@ function onUpdate() {
     } else {
         bodyStore.velocity = -bodyStore.velocity;
     }
-    bodyStore.x += 0.1;
 }
 
 let actualX = 0;

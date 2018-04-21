@@ -4,28 +4,29 @@ import { Parametric } from './parametric';
 
 
 const PARTICLES_IN_COLUMN = 1;// all
-const PARTICLES_IN_ROW = 500;// count in the row
+const PARTICLES_IN_ROW = 240;// count in the row
 const PARTICLES_WIDTH = 5;// units
 const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 export const particles: { [key: string]: number } = {};
 for (let i = 0; i < count; i += 1) {
     particles[
-        `${Math.floor(i % PARTICLES_IN_ROW) - 250}|${Math.floor(i / PARTICLES_IN_ROW) - 60}`
+        `${Math.floor(i % PARTICLES_IN_ROW) - 120}|${Math.floor(i / PARTICLES_IN_ROW) - 60}`
     ] = i;
 }
 
 export function Particles() {
     return (
-        <group position={new Vector3(-250 * PARTICLES_WIDTH, -80 * PARTICLES_WIDTH, 0)}>
-            {Object.keys(particles).map((coo, i) => (
-                <Particle
-                    key={i}
-                    x={parseInt(coo.split('|')[0], 10) + 250}
-                    y={parseInt(coo.split('|')[1], 10) + 80}
-                />
-            ))}
-        </group>
+        <Parametric
+            position={new Vector3(-120 * PARTICLES_WIDTH, -60 * PARTICLES_WIDTH, 0)}
+            slices={1}
+            stacks={1}
+            parametricFunction={(u, v) => new Vector3(
+                u * PARTICLES_IN_ROW * PARTICLES_WIDTH,
+                v * PARTICLES_WIDTH,
+                0
+            )}
+        />
     );
 }
 

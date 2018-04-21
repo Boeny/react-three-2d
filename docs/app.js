@@ -102765,15 +102765,15 @@ var React = __webpack_require__(5);
 var three_1 = __webpack_require__(15);
 var parametric_1 = __webpack_require__(67);
 var PARTICLES_IN_COLUMN = 1; // all
-var PARTICLES_IN_ROW = 500; // count in the row
+var PARTICLES_IN_ROW = 240; // count in the row
 var PARTICLES_WIDTH = 5; // units
 var count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 exports.particles = {};
 for (var i = 0; i < count; i += 1) {
-    exports.particles[Math.floor(i % PARTICLES_IN_ROW) - 250 + "|" + (Math.floor(i / PARTICLES_IN_ROW) - 60)] = i;
+    exports.particles[Math.floor(i % PARTICLES_IN_ROW) - 120 + "|" + (Math.floor(i / PARTICLES_IN_ROW) - 60)] = i;
 }
 function Particles() {
-    return (React.createElement("group", { position: new three_1.Vector3(-250 * PARTICLES_WIDTH, -80 * PARTICLES_WIDTH, 0) }, Object.keys(exports.particles).map(function (coo, i) { return (React.createElement(Particle, { key: i, x: parseInt(coo.split('|')[0], 10) + 250, y: parseInt(coo.split('|')[1], 10) + 80 })); })));
+    return (React.createElement(parametric_1.Parametric, { position: new three_1.Vector3(-120 * PARTICLES_WIDTH, -60 * PARTICLES_WIDTH, 0), slices: 1, stacks: 1, parametricFunction: function (u, v) { return new three_1.Vector3(u * PARTICLES_IN_ROW * PARTICLES_WIDTH, v * PARTICLES_WIDTH, 0); } }));
 }
 exports.Particles = Particles;
 function Particle(props) {
@@ -109861,7 +109861,10 @@ var init = mobx_1.action(function (x, y) {
     exports.Store.state.x = x;
     exports.Store.state.y = y;
 });
-exports.update = mobx_1.action(function (sign) {
+exports.updateX = mobx_1.action(function (sign) {
+    exports.Store.state.x += sign;
+});
+exports.updateY = mobx_1.action(function (sign) {
     exports.Store.state.y += sign;
 });
 exports.Body = mobx_react_1.observer(function (props) {
@@ -127247,8 +127250,13 @@ function onUpdate() {
     actualX = body_1.Store.state.x;
     actualY = body_1.Store.state.y;
     sign = body_1.Store.velocity > 0 ? 1 : -1;
+    if (Math.abs(body_1.Store.x - actualX) > 1) {
+        body_1.updateX(1); // async
+        actualX += 1;
+        body_1.Store.x = actualX;
+    }
     if (Math.abs(body_1.Store.y - actualY) > 1) {
-        body_1.update(sign); // async
+        body_1.updateY(sign); // async
         actualY += sign;
         body_1.Store.y = actualY;
     }
@@ -127259,6 +127267,7 @@ function onUpdate() {
     else {
         body_1.Store.velocity = -body_1.Store.velocity;
     }
+    body_1.Store.x += 0.1;
 }
 var actualX = 0;
 var actualY = 0;
