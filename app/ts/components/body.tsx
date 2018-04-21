@@ -24,8 +24,8 @@ const init = action((x: number, y: number) => {
 });
 
 
-export const update = action(() => {
-    Store.state.y -= 1;
+export const update = action((sign: number) => {
+    Store.state.y += sign;
 });
 
 

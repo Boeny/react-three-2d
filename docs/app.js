@@ -102770,7 +102770,7 @@ var PARTICLES_WIDTH = 5; // units
 var count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 exports.particles = {};
 for (var i = 0; i < count; i += 1) {
-    exports.particles[Math.floor(i % PARTICLES_IN_ROW) - 250 + "|" + (Math.floor(i / PARTICLES_IN_ROW) - 80)] = i;
+    exports.particles[Math.floor(i % PARTICLES_IN_ROW) - 250 + "|" + (Math.floor(i / PARTICLES_IN_ROW) - 60)] = i;
 }
 function Particles() {
     return (React.createElement("group", { position: new three_1.Vector3(-250 * PARTICLES_WIDTH, -80 * PARTICLES_WIDTH, 0) }, Object.keys(exports.particles).map(function (coo, i) { return (React.createElement(Particle, { key: i, x: parseInt(coo.split('|')[0], 10) + 250, y: parseInt(coo.split('|')[1], 10) + 80 })); })));
@@ -109861,8 +109861,8 @@ var init = mobx_1.action(function (x, y) {
     exports.Store.state.x = x;
     exports.Store.state.y = y;
 });
-exports.update = mobx_1.action(function () {
-    exports.Store.state.y -= 1;
+exports.update = mobx_1.action(function (sign) {
+    exports.Store.state.y += sign;
 });
 exports.Body = mobx_react_1.observer(function (props) {
     var pos = props.position || { x: 0, y: 0 };
@@ -127246,21 +127246,23 @@ function onUpdate() {
     // TODO: if (result force === 0) return;
     actualX = body_1.Store.state.x;
     actualY = body_1.Store.state.y;
+    sign = body_1.Store.velocity > 0 ? 1 : -1;
     if (Math.abs(body_1.Store.y - actualY) > 1) {
-        body_1.update(); // async
-        actualY -= 1;
+        body_1.update(sign); // async
+        actualY += sign;
         body_1.Store.y = actualY;
     }
-    if (particles_1.particles[actualX + "|" + (actualY - 1)] === undefined) {
-        body_1.Store.y -= body_1.Store.velocity;
-        body_1.Store.velocity += 0.001;
+    if (particles_1.particles[actualX + "|" + (actualY + sign)] === undefined) {
+        body_1.Store.y += body_1.Store.velocity;
+        body_1.Store.velocity += -0.001;
     }
     else {
-        body_1.Store.velocity = 0;
+        body_1.Store.velocity = -body_1.Store.velocity;
     }
 }
 var actualX = 0;
 var actualY = 0;
+var sign = 0;
 
 
 /***/ }),

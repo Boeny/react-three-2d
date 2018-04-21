@@ -115,18 +115,20 @@ function onUpdate() {
     // TODO: if (result force === 0) return;
     actualX = bodyStore.state.x;
     actualY = bodyStore.state.y;
+    sign = bodyStore.velocity > 0 ? 1 : -1;
     if (Math.abs(bodyStore.y - actualY) > 1) {
-        updateBody();// async
-        actualY -= 1;
+        updateBody(sign);// async
+        actualY += sign;
         bodyStore.y = actualY;
     }
-    if (particles[`${actualX}|${actualY - 1}`] === undefined) {
-        bodyStore.y -= bodyStore.velocity;
-        bodyStore.velocity += 0.001;
+    if (particles[`${actualX}|${actualY + sign}`] === undefined) {
+        bodyStore.y += bodyStore.velocity;
+        bodyStore.velocity += -0.001;
     } else {
-        bodyStore.velocity = 0;
+        bodyStore.velocity = -bodyStore.velocity;
     }
 }
 
 let actualX = 0;
 let actualY = 0;
+let sign = 0;
