@@ -1,45 +1,59 @@
 import * as React from 'react';
+import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
-import { MountAndInit } from '~/components/mount-and-init';
 import { Particle } from './particles';
 
 
-export const Store = {
+export interface IStore {
+    state: {
+        x: number;
+        y: number;
+        left: boolean;
+        right: boolean;
+        top: boolean;
+        bottom: boolean;
+    };
+    x: number;
+    y: number;
+    velocity: number;
+    updateX: (sign: number) => void;
+    updateY: (sign: number) => void;
+    setCollision: (target: string, value: boolean) => void;
+}
+
+export const Store: IStore[] = [];
+
+const getStore = (p?: Vector3): IStore => ({
     state: observable({
-        x: 0,
-        y: 0,
+        x: p ? p.x : 0,
+        y: p ? p.y : 0,
         left: false,
         right: false,
         top: false,
         bottom: false
     }),
-    x: 0,
-    y: 0,
-    velocity: 0
+    x: p ? p.x : 0,
+    y: p ? p.y : 0,
+    velocity: 0,
+    updateX: () => { },
+    updateY: () => { },
+    setCollision: () => { }
+});
+
+
+const updateX = (store: IStore) => (sign: number) => {
+    store.state.x += sign;
 };
 
 
-const init = action((x: number, y: number) => {
-    Store.x = x;
-    Store.y = y;
-    Store.state.x = x;
-    Store.state.y = y;
-});
+const updateY = (store: IStore) => (sign: number) => {
+    store.state.y += sign;
+};
 
 
-export const updateX = action((sign: number) => {
-    Store.state.x += sign;
-});
-
-
-export const updateY = action((sign: number) => {
-    Store.state.y += sign;
-});
-
-
-export const setCollision = action((target: string, value: boolean) => {
-    const { state } = Store;
+const setCollision = (store: IStore) => (target: string, value: boolean) => {
+    const { state } = store;
     switch (target) {
         case 'left':
             if (state.left !== value) {
@@ -62,24 +76,30 @@ export const setCollision = action((target: string, value: boolean) => {
             }
             break;
     }
-});
+};
 
 
-export const Body = observer((props: PositionProps) => {
-    const pos = props.position || { x: 0, y: 0 };
-    const { x, y, left, right, top, bottom } = Store.state;
+const getConnected = (store: IStore) => observer(() => {
+    const { x, y, left, right, top, bottom } = store.state;
     return (
-        <MountAndInit
-            component={(
-                <group>
-                    <Particle {...Store.state} />
-                    {left ? <Particle x={x + 1} y={y} color={'red'} /> : null}
-                    {right ? <Particle x={x - 1} y={y} color={'red'} /> : null}
-                    {top ? <Particle x={x} y={y + 1} color={'red'} /> : null}
-                    {bottom ? <Particle x={x} y={y - 1} color={'red'} /> : null}
-                </group>
-            )}
-            onMount={() => init(pos.x, pos.y)}
-        />
+        <group>
+            <Particle {...store.state} />
+            {left ? <Particle x={x + 1} y={y} color={'red'} /> : null}
+            {right ? <Particle x={x - 1} y={y} color={'red'} /> : null}
+            {top ? <Particle x={x} y={y + 1} color={'red'} /> : null}
+            {bottom ? <Particle x={x} y={y - 1} color={'red'} /> : null}
+        </group>
     );
 });
+
+
+export function Body(props: PositionProps) {
+    const store = getStore(props.position);
+    store.updateX = action(updateX(store));
+    store.updateY = action(updateY(store));
+    store.setCollision = action(setCollision(store));
+    console.log('store creation');
+    Store.push(store);
+    const Connected = getConnected(store);
+    return <Connected />;
+}

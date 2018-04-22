@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as React3 from 'react3';
-import { Vector2 } from 'three';
+import { Vector2, Vector3 } from 'three';
 import { Store as CameraStore } from '~/components/camera/store';
 import { setCanvas, setCursor } from './html/actions';
 import {
@@ -12,10 +12,7 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
 import { Particles, particles } from '~/components/particles';
-import {
-    Body, updateY as updateBodyY, updateX as updateBodyX, Store as bodyStore,
-    setCollision as setBodyCollision
-} from '~/components/body';
+import { Body, Store as bodies, IStore as IBodyStore } from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -46,7 +43,11 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body />
+                <Body position={new Vector3(-4, 0, 0)} />
+                <Body position={new Vector3(-2, -2, 0)} />
+                <Body position={new Vector3(0, -4, 0)} />
+                <Body position={new Vector3(2, -6, 0)} />
+                <Body position={new Vector3(4, -9, 0)} />
             </scene>
         </React3>
     );
@@ -115,30 +116,34 @@ function onUpdate() {
             mode = 'idle';
         }
     }
-    // TODO: if (result force === 0) return;
-    actualX = bodyStore.state.x;
-    actualY = bodyStore.state.y;
-    sign = bodyStore.velocity > 0 ? 1 : -1;
-    if (Math.abs(bodyStore.x - actualX) > 1) {
-        updateBodyX(1);// async
-        actualX += 1;
-        bodyStore.x = actualX;
-    }
-    if (Math.abs(bodyStore.y - actualY) > 1) {
-        updateBodyY(sign);// async
-        actualY += sign;
-        bodyStore.y = actualY;
-        setBodyCollision('bottom', false);
-    }
-    if (particles[`${actualX}|${actualY + sign}`] === undefined) {
-        bodyStore.y += bodyStore.velocity;
-        bodyStore.velocity += -0.001;
-    } else {
-        bodyStore.velocity = -bodyStore.velocity;
-        setBodyCollision('bottom', true);
+    for (let i = 0; i < bodies.length; i += 1) {
+        // TODO: if (result force === 0) return;
+        body = bodies[i];
+        actualX = body.state.x;
+        actualY = body.state.y;
+        sign = body.velocity > 0 ? 1 : -1;
+        if (Math.abs(body.x - actualX) > 1) {
+            body.updateX(1);// async
+            actualX += 1;
+            body.x = actualX;
+        }
+        if (Math.abs(body.y - actualY) > 1) {
+            body.updateY(sign);// async
+            actualY += sign;
+            body.y = actualY;
+            body.setCollision('bottom', false);
+        }
+        if (particles[`${actualX}|${actualY + sign}`] === undefined) {
+            body.y += body.velocity;
+            body.velocity += -0.001;
+        } else {
+            body.velocity = -body.velocity;
+            body.setCollision('bottom', true);
+        }
     }
 }
 
 let actualX = 0;
 let actualY = 0;
 let sign = 0;
+let body: IBodyStore;

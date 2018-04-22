@@ -44920,7 +44920,7 @@ module.exports = GeometryDescriptorBase;
 
 var _prodInvariant = __webpack_require__(24);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 
 var invariant = __webpack_require__(3);
 var warning = __webpack_require__(4);
@@ -46186,392 +46186,6 @@ module.exports = Object3DDescriptor;
 
 /***/ }),
 /* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/**
- * Copyright 2013-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-
-
-/**
- * Keeps track of the current owner.
- *
- * The current owner is the component who should own any components that are
- * currently being constructed.
- */
-var ReactCurrentOwner = {
-  /**
-   * @internal
-   * @type {ReactComponent}
-   */
-  current: null
-};
-
-module.exports = ReactCurrentOwner;
-
-/***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
-var _class;
-
-var _three = __webpack_require__(0);
-
-var THREE = _interopRequireWildcard(_three);
-
-var _invariant = __webpack_require__(3);
-
-var _invariant2 = _interopRequireDefault(_invariant);
-
-var _warning = __webpack_require__(4);
-
-var _warning2 = _interopRequireDefault(_warning);
-
-var _propTypes = __webpack_require__(2);
-
-var _propTypes2 = _interopRequireDefault(_propTypes);
-
-var _THREEElementDescriptor = __webpack_require__(11);
-
-var _THREEElementDescriptor2 = _interopRequireDefault(_THREEElementDescriptor);
-
-var _resource = __webpack_require__(42);
-
-var _resource2 = _interopRequireDefault(_resource);
-
-var _ResourceReference = __webpack_require__(28);
-
-var _ResourceReference2 = _interopRequireDefault(_ResourceReference);
-
-var _propTypeInstanceOf = __webpack_require__(6);
-
-var _propTypeInstanceOf2 = _interopRequireDefault(_propTypeInstanceOf);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var MaterialDescriptorBase = (0, _resource2.default)(_class = function (_THREEElementDescript) {
-  _inherits(MaterialDescriptorBase, _THREEElementDescript);
-
-  function MaterialDescriptorBase(react3Instance) {
-    _classCallCheck(this, MaterialDescriptorBase);
-
-    var _this = _possibleConstructorReturn(this, (MaterialDescriptorBase.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase)).call(this, react3Instance));
-
-    _this._invalidChild = function (child) {
-      return _this.invalidChildInternal(child);
-    };
-
-    _this.hasProp('slot', {
-      type: _propTypes2.default.string,
-      updateInitial: true,
-      update: function update(threeObject, slot, hasProperty) {
-        if (hasProperty) {
-          threeObject.userData._materialSlot = slot;
-        } else {
-          threeObject.userData._materialSlot = 'material';
-        }
-      },
-      default: 'material'
-    });
-
-    _this.hasProp('transparent', {
-      type: _propTypes2.default.bool,
-      simple: true
-    });
-
-    _this.hasProp('alphaTest', {
-      type: _propTypes2.default.number,
-      updateInitial: true,
-      update: function update(threeObject, alphaTest) {
-        threeObject.alphaTest = alphaTest;
-        threeObject.needsUpdate = true;
-      },
-      default: 0
-    });
-
-    _this.hasProp('side', {
-      type: _propTypes2.default.oneOf([THREE.FrontSide, THREE.BackSide, THREE.DoubleSide]),
-      updateInitial: true,
-      update: function update(threeObject, side) {
-        threeObject.side = side;
-      },
-      default: THREE.FrontSide
-    });
-
-    _this.hasProp('depthTest', {
-      type: _propTypes2.default.bool,
-      simple: true,
-      default: true
-    });
-
-    _this.hasProp('depthWrite', {
-      type: _propTypes2.default.bool,
-      simple: true,
-      default: true
-    });
-
-    _this.hasProp('blending', {
-      type: _propTypes2.default.oneOf([THREE.NoBlending, THREE.NormalBlending, THREE.AdditiveBlending, THREE.SubtractiveBlending, THREE.MultiplyBlending, THREE.CustomBlending]),
-      simple: true,
-      default: THREE.NormalBlending
-    });
-
-    _this.hasProp('depthFunc', {
-      type: _propTypes2.default.oneOf([THREE.NeverDepth, THREE.AlwaysDepth, THREE.LessDepth, THREE.LessEqualDepth, THREE.EqualDepth, THREE.GreaterEqualDepth, THREE.GreaterDepth, THREE.NotEqualDepth]),
-      simple: true,
-      default: THREE.LessEqualDepth
-    });
-
-    _this.hasProp('opacity', {
-      type: _propTypes2.default.number,
-      simple: true
-    });
-
-    _this.hasProp('visible', {
-      type: _propTypes2.default.bool,
-      simple: true,
-      default: true
-    });
-
-    _this.hasProp('vertexColors', {
-      type: _propTypes2.default.oneOf([THREE.NoColors, THREE.FaceColors, THREE.VertexColors]),
-      simple: true,
-      default: THREE.NoColors
-    });
-
-    _this._colors = [];
-    _this._supportedMaps = {};
-    return _this;
-  }
-
-  _createClass(MaterialDescriptorBase, [{
-    key: 'hasMap',
-    value: function hasMap() {
-      var mapPropertyName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'map';
-
-      this._supportedMaps[mapPropertyName] = true;
-
-      this.hasProp(mapPropertyName, {
-        type: (0, _propTypeInstanceOf2.default)(THREE.Texture),
-        update: function update(threeObject, value) {
-          threeObject.userData['_' + mapPropertyName + '}Property'] = value;
-
-          if (!threeObject.userData['_has' + mapPropertyName + '}TextureChild']) {
-            if (threeObject[mapPropertyName] !== value) {
-              threeObject.needsUpdate = true;
-            }
-            threeObject[mapPropertyName] = value;
-          } else {
-            var slotInfo = 'texture';
-
-            if (mapPropertyName !== 'map') {
-              slotInfo += 'with a \'' + mapPropertyName + '\' slot';
-            }
-
-            (0, _warning2.default)(value === null, 'The material already has a' + (' ' + slotInfo + ' assigned to it as a child;') + (' therefore the \'' + mapPropertyName + '\' property will have no effect'));
-          }
-        },
-
-        updateInitial: true,
-        default: null
-      });
-    }
-  }, {
-    key: 'getMaterialDescription',
-    value: function getMaterialDescription(props) {
-      var materialDescription = {};
-
-      this._colors.forEach(function (colorPropName) {
-        if (props.hasOwnProperty(colorPropName)) {
-          materialDescription[colorPropName] = props[colorPropName];
-        }
-      });
-
-      if (props.hasOwnProperty('side')) {
-        materialDescription.side = props.side;
-      }
-
-      return materialDescription;
-    }
-  }, {
-    key: 'hasColor',
-    value: function hasColor() {
-      var propName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'color';
-      var defaultVal = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0xffffff;
-
-      if (process.env.NODE_ENV !== 'production') {
-        (0, _invariant2.default)(this._colors.indexOf(propName) === -1, 'This color is already defined for %s.', this.constructor.name);
-      }
-
-      this._colors.push(propName);
-
-      this.hasProp(propName, {
-        type: _propTypes2.default.oneOfType([(0, _propTypeInstanceOf2.default)(THREE.Color), _propTypes2.default.number, _propTypes2.default.string]),
-        update: function update(threeObject, value) {
-          threeObject[propName].set(value);
-        },
-        default: defaultVal
-      });
-    }
-  }, {
-    key: 'hasWireframe',
-    value: function hasWireframe() {
-      this.hasProp('wireframe', {
-        type: _propTypes2.default.bool,
-        simple: true,
-        default: false
-      });
-
-      this.hasProp('wireframeLinewidth', {
-        type: _propTypes2.default.number,
-        simple: true,
-        default: 1
-      });
-    }
-  }, {
-    key: 'construct',
-    value: function construct() {
-      return new THREE.Material({});
-    }
-  }, {
-    key: 'applyInitialProps',
-    value: function applyInitialProps(threeObject, props) {
-      threeObject.userData = _extends({}, threeObject.userData, {
-        _hasTextureChild: false
-      });
-
-      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'applyInitialProps', this).call(this, threeObject, props);
-    }
-  }, {
-    key: 'setParent',
-    value: function setParent(material, parentObject3D) {
-      (0, _invariant2.default)(parentObject3D instanceof THREE.Mesh || parentObject3D instanceof THREE.Points || parentObject3D instanceof THREE.Sprite || parentObject3D instanceof THREE.Line, 'Parent is not a mesh');
-      (0, _invariant2.default)(parentObject3D[material.userData._materialSlot] === undefined || parentObject3D[material.userData._materialSlot] === null, 'Parent already has a ' + material.userData._materialSlot + ' defined');
-      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'setParent', this).call(this, material, parentObject3D);
-
-      parentObject3D[material.userData._materialSlot] = material;
-    }
-  }, {
-    key: 'unmount',
-    value: function unmount(material) {
-      var parent = material.userData.markup.parentMarkup.threeObject;
-
-      // could either be a resource description or an actual material
-      if (parent instanceof THREE.Mesh || parent instanceof THREE.Sprite || parent instanceof THREE.Line || parent instanceof THREE.Points) {
-        var slot = material.userData._materialSlot;
-
-        if (parent[slot] === material) {
-          // TODO: set material slot to null rather than undefined
-
-          parent[slot] = undefined;
-        }
-      }
-
-      material.dispose();
-
-      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'unmount', this).call(this, material);
-    }
-  }, {
-    key: 'highlight',
-    value: function highlight(threeObject) {
-      var ownerMesh = threeObject.userData.markup.parentMarkup.threeObject;
-
-      threeObject.userData.events.emit('highlight', {
-        uuid: threeObject.uuid,
-        boundingBoxFunc: function boundingBoxFunc() {
-          var boundingBox = new THREE.Box3();
-
-          if (ownerMesh && ownerMesh.geometry && ownerMesh.geometry.computeBoundingBox) {
-            ownerMesh.geometry.computeBoundingBox();
-          }
-
-          boundingBox.setFromObject(ownerMesh);
-
-          return [boundingBox];
-        }
-      });
-    }
-  }, {
-    key: 'getBoundingBoxes',
-    value: function getBoundingBoxes(threeObject) {
-      var boundingBox = new THREE.Box3();
-
-      var ownerMesh = threeObject.userData.markup.parentMarkup.threeObject;
-
-      if (ownerMesh && ownerMesh.geometry && ownerMesh.geometry.computeBoundingBox) {
-        ownerMesh.geometry.computeBoundingBox();
-      }
-
-      boundingBox.setFromObject(ownerMesh);
-
-      return [boundingBox];
-    }
-  }, {
-    key: 'hideHighlight',
-    value: function hideHighlight(threeObject) {
-      threeObject.userData.events.emit('hideHighlight');
-    }
-  }, {
-    key: 'addChildren',
-    value: function addChildren(threeObject, children) {
-      (0, _invariant2.default)(children.filter(this._invalidChild).length === 0, 'Material children can only be textures or texture resource references!');
-    }
-  }, {
-    key: 'addChild',
-    value: function addChild(threeObject, child) {
-      this.addChildren(threeObject, [child]);
-    }
-  }, {
-    key: 'moveChild',
-    value: function moveChild() {
-      // doesn't matter
-    }
-  }, {
-    key: 'removeChild',
-    value: function removeChild() {
-      // doesn't matter since the texture will take care of things on unmount
-    }
-  }, {
-    key: 'invalidChildInternal',
-    value: function invalidChildInternal(child) {
-      return !(child instanceof THREE.Texture || child instanceof _ResourceReference2.default);
-    }
-  }]);
-
-  return MaterialDescriptorBase;
-}(_THREEElementDescriptor2.default)) || _class;
-
-module.exports = MaterialDescriptorBase;
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -92553,6 +92167,392 @@ function CanvasRenderer() {
 
 
 /***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/**
+ * Copyright 2013-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
+
+
+
+/**
+ * Keeps track of the current owner.
+ *
+ * The current owner is the component who should own any components that are
+ * currently being constructed.
+ */
+var ReactCurrentOwner = {
+  /**
+   * @internal
+   * @type {ReactComponent}
+   */
+  current: null
+};
+
+module.exports = ReactCurrentOwner;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+var _class;
+
+var _three = __webpack_require__(0);
+
+var THREE = _interopRequireWildcard(_three);
+
+var _invariant = __webpack_require__(3);
+
+var _invariant2 = _interopRequireDefault(_invariant);
+
+var _warning = __webpack_require__(4);
+
+var _warning2 = _interopRequireDefault(_warning);
+
+var _propTypes = __webpack_require__(2);
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _THREEElementDescriptor = __webpack_require__(11);
+
+var _THREEElementDescriptor2 = _interopRequireDefault(_THREEElementDescriptor);
+
+var _resource = __webpack_require__(42);
+
+var _resource2 = _interopRequireDefault(_resource);
+
+var _ResourceReference = __webpack_require__(28);
+
+var _ResourceReference2 = _interopRequireDefault(_ResourceReference);
+
+var _propTypeInstanceOf = __webpack_require__(6);
+
+var _propTypeInstanceOf2 = _interopRequireDefault(_propTypeInstanceOf);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var MaterialDescriptorBase = (0, _resource2.default)(_class = function (_THREEElementDescript) {
+  _inherits(MaterialDescriptorBase, _THREEElementDescript);
+
+  function MaterialDescriptorBase(react3Instance) {
+    _classCallCheck(this, MaterialDescriptorBase);
+
+    var _this = _possibleConstructorReturn(this, (MaterialDescriptorBase.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase)).call(this, react3Instance));
+
+    _this._invalidChild = function (child) {
+      return _this.invalidChildInternal(child);
+    };
+
+    _this.hasProp('slot', {
+      type: _propTypes2.default.string,
+      updateInitial: true,
+      update: function update(threeObject, slot, hasProperty) {
+        if (hasProperty) {
+          threeObject.userData._materialSlot = slot;
+        } else {
+          threeObject.userData._materialSlot = 'material';
+        }
+      },
+      default: 'material'
+    });
+
+    _this.hasProp('transparent', {
+      type: _propTypes2.default.bool,
+      simple: true
+    });
+
+    _this.hasProp('alphaTest', {
+      type: _propTypes2.default.number,
+      updateInitial: true,
+      update: function update(threeObject, alphaTest) {
+        threeObject.alphaTest = alphaTest;
+        threeObject.needsUpdate = true;
+      },
+      default: 0
+    });
+
+    _this.hasProp('side', {
+      type: _propTypes2.default.oneOf([THREE.FrontSide, THREE.BackSide, THREE.DoubleSide]),
+      updateInitial: true,
+      update: function update(threeObject, side) {
+        threeObject.side = side;
+      },
+      default: THREE.FrontSide
+    });
+
+    _this.hasProp('depthTest', {
+      type: _propTypes2.default.bool,
+      simple: true,
+      default: true
+    });
+
+    _this.hasProp('depthWrite', {
+      type: _propTypes2.default.bool,
+      simple: true,
+      default: true
+    });
+
+    _this.hasProp('blending', {
+      type: _propTypes2.default.oneOf([THREE.NoBlending, THREE.NormalBlending, THREE.AdditiveBlending, THREE.SubtractiveBlending, THREE.MultiplyBlending, THREE.CustomBlending]),
+      simple: true,
+      default: THREE.NormalBlending
+    });
+
+    _this.hasProp('depthFunc', {
+      type: _propTypes2.default.oneOf([THREE.NeverDepth, THREE.AlwaysDepth, THREE.LessDepth, THREE.LessEqualDepth, THREE.EqualDepth, THREE.GreaterEqualDepth, THREE.GreaterDepth, THREE.NotEqualDepth]),
+      simple: true,
+      default: THREE.LessEqualDepth
+    });
+
+    _this.hasProp('opacity', {
+      type: _propTypes2.default.number,
+      simple: true
+    });
+
+    _this.hasProp('visible', {
+      type: _propTypes2.default.bool,
+      simple: true,
+      default: true
+    });
+
+    _this.hasProp('vertexColors', {
+      type: _propTypes2.default.oneOf([THREE.NoColors, THREE.FaceColors, THREE.VertexColors]),
+      simple: true,
+      default: THREE.NoColors
+    });
+
+    _this._colors = [];
+    _this._supportedMaps = {};
+    return _this;
+  }
+
+  _createClass(MaterialDescriptorBase, [{
+    key: 'hasMap',
+    value: function hasMap() {
+      var mapPropertyName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'map';
+
+      this._supportedMaps[mapPropertyName] = true;
+
+      this.hasProp(mapPropertyName, {
+        type: (0, _propTypeInstanceOf2.default)(THREE.Texture),
+        update: function update(threeObject, value) {
+          threeObject.userData['_' + mapPropertyName + '}Property'] = value;
+
+          if (!threeObject.userData['_has' + mapPropertyName + '}TextureChild']) {
+            if (threeObject[mapPropertyName] !== value) {
+              threeObject.needsUpdate = true;
+            }
+            threeObject[mapPropertyName] = value;
+          } else {
+            var slotInfo = 'texture';
+
+            if (mapPropertyName !== 'map') {
+              slotInfo += 'with a \'' + mapPropertyName + '\' slot';
+            }
+
+            (0, _warning2.default)(value === null, 'The material already has a' + (' ' + slotInfo + ' assigned to it as a child;') + (' therefore the \'' + mapPropertyName + '\' property will have no effect'));
+          }
+        },
+
+        updateInitial: true,
+        default: null
+      });
+    }
+  }, {
+    key: 'getMaterialDescription',
+    value: function getMaterialDescription(props) {
+      var materialDescription = {};
+
+      this._colors.forEach(function (colorPropName) {
+        if (props.hasOwnProperty(colorPropName)) {
+          materialDescription[colorPropName] = props[colorPropName];
+        }
+      });
+
+      if (props.hasOwnProperty('side')) {
+        materialDescription.side = props.side;
+      }
+
+      return materialDescription;
+    }
+  }, {
+    key: 'hasColor',
+    value: function hasColor() {
+      var propName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'color';
+      var defaultVal = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0xffffff;
+
+      if (process.env.NODE_ENV !== 'production') {
+        (0, _invariant2.default)(this._colors.indexOf(propName) === -1, 'This color is already defined for %s.', this.constructor.name);
+      }
+
+      this._colors.push(propName);
+
+      this.hasProp(propName, {
+        type: _propTypes2.default.oneOfType([(0, _propTypeInstanceOf2.default)(THREE.Color), _propTypes2.default.number, _propTypes2.default.string]),
+        update: function update(threeObject, value) {
+          threeObject[propName].set(value);
+        },
+        default: defaultVal
+      });
+    }
+  }, {
+    key: 'hasWireframe',
+    value: function hasWireframe() {
+      this.hasProp('wireframe', {
+        type: _propTypes2.default.bool,
+        simple: true,
+        default: false
+      });
+
+      this.hasProp('wireframeLinewidth', {
+        type: _propTypes2.default.number,
+        simple: true,
+        default: 1
+      });
+    }
+  }, {
+    key: 'construct',
+    value: function construct() {
+      return new THREE.Material({});
+    }
+  }, {
+    key: 'applyInitialProps',
+    value: function applyInitialProps(threeObject, props) {
+      threeObject.userData = _extends({}, threeObject.userData, {
+        _hasTextureChild: false
+      });
+
+      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'applyInitialProps', this).call(this, threeObject, props);
+    }
+  }, {
+    key: 'setParent',
+    value: function setParent(material, parentObject3D) {
+      (0, _invariant2.default)(parentObject3D instanceof THREE.Mesh || parentObject3D instanceof THREE.Points || parentObject3D instanceof THREE.Sprite || parentObject3D instanceof THREE.Line, 'Parent is not a mesh');
+      (0, _invariant2.default)(parentObject3D[material.userData._materialSlot] === undefined || parentObject3D[material.userData._materialSlot] === null, 'Parent already has a ' + material.userData._materialSlot + ' defined');
+      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'setParent', this).call(this, material, parentObject3D);
+
+      parentObject3D[material.userData._materialSlot] = material;
+    }
+  }, {
+    key: 'unmount',
+    value: function unmount(material) {
+      var parent = material.userData.markup.parentMarkup.threeObject;
+
+      // could either be a resource description or an actual material
+      if (parent instanceof THREE.Mesh || parent instanceof THREE.Sprite || parent instanceof THREE.Line || parent instanceof THREE.Points) {
+        var slot = material.userData._materialSlot;
+
+        if (parent[slot] === material) {
+          // TODO: set material slot to null rather than undefined
+
+          parent[slot] = undefined;
+        }
+      }
+
+      material.dispose();
+
+      _get(MaterialDescriptorBase.prototype.__proto__ || Object.getPrototypeOf(MaterialDescriptorBase.prototype), 'unmount', this).call(this, material);
+    }
+  }, {
+    key: 'highlight',
+    value: function highlight(threeObject) {
+      var ownerMesh = threeObject.userData.markup.parentMarkup.threeObject;
+
+      threeObject.userData.events.emit('highlight', {
+        uuid: threeObject.uuid,
+        boundingBoxFunc: function boundingBoxFunc() {
+          var boundingBox = new THREE.Box3();
+
+          if (ownerMesh && ownerMesh.geometry && ownerMesh.geometry.computeBoundingBox) {
+            ownerMesh.geometry.computeBoundingBox();
+          }
+
+          boundingBox.setFromObject(ownerMesh);
+
+          return [boundingBox];
+        }
+      });
+    }
+  }, {
+    key: 'getBoundingBoxes',
+    value: function getBoundingBoxes(threeObject) {
+      var boundingBox = new THREE.Box3();
+
+      var ownerMesh = threeObject.userData.markup.parentMarkup.threeObject;
+
+      if (ownerMesh && ownerMesh.geometry && ownerMesh.geometry.computeBoundingBox) {
+        ownerMesh.geometry.computeBoundingBox();
+      }
+
+      boundingBox.setFromObject(ownerMesh);
+
+      return [boundingBox];
+    }
+  }, {
+    key: 'hideHighlight',
+    value: function hideHighlight(threeObject) {
+      threeObject.userData.events.emit('hideHighlight');
+    }
+  }, {
+    key: 'addChildren',
+    value: function addChildren(threeObject, children) {
+      (0, _invariant2.default)(children.filter(this._invalidChild).length === 0, 'Material children can only be textures or texture resource references!');
+    }
+  }, {
+    key: 'addChild',
+    value: function addChild(threeObject, child) {
+      this.addChildren(threeObject, [child]);
+    }
+  }, {
+    key: 'moveChild',
+    value: function moveChild() {
+      // doesn't matter
+    }
+  }, {
+    key: 'removeChild',
+    value: function removeChild() {
+      // doesn't matter since the texture will take care of things on unmount
+    }
+  }, {
+    key: 'invalidChildInternal',
+    value: function invalidChildInternal(child) {
+      return !(child instanceof THREE.Texture || child instanceof _ResourceReference2.default);
+    }
+  }]);
+
+  return MaterialDescriptorBase;
+}(_THREEElementDescriptor2.default)) || _class;
+
+module.exports = MaterialDescriptorBase;
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -92571,7 +92571,7 @@ function CanvasRenderer() {
 
 var _assign = __webpack_require__(10);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 
 var warning = __webpack_require__(4);
 var canDefineProperty = __webpack_require__(36);
@@ -97197,211 +97197,6 @@ module.exports = ResourceReference;
 
 /***/ }),
 /* 29 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (immutable) */ __webpack_exports__["__extends"] = __extends;
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__assign", function() { return __assign; });
-/* harmony export (immutable) */ __webpack_exports__["__rest"] = __rest;
-/* harmony export (immutable) */ __webpack_exports__["__decorate"] = __decorate;
-/* harmony export (immutable) */ __webpack_exports__["__param"] = __param;
-/* harmony export (immutable) */ __webpack_exports__["__metadata"] = __metadata;
-/* harmony export (immutable) */ __webpack_exports__["__awaiter"] = __awaiter;
-/* harmony export (immutable) */ __webpack_exports__["__generator"] = __generator;
-/* harmony export (immutable) */ __webpack_exports__["__exportStar"] = __exportStar;
-/* harmony export (immutable) */ __webpack_exports__["__values"] = __values;
-/* harmony export (immutable) */ __webpack_exports__["__read"] = __read;
-/* harmony export (immutable) */ __webpack_exports__["__spread"] = __spread;
-/* harmony export (immutable) */ __webpack_exports__["__await"] = __await;
-/* harmony export (immutable) */ __webpack_exports__["__asyncGenerator"] = __asyncGenerator;
-/* harmony export (immutable) */ __webpack_exports__["__asyncDelegator"] = __asyncDelegator;
-/* harmony export (immutable) */ __webpack_exports__["__asyncValues"] = __asyncValues;
-/* harmony export (immutable) */ __webpack_exports__["__makeTemplateObject"] = __makeTemplateObject;
-/* harmony export (immutable) */ __webpack_exports__["__importStar"] = __importStar;
-/* harmony export (immutable) */ __webpack_exports__["__importDefault"] = __importDefault;
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-/* global Reflect, Promise */
-
-var extendStatics = Object.setPrototypeOf ||
-    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-
-function __extends(d, b) {
-    extendStatics(d, b);
-    function __() { this.constructor = d; }
-    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-}
-
-var __assign = Object.assign || function __assign(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-    }
-    return t;
-}
-
-function __rest(s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
-            t[p[i]] = s[p[i]];
-    return t;
-}
-
-function __decorate(decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-}
-
-function __param(paramIndex, decorator) {
-    return function (target, key) { decorator(target, key, paramIndex); }
-}
-
-function __metadata(metadataKey, metadataValue) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
-}
-
-function __awaiter(thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-}
-
-function __generator(thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-}
-
-function __exportStar(m, exports) {
-    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
-}
-
-function __values(o) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
-    if (m) return m.call(o);
-    return {
-        next: function () {
-            if (o && i >= o.length) o = void 0;
-            return { value: o && o[i++], done: !o };
-        }
-    };
-}
-
-function __read(o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-}
-
-function __spread() {
-    for (var ar = [], i = 0; i < arguments.length; i++)
-        ar = ar.concat(__read(arguments[i]));
-    return ar;
-}
-
-function __await(v) {
-    return this instanceof __await ? (this.v = v, this) : new __await(v);
-}
-
-function __asyncGenerator(thisArg, _arguments, generator) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var g = generator.apply(thisArg, _arguments || []), i, q = [];
-    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
-    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
-    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
-    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
-    function fulfill(value) { resume("next", value); }
-    function reject(value) { resume("throw", value); }
-    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
-}
-
-function __asyncDelegator(o) {
-    var i, p;
-    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
-    function verb(n, f) { if (o[n]) i[n] = function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; }; }
-}
-
-function __asyncValues(o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator];
-    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
-}
-
-function __makeTemplateObject(cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-};
-
-function __importStar(mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result.default = mod;
-    return result;
-}
-
-function __importDefault(mod) {
-    return (mod && mod.__esModule) ? mod : { default: mod };
-}
-
-
-/***/ }),
-/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -97425,7 +97220,7 @@ module.exports = emptyObject;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -97682,7 +97477,7 @@ module.exports = ReactUpdates;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -98010,6 +97805,211 @@ module.exports = LightDescriptorBase;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
+/* 32 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony export (immutable) */ __webpack_exports__["__extends"] = __extends;
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "__assign", function() { return __assign; });
+/* harmony export (immutable) */ __webpack_exports__["__rest"] = __rest;
+/* harmony export (immutable) */ __webpack_exports__["__decorate"] = __decorate;
+/* harmony export (immutable) */ __webpack_exports__["__param"] = __param;
+/* harmony export (immutable) */ __webpack_exports__["__metadata"] = __metadata;
+/* harmony export (immutable) */ __webpack_exports__["__awaiter"] = __awaiter;
+/* harmony export (immutable) */ __webpack_exports__["__generator"] = __generator;
+/* harmony export (immutable) */ __webpack_exports__["__exportStar"] = __exportStar;
+/* harmony export (immutable) */ __webpack_exports__["__values"] = __values;
+/* harmony export (immutable) */ __webpack_exports__["__read"] = __read;
+/* harmony export (immutable) */ __webpack_exports__["__spread"] = __spread;
+/* harmony export (immutable) */ __webpack_exports__["__await"] = __await;
+/* harmony export (immutable) */ __webpack_exports__["__asyncGenerator"] = __asyncGenerator;
+/* harmony export (immutable) */ __webpack_exports__["__asyncDelegator"] = __asyncDelegator;
+/* harmony export (immutable) */ __webpack_exports__["__asyncValues"] = __asyncValues;
+/* harmony export (immutable) */ __webpack_exports__["__makeTemplateObject"] = __makeTemplateObject;
+/* harmony export (immutable) */ __webpack_exports__["__importStar"] = __importStar;
+/* harmony export (immutable) */ __webpack_exports__["__importDefault"] = __importDefault;
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
+
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
+
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = Object.setPrototypeOf ||
+    ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+    function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+
+function __extends(d, b) {
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var __assign = Object.assign || function __assign(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+    return t;
+}
+
+function __rest(s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) if (e.indexOf(p[i]) < 0)
+            t[p[i]] = s[p[i]];
+    return t;
+}
+
+function __decorate(decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+function __param(paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+}
+
+function __metadata(metadataKey, metadataValue) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(metadataKey, metadataValue);
+}
+
+function __awaiter(thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+}
+
+function __generator(thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+}
+
+function __exportStar(m, exports) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+
+function __values(o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+}
+
+function __read(o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+}
+
+function __spread() {
+    for (var ar = [], i = 0; i < arguments.length; i++)
+        ar = ar.concat(__read(arguments[i]));
+    return ar;
+}
+
+function __await(v) {
+    return this instanceof __await ? (this.v = v, this) : new __await(v);
+}
+
+function __asyncGenerator(thisArg, _arguments, generator) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var g = generator.apply(thisArg, _arguments || []), i, q = [];
+    return i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i;
+    function verb(n) { if (g[n]) i[n] = function (v) { return new Promise(function (a, b) { q.push([n, v, a, b]) > 1 || resume(n, v); }); }; }
+    function resume(n, v) { try { step(g[n](v)); } catch (e) { settle(q[0][3], e); } }
+    function step(r) { r.value instanceof __await ? Promise.resolve(r.value.v).then(fulfill, reject) : settle(q[0][2], r);  }
+    function fulfill(value) { resume("next", value); }
+    function reject(value) { resume("throw", value); }
+    function settle(f, v) { if (f(v), q.shift(), q.length) resume(q[0][0], q[0][1]); }
+}
+
+function __asyncDelegator(o) {
+    var i, p;
+    return i = {}, verb("next"), verb("throw", function (e) { throw e; }), verb("return"), i[Symbol.iterator] = function () { return this; }, i;
+    function verb(n, f) { if (o[n]) i[n] = function (v) { return (p = !p) ? { value: __await(o[n](v)), done: n === "return" } : f ? f(v) : v; }; }
+}
+
+function __asyncValues(o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator];
+    return m ? m.call(o) : typeof __values === "function" ? __values(o) : o[Symbol.iterator]();
+}
+
+function __makeTemplateObject(cooked, raw) {
+    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
+    return cooked;
+};
+
+function __importStar(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result.default = mod;
+    return result;
+}
+
+function __importDefault(mod) {
+    return (mod && mod.__esModule) ? mod : { default: mod };
+}
+
+
+/***/ }),
 /* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -98244,7 +98244,7 @@ var _ReactElement = __webpack_require__(16);
 
 var _ReactElement2 = _interopRequireDefault(_ReactElement);
 
-var _ReactCurrentOwner = __webpack_require__(13);
+var _ReactCurrentOwner = __webpack_require__(14);
 
 var _ReactCurrentOwner2 = _interopRequireDefault(_ReactCurrentOwner);
 
@@ -98274,7 +98274,7 @@ var _ReactReconciler = __webpack_require__(26);
 
 var _ReactReconciler2 = _interopRequireDefault(_ReactReconciler);
 
-var _ReactUpdates = __webpack_require__(31);
+var _ReactUpdates = __webpack_require__(30);
 
 var _ReactUpdates2 = _interopRequireDefault(_ReactUpdates);
 
@@ -100078,7 +100078,7 @@ module.exports = PolyhedronGeometryDescriptorBase;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var mobx_1 = __webpack_require__(22);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 exports.Store = {
     state: mobx_1.observable({
         zoom: 1,
@@ -100096,7 +100096,7 @@ exports.Store = {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 function convertToColor(color) {
     return new three_1.Color(color);
 }
@@ -101351,7 +101351,7 @@ module.exports = ReactComponentEnvironment;
 
 var _prodInvariant = __webpack_require__(7);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var REACT_ELEMENT_TYPE = __webpack_require__(170);
 
 var getIteratorFn = __webpack_require__(171);
@@ -102744,7 +102744,7 @@ exports.ARRAY_9 = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 function Parametric(props) {
     var angle = props.angle, color = props.color, position = props.position, slices = props.slices, stacks = props.stacks, parametricFunction = props.parametricFunction;
     return (React.createElement("mesh", { rotation: new three_1.Euler(0, 0, angle || 0), position: position },
@@ -102762,7 +102762,7 @@ exports.Parametric = Parametric;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var parametric_1 = __webpack_require__(67);
 var PARTICLES_IN_COLUMN = 1; // all
 var PARTICLES_IN_ROW = 240; // count in the row
@@ -103349,7 +103349,7 @@ module.exports = REACT_ELEMENT_TYPE;
 
 var _prodInvariant = __webpack_require__(24);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var REACT_ELEMENT_TYPE = __webpack_require__(78);
 
 var getIteratorFn = __webpack_require__(80);
@@ -103582,7 +103582,7 @@ module.exports = getIteratorFn;
 
 
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var ReactComponentTreeHook = __webpack_require__(9);
 var ReactElement = __webpack_require__(16);
 
@@ -104743,10 +104743,10 @@ module.exports = PooledClass.addPoolingTo(CallbackQueue);
 
 var _prodInvariant = __webpack_require__(7);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var ReactInstanceMap = __webpack_require__(25);
 var ReactInstrumentation = __webpack_require__(18);
-var ReactUpdates = __webpack_require__(31);
+var ReactUpdates = __webpack_require__(30);
 
 var invariant = __webpack_require__(3);
 var warning = __webpack_require__(4);
@@ -106197,7 +106197,7 @@ var _prodInvariant = __webpack_require__(7),
 
 var React = __webpack_require__(47);
 var ReactComponentEnvironment = __webpack_require__(57);
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var ReactErrorUtils = __webpack_require__(56);
 var ReactInstanceMap = __webpack_require__(25);
 var ReactInstrumentation = __webpack_require__(18);
@@ -107115,7 +107115,7 @@ var _ReactElement = __webpack_require__(16);
 
 var _ReactElement2 = _interopRequireDefault(_ReactElement);
 
-var _ReactCurrentOwner = __webpack_require__(13);
+var _ReactCurrentOwner = __webpack_require__(14);
 
 var _ReactCurrentOwner2 = _interopRequireDefault(_ReactCurrentOwner);
 
@@ -107823,7 +107823,7 @@ var _warning = __webpack_require__(4);
 
 var _warning2 = _interopRequireDefault(_warning);
 
-var _ReactUpdates = __webpack_require__(31);
+var _ReactUpdates = __webpack_require__(30);
 
 var _ReactUpdates2 = _interopRequireDefault(_ReactUpdates);
 
@@ -109660,7 +109660,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -109783,7 +109783,7 @@ exports.setSpeed = getSpeedSetter(store_1.Store);
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
+var tslib_1 = __webpack_require__(32);
 var React = __webpack_require__(5);
 var utils_1 = __webpack_require__(46);
 var parametric_1 = __webpack_require__(67);
@@ -109840,39 +109840,36 @@ var parametric = function (radius1, radius2) { return function (u, v) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
+var tslib_1 = __webpack_require__(32);
 var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(65);
 var mobx_1 = __webpack_require__(22);
-var mount_and_init_1 = __webpack_require__(294);
 var particles_1 = __webpack_require__(68);
-exports.Store = {
+exports.Store = [];
+var getStore = function (p) { return ({
     state: mobx_1.observable({
-        x: 0,
-        y: 0,
+        x: p ? p.x : 0,
+        y: p ? p.y : 0,
         left: false,
         right: false,
         top: false,
         bottom: false
     }),
-    x: 0,
-    y: 0,
-    velocity: 0
-};
-var init = mobx_1.action(function (x, y) {
-    exports.Store.x = x;
-    exports.Store.y = y;
-    exports.Store.state.x = x;
-    exports.Store.state.y = y;
-});
-exports.updateX = mobx_1.action(function (sign) {
-    exports.Store.state.x += sign;
-});
-exports.updateY = mobx_1.action(function (sign) {
-    exports.Store.state.y += sign;
-});
-exports.setCollision = mobx_1.action(function (target, value) {
-    var state = exports.Store.state;
+    x: p ? p.x : 0,
+    y: p ? p.y : 0,
+    velocity: 0,
+    updateX: function () { },
+    updateY: function () { },
+    setCollision: function () { }
+}); };
+var updateX = function (store) { return function (sign) {
+    store.state.x += sign;
+}; };
+var updateY = function (store) { return function (sign) {
+    store.state.y += sign;
+}; };
+var setCollision = function (store) { return function (target, value) {
+    var state = store.state;
     switch (target) {
         case 'left':
             if (state.left !== value) {
@@ -109895,17 +109892,27 @@ exports.setCollision = mobx_1.action(function (target, value) {
             }
             break;
     }
-});
-exports.Body = mobx_react_1.observer(function (props) {
-    var pos = props.position || { x: 0, y: 0 };
-    var _a = exports.Store.state, x = _a.x, y = _a.y, left = _a.left, right = _a.right, top = _a.top, bottom = _a.bottom;
-    return (React.createElement(mount_and_init_1.MountAndInit, { component: (React.createElement("group", null,
-            React.createElement(particles_1.Particle, tslib_1.__assign({}, exports.Store.state)),
-            left ? React.createElement(particles_1.Particle, { x: x + 1, y: y, color: 'red' }) : null,
-            right ? React.createElement(particles_1.Particle, { x: x - 1, y: y, color: 'red' }) : null,
-            top ? React.createElement(particles_1.Particle, { x: x, y: y + 1, color: 'red' }) : null,
-            bottom ? React.createElement(particles_1.Particle, { x: x, y: y - 1, color: 'red' }) : null)), onMount: function () { return init(pos.x, pos.y); } }));
-});
+}; };
+var getConnected = function (store) { return mobx_react_1.observer(function () {
+    var _a = store.state, x = _a.x, y = _a.y, left = _a.left, right = _a.right, top = _a.top, bottom = _a.bottom;
+    return (React.createElement("group", null,
+        React.createElement(particles_1.Particle, tslib_1.__assign({}, store.state)),
+        left ? React.createElement(particles_1.Particle, { x: x + 1, y: y, color: 'red' }) : null,
+        right ? React.createElement(particles_1.Particle, { x: x - 1, y: y, color: 'red' }) : null,
+        top ? React.createElement(particles_1.Particle, { x: x, y: y + 1, color: 'red' }) : null,
+        bottom ? React.createElement(particles_1.Particle, { x: x, y: y - 1, color: 'red' }) : null));
+}); };
+function Body(props) {
+    var store = getStore(props.position);
+    store.updateX = mobx_1.action(updateX(store));
+    store.updateY = mobx_1.action(updateY(store));
+    store.setCollision = mobx_1.action(setCollision(store));
+    console.log('store creation');
+    exports.Store.push(store);
+    var Connected = getConnected(store);
+    return React.createElement(Connected, null);
+}
+exports.Body = Body;
 
 
 /***/ }),
@@ -109919,7 +109926,7 @@ var React = __webpack_require__(5);
 var react_dom_1 = __webpack_require__(70);
 var app_1 = __webpack_require__(128);
 var constants_1 = __webpack_require__(66);
-__webpack_require__(295);
+__webpack_require__(294);
 react_dom_1.render(React.createElement(app_1.App, null), document.getElementById(constants_1.ROOT_ELEMENT_ID));
 
 
@@ -109937,7 +109944,7 @@ react_dom_1.render(React.createElement(app_1.App, null), document.getElementById
  * LICENSE file in the root directory of this source tree.
  */
 
-var m=__webpack_require__(10),n=__webpack_require__(30),p=__webpack_require__(23),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.call"):60104,u=q?Symbol["for"]("react.return"):60105,v=q?Symbol["for"]("react.portal"):60106,w=q?Symbol["for"]("react.fragment"):60107,x="function"===typeof Symbol&&Symbol.iterator;
+var m=__webpack_require__(10),n=__webpack_require__(29),p=__webpack_require__(23),q="function"===typeof Symbol&&Symbol["for"],r=q?Symbol["for"]("react.element"):60103,t=q?Symbol["for"]("react.call"):60104,u=q?Symbol["for"]("react.return"):60105,v=q?Symbol["for"]("react.portal"):60106,w=q?Symbol["for"]("react.fragment"):60107,x="function"===typeof Symbol&&Symbol.iterator;
 function y(a){for(var b=arguments.length-1,e="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,c=0;c<b;c++)e+="\x26args[]\x3d"+encodeURIComponent(arguments[c+1]);b=Error(e+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}
 var z={isMounted:function(){return!1},enqueueForceUpdate:function(){},enqueueReplaceState:function(){},enqueueSetState:function(){}};function A(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}A.prototype.isReactComponent={};A.prototype.setState=function(a,b){"object"!==typeof a&&"function"!==typeof a&&null!=a?y("85"):void 0;this.updater.enqueueSetState(this,a,b,"setState")};A.prototype.forceUpdate=function(a){this.updater.enqueueForceUpdate(this,a,"forceUpdate")};
 function B(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}function C(){}C.prototype=A.prototype;var D=B.prototype=new C;D.constructor=B;m(D,A.prototype);D.isPureReactComponent=!0;function E(a,b,e){this.props=a;this.context=b;this.refs=n;this.updater=e||z}var F=E.prototype=new C;F.constructor=E;m(F,A.prototype);F.unstable_isAsyncReactComponent=!0;F.render=function(){return this.props.children};var G={current:null},H=Object.prototype.hasOwnProperty,I={key:!0,ref:!0,__self:!0,__source:!0};
@@ -109974,7 +109981,7 @@ if (process.env.NODE_ENV !== "production") {
 'use strict';
 
 var _assign = __webpack_require__(10);
-var emptyObject = __webpack_require__(30);
+var emptyObject = __webpack_require__(29);
 var invariant = __webpack_require__(34);
 var warning = __webpack_require__(35);
 var emptyFunction = __webpack_require__(23);
@@ -111352,7 +111359,7 @@ module.exports = ReactPropTypesSecret;
 /*
  Modernizr 3.0.0pre (Custom Build) | MIT
 */
-var aa=__webpack_require__(5),l=__webpack_require__(71),B=__webpack_require__(10),C=__webpack_require__(23),ba=__webpack_require__(72),da=__webpack_require__(73),ea=__webpack_require__(74),fa=__webpack_require__(75),ia=__webpack_require__(76),D=__webpack_require__(30);
+var aa=__webpack_require__(5),l=__webpack_require__(71),B=__webpack_require__(10),C=__webpack_require__(23),ba=__webpack_require__(72),da=__webpack_require__(73),ea=__webpack_require__(74),fa=__webpack_require__(75),ia=__webpack_require__(76),D=__webpack_require__(29);
 function E(a){for(var b=arguments.length-1,c="Minified React error #"+a+"; visit http://facebook.github.io/react/docs/error-decoder.html?invariant\x3d"+a,d=0;d<b;d++)c+="\x26args[]\x3d"+encodeURIComponent(arguments[d+1]);b=Error(c+" for the full message or use the non-minified dev environment for full errors and additional helpful warnings.");b.name="Invariant Violation";b.framesToPop=1;throw b;}aa?void 0:E("227");
 var oa={children:!0,dangerouslySetInnerHTML:!0,defaultValue:!0,defaultChecked:!0,innerHTML:!0,suppressContentEditableWarning:!0,suppressHydrationWarning:!0,style:!0};function pa(a,b){return(a&b)===b}
 var ta={MUST_USE_PROPERTY:1,HAS_BOOLEAN_VALUE:4,HAS_NUMERIC_VALUE:8,HAS_POSITIVE_NUMERIC_VALUE:24,HAS_OVERLOADED_BOOLEAN_VALUE:32,HAS_STRING_BOOLEAN_VALUE:64,injectDOMPropertyConfig:function(a){var b=ta,c=a.Properties||{},d=a.DOMAttributeNamespaces||{},e=a.DOMAttributeNames||{};a=a.DOMMutationMethods||{};for(var f in c){ua.hasOwnProperty(f)?E("48",f):void 0;var g=f.toLowerCase(),h=c[f];g={attributeName:g,attributeNamespace:null,propertyName:f,mutationMethod:null,mustUseProperty:pa(h,b.MUST_USE_PROPERTY),
@@ -111660,7 +111667,7 @@ var getActiveElement = __webpack_require__(73);
 var shallowEqual = __webpack_require__(74);
 var containsNode = __webpack_require__(75);
 var focusNode = __webpack_require__(76);
-var emptyObject = __webpack_require__(30);
+var emptyObject = __webpack_require__(29);
 var checkPropTypes = __webpack_require__(69);
 var hyphenateStyleName = __webpack_require__(124);
 var camelizeStyleName = __webpack_require__(126);
@@ -127194,6 +127201,7 @@ module.exports = camelize;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var React3 = __webpack_require__(129);
+var three_1 = __webpack_require__(13);
 var store_1 = __webpack_require__(45);
 var actions_1 = __webpack_require__(272);
 var actions_2 = __webpack_require__(275);
@@ -127218,7 +127226,11 @@ function App() {
         React.createElement("scene", null,
             React.createElement(components_1.Camera, null),
             React.createElement(particles_1.Particles, null),
-            React.createElement(body_1.Body, null))));
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-4, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-2, -2, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(0, -4, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(2, -6, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(4, -9, 0) }))));
 }
 exports.App = App;
 function onMouseWheel(e) {
@@ -127281,33 +127293,37 @@ function onUpdate() {
             mode = 'idle';
         }
     }
-    // TODO: if (result force === 0) return;
-    actualX = body_1.Store.state.x;
-    actualY = body_1.Store.state.y;
-    sign = body_1.Store.velocity > 0 ? 1 : -1;
-    if (Math.abs(body_1.Store.x - actualX) > 1) {
-        body_1.updateX(1); // async
-        actualX += 1;
-        body_1.Store.x = actualX;
-    }
-    if (Math.abs(body_1.Store.y - actualY) > 1) {
-        body_1.updateY(sign); // async
-        actualY += sign;
-        body_1.Store.y = actualY;
-        body_1.setCollision('bottom', false);
-    }
-    if (particles_1.particles[actualX + "|" + (actualY + sign)] === undefined) {
-        body_1.Store.y += body_1.Store.velocity;
-        body_1.Store.velocity += -0.001;
-    }
-    else {
-        body_1.Store.velocity = -body_1.Store.velocity;
-        body_1.setCollision('bottom', true);
+    for (var i = 0; i < body_1.Store.length; i += 1) {
+        // TODO: if (result force === 0) return;
+        body = body_1.Store[i];
+        actualX = body.state.x;
+        actualY = body.state.y;
+        sign = body.velocity > 0 ? 1 : -1;
+        if (Math.abs(body.x - actualX) > 1) {
+            body.updateX(1); // async
+            actualX += 1;
+            body.x = actualX;
+        }
+        if (Math.abs(body.y - actualY) > 1) {
+            body.updateY(sign); // async
+            actualY += sign;
+            body.y = actualY;
+            body.setCollision('bottom', false);
+        }
+        if (particles_1.particles[actualX + "|" + (actualY + sign)] === undefined) {
+            body.y += body.velocity;
+            body.velocity += -0.001;
+        }
+        else {
+            body.velocity = -body.velocity;
+            body.setCollision('bottom', true);
+        }
     }
 }
 var actualX = 0;
 var actualY = 0;
 var sign = 0;
+var body;
 
 
 /***/ }),
@@ -128198,7 +128214,7 @@ module.exports = factory(Component, isValidElement, ReactNoopUpdateQueue);
 
 var _assign = __webpack_require__(10);
 
-var emptyObject = __webpack_require__(30);
+var emptyObject = __webpack_require__(29);
 var _invariant = __webpack_require__(34);
 
 if (process.env.NODE_ENV !== 'production') {
@@ -129918,7 +129934,7 @@ var ReactComponentEnvironment = __webpack_require__(57);
 var ReactEmptyComponent = __webpack_require__(91);
 var ReactBrowserEventEmitter = __webpack_require__(92);
 var ReactHostComponent = __webpack_require__(93);
-var ReactUpdates = __webpack_require__(31);
+var ReactUpdates = __webpack_require__(30);
 
 var ReactInjection = {
   Component: ReactComponentEnvironment.injection,
@@ -131117,7 +131133,7 @@ module.exports = getActiveElement;
 
 var _assign = __webpack_require__(10);
 
-var ReactUpdates = __webpack_require__(31);
+var ReactUpdates = __webpack_require__(30);
 var Transaction = __webpack_require__(54);
 
 var emptyFunction = __webpack_require__(20);
@@ -131356,7 +131372,7 @@ var _flattenChildren = __webpack_require__(176);
 
 var _flattenChildren2 = _interopRequireDefault(_flattenChildren);
 
-var _ReactCurrentOwner = __webpack_require__(13);
+var _ReactCurrentOwner = __webpack_require__(14);
 
 var _ReactCurrentOwner2 = _interopRequireDefault(_ReactCurrentOwner);
 
@@ -132296,7 +132312,7 @@ var ReactComponentEnvironment = __webpack_require__(57);
 var ReactInstanceMap = __webpack_require__(25);
 var ReactInstrumentation = __webpack_require__(18);
 
-var ReactCurrentOwner = __webpack_require__(13);
+var ReactCurrentOwner = __webpack_require__(14);
 var ReactReconciler = __webpack_require__(26);
 var ReactChildReconciler = __webpack_require__(178);
 
@@ -135462,7 +135478,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _LightDescriptorBase2 = __webpack_require__(32);
+var _LightDescriptorBase2 = __webpack_require__(31);
 
 var _LightDescriptorBase3 = _interopRequireDefault(_LightDescriptorBase2);
 
@@ -135531,7 +135547,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _LightDescriptorBase2 = __webpack_require__(32);
+var _LightDescriptorBase2 = __webpack_require__(31);
 
 var _LightDescriptorBase3 = _interopRequireDefault(_LightDescriptorBase2);
 
@@ -135654,7 +135670,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _LightDescriptorBase2 = __webpack_require__(32);
+var _LightDescriptorBase2 = __webpack_require__(31);
 
 var _LightDescriptorBase3 = _interopRequireDefault(_LightDescriptorBase2);
 
@@ -135747,7 +135763,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _LightDescriptorBase2 = __webpack_require__(32);
+var _LightDescriptorBase2 = __webpack_require__(31);
 
 var _LightDescriptorBase3 = _interopRequireDefault(_LightDescriptorBase2);
 
@@ -135851,7 +135867,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _LightDescriptorBase2 = __webpack_require__(32);
+var _LightDescriptorBase2 = __webpack_require__(31);
 
 var _LightDescriptorBase3 = _interopRequireDefault(_LightDescriptorBase2);
 
@@ -139157,7 +139173,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -139244,7 +139260,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -139309,7 +139325,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -139478,7 +139494,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -139570,7 +139586,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -140482,7 +140498,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -140567,7 +140583,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -140656,7 +140672,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -140712,7 +140728,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -140769,7 +140785,7 @@ var _propTypes = __webpack_require__(2);
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _MaterialDescriptorBase = __webpack_require__(14);
+var _MaterialDescriptorBase = __webpack_require__(15);
 
 var _MaterialDescriptorBase2 = _interopRequireDefault(_MaterialDescriptorBase);
 
@@ -141481,7 +141497,7 @@ exports.getElementSetterAction = function (store) { return function (element) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var mobx_1 = __webpack_require__(22);
 var store_1 = __webpack_require__(45);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var constants_1 = __webpack_require__(64);
 var getZoomSetterAction = function (store) { return function (newZoom) {
     var width = window.innerWidth;
@@ -141583,7 +141599,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(65);
 var store_1 = __webpack_require__(280);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var utils_1 = __webpack_require__(46);
 exports.Mesh = mobx_react_1.observer(function (props) {
     var angle = props.angle, radius = props.radius;
@@ -141622,9 +141638,9 @@ exports.Store = mobx_1.observable({
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
+var tslib_1 = __webpack_require__(32);
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var components_1 = __webpack_require__(282);
 var constants_1 = __webpack_require__(66);
 var constants_2 = __webpack_require__(33);
@@ -141764,7 +141780,7 @@ exports.Reactor = Reactor;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var components_1 = __webpack_require__(17);
 var constants_1 = __webpack_require__(33);
 function Terminal(props) {
@@ -141787,7 +141803,7 @@ exports.Terminal = Terminal;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
+var tslib_1 = __webpack_require__(32);
 var React = __webpack_require__(5);
 var components_1 = __webpack_require__(17);
 function Rapport(props) {
@@ -141804,7 +141820,7 @@ exports.Rapport = Rapport;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var utils_1 = __webpack_require__(46);
 var components_1 = __webpack_require__(17);
 var cabins_1 = __webpack_require__(291);
@@ -141837,7 +141853,7 @@ function pointInTheTube(u, v, tubeLength) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var components_1 = __webpack_require__(17);
 var constants_1 = __webpack_require__(66);
 var constants_2 = __webpack_require__(33);
@@ -141860,7 +141876,7 @@ function BerthCabin(props) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
+var tslib_1 = __webpack_require__(32);
 var React = __webpack_require__(5);
 var ring_1 = __webpack_require__(114);
 function Container(props) {
@@ -141877,7 +141893,7 @@ exports.Container = Container;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
-var three_1 = __webpack_require__(15);
+var three_1 = __webpack_require__(13);
 var components_1 = __webpack_require__(17);
 function Plane() {
     return (React.createElement(components_1.Parametric, { slices: 1, stacks: 1, parametricFunction: pointOfPlane }));
@@ -141890,35 +141906,6 @@ function pointOfPlane(u, v) {
 
 /***/ }),
 /* 294 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(29);
-var React = __webpack_require__(5);
-var MountAndInit = /** @class */ (function (_super) {
-    tslib_1.__extends(MountAndInit, _super);
-    function MountAndInit(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = { ready: false };
-        return _this;
-    }
-    MountAndInit.prototype.componentDidMount = function () {
-        this.props.onMount && this.props.onMount();
-        this.setState({ ready: true });
-    };
-    MountAndInit.prototype.render = function () {
-        var _a = this.props, component = _a.component, defaultComponent = _a.defaultComponent;
-        return this.state.ready ? component : (defaultComponent || null);
-    };
-    return MountAndInit;
-}(React.Component));
-exports.MountAndInit = MountAndInit;
-
-
-/***/ }),
-/* 295 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
