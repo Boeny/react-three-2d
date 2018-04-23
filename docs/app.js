@@ -102759,6 +102759,10 @@ exports.particles = {};
 for (var i = 0; i < count; i += 1) {
     exports.particles[Math.floor(i % PARTICLES_IN_ROW) - 120 + "|" + (Math.floor(i / PARTICLES_IN_ROW) - 60)] = i;
 }
+for (var i = 0; i < 60; i += 1) {
+    exports.particles[-120 + "|" + -i] = i;
+    exports.particles[120 + "|" + -i] = i;
+}
 function Particles() {
     return (React.createElement(parametric_1.Parametric, { position: new three_1.Vector3(-120 * PARTICLES_WIDTH, -60 * PARTICLES_WIDTH, 0), slices: 1, stacks: 1, parametricFunction: function (u, v) { return new three_1.Vector3(u * PARTICLES_IN_ROW * PARTICLES_WIDTH, v * PARTICLES_WIDTH, 0); } }));
 }
@@ -109844,10 +109848,11 @@ var getStore = function (p) { return ({
     }),
     x: p ? p.x : 0,
     y: p ? p.y : 0,
-    velocity: 0,
+    velocity: { x: 0, y: 0 },
     updateX: function () { },
     updateY: function () { },
-    setCollision: function () { }
+    setCollision: function () { },
+    parent: undefined
 }); };
 var updateX = function (store) { return function (sign) {
     store.state.x += sign;
@@ -109880,7 +109885,7 @@ var setCollision = function (store) { return function (target, value) {
             break;
     }
 }; };
-var getConnected = function (store) { return mobx_react_1.observer(function () {
+var Connected = mobx_react_1.observer(function (store) {
     var _a = store.state, x = _a.x, y = _a.y, left = _a.left, right = _a.right, top = _a.top, bottom = _a.bottom;
     return (React.createElement("group", null,
         React.createElement(particles_1.Particle, tslib_1.__assign({}, store.state)),
@@ -109888,16 +109893,16 @@ var getConnected = function (store) { return mobx_react_1.observer(function () {
         right ? React.createElement(particles_1.Particle, { x: x - 1, y: y, color: 'red' }) : null,
         top ? React.createElement(particles_1.Particle, { x: x, y: y + 1, color: 'red' }) : null,
         bottom ? React.createElement(particles_1.Particle, { x: x, y: y - 1, color: 'red' }) : null));
-}); };
+});
 function Body(props) {
-    var store = getStore(props.position);
+    var position = props.position, parent = props.parent;
+    var store = getStore(position);
     store.updateX = mobx_1.action(updateX(store));
     store.updateY = mobx_1.action(updateY(store));
     store.setCollision = mobx_1.action(setCollision(store));
-    console.log('store creation');
+    store.parent = parent || exports.Store[exports.Store.length - 1];
     exports.Store.push(store);
-    var Connected = getConnected(store);
-    return React.createElement(Connected, null);
+    return React.createElement(Connected, tslib_1.__assign({}, store));
 }
 exports.Body = Body;
 
@@ -127206,6 +127211,8 @@ var MOUSE = {
     right: 2
 };
 var TIMER_DELAY = 1;
+var GAP_LENGTH = 1;
+var GRAV_ACC = { x: 0, y: -0.001 };
 function App() {
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -127213,11 +127220,7 @@ function App() {
         React.createElement("scene", null,
             React.createElement(components_1.Camera, null),
             React.createElement(particles_1.Particles, null),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(-4, 0, 0) }),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(-2, -2, 0) }),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(0, -4, 0) }),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(2, -6, 0) }),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(4, -9, 0) }))));
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-20, 0, 0), parent: { x: 0, y: 0 } }))));
 }
 exports.App = App;
 function onMouseWheel(e) {
@@ -127281,36 +127284,59 @@ function onUpdate() {
         }
     }
     for (var i = 0; i < body_1.Store.length; i += 1) {
-        // TODO: if (result force === 0) return;
         body = body_1.Store[i];
-        actualX = body.state.x;
-        actualY = body.state.y;
-        sign = body.velocity > 0 ? 1 : -1;
-        if (Math.abs(body.x - actualX) > 1) {
-            body.updateX(1); // async
-            actualX += 1;
-            body.x = actualX;
+        actual.x = body.state.x;
+        actual.y = body.state.y;
+        sign.x = body.velocity.x > 0 ? 1 : -1;
+        sign.y = body.velocity.y > 0 ? 1 : -1;
+        collisionDirection.x = sign.x > 0 ? 'right' : 'left';
+        collisionDirection.y = sign.y > 0 ? 'top' : 'bottom';
+        if (Math.abs(body.x - actual.x) > 1) {
+            body.updateX(sign.x); // async
+            actual.x += sign.x;
+            body.x = actual.x;
+            body.setCollision(collisionDirection.x, false);
         }
-        if (Math.abs(body.y - actualY) > 1) {
-            body.updateY(sign); // async
-            actualY += sign;
-            body.y = actualY;
-            body.setCollision('bottom', false);
+        if (Math.abs(body.y - actual.y) > 1) {
+            body.updateY(sign.y); // async
+            actual.y += sign.y;
+            body.y = actual.y;
+            body.setCollision(collisionDirection.y, false);
         }
-        if (particles_1.particles[actualX + "|" + (actualY + sign)] === undefined) {
-            body.y += body.velocity;
-            body.velocity += -0.001;
+        if (body.parent) {
+            dx = body.parent.x - body.x;
+            dy = body.parent.y - body.y;
+            dLength = Math.sqrt(dx * dx + dy * dy);
+            gapLength = dLength - GAP_LENGTH;
+            body.velocity.x += dx * gapLength / dLength;
+            body.velocity.y += dy * gapLength / dLength;
+        }
+        if (particles_1.particles[actual.x + "|" + (actual.y + sign.y)] === undefined) {
+            body.y += body.velocity.y;
+            body.velocity.y += GRAV_ACC.y;
         }
         else {
-            body.velocity = -body.velocity;
-            body.setCollision('bottom', true);
+            body.velocity.y = -body.velocity.y;
+            body.setCollision(collisionDirection.y, true);
+        }
+        if (particles_1.particles[actual.x + sign.x + "|" + actual.y] === undefined) {
+            body.x += body.velocity.x;
+            body.velocity.x += GRAV_ACC.x;
+        }
+        else {
+            body.velocity.x = -body.velocity.x;
+            body.setCollision(collisionDirection.x, true);
         }
     }
 }
-var actualX = 0;
-var actualY = 0;
-var sign = 0;
+var actual = { x: 0, y: 0 };
+var sign = { x: 0, y: 0 };
+var collisionDirection = { x: '', y: '' };
 var body;
+var dx = 0;
+var dy = 0;
+var gapLength = 0;
+var dLength = 0;
 
 
 /***/ }),

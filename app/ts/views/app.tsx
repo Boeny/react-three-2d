@@ -12,7 +12,7 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
 import { Particles, particles } from '~/components/particles';
-import { Body, Store as bodies, IStore as IBodyStore } from '~/components/body';
+import { Body, Store as bodies, IStore as IBodyStore, Position } from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -24,6 +24,9 @@ const MOUSE = {
     right: 2
 };
 const TIMER_DELAY = 1;
+const GAP_LENGTH = 1;
+const GRAV_ACC = { x: 0, y: -0.001 };
+
 
 export function App() {
     const width = window.innerWidth;
@@ -43,11 +46,7 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body position={new Vector3(-4, 0, 0)} />
-                <Body position={new Vector3(-2, -2, 0)} />
-                <Body position={new Vector3(0, -4, 0)} />
-                <Body position={new Vector3(2, -6, 0)} />
-                <Body position={new Vector3(4, -9, 0)} />
+                <Body position={new Vector3(-20, 0, 0)} parent={{ x: 0, y: 0 }} />
             </scene>
         </React3>
     );
@@ -117,33 +116,55 @@ function onUpdate() {
         }
     }
     for (let i = 0; i < bodies.length; i += 1) {
-        // TODO: if (result force === 0) return;
         body = bodies[i];
-        actualX = body.state.x;
-        actualY = body.state.y;
-        sign = body.velocity > 0 ? 1 : -1;
-        if (Math.abs(body.x - actualX) > 1) {
-            body.updateX(1);// async
-            actualX += 1;
-            body.x = actualX;
+        actual.x = body.state.x;
+        actual.y = body.state.y;
+        sign.x = body.velocity.x > 0 ? 1 : -1;
+        sign.y = body.velocity.y > 0 ? 1 : -1;
+        collisionDirection.x = sign.x > 0 ? 'right' : 'left';
+        collisionDirection.y = sign.y > 0 ? 'top' : 'bottom';
+        if (Math.abs(body.x - actual.x) > 1) {
+            body.updateX(sign.x);// async
+            actual.x += sign.x;
+            body.x = actual.x;
+            body.setCollision(collisionDirection.x, false);
         }
-        if (Math.abs(body.y - actualY) > 1) {
-            body.updateY(sign);// async
-            actualY += sign;
-            body.y = actualY;
-            body.setCollision('bottom', false);
+        if (Math.abs(body.y - actual.y) > 1) {
+            body.updateY(sign.y);// async
+            actual.y += sign.y;
+            body.y = actual.y;
+            body.setCollision(collisionDirection.y, false);
         }
-        if (particles[`${actualX}|${actualY + sign}`] === undefined) {
-            body.y += body.velocity;
-            body.velocity += -0.001;
+        if (body.parent) {
+            dx = body.parent.x - body.x;
+            dy = body.parent.y - body.y;
+            dLength = Math.sqrt(dx * dx + dy * dy);
+            gapLength = dLength - GAP_LENGTH;
+            body.velocity.x += dx * gapLength / dLength;
+            body.velocity.y += dy * gapLength / dLength;
+        }
+        if (particles[`${actual.x}|${actual.y + sign.y}`] === undefined) {
+            body.y += body.velocity.y;
+            body.velocity.y += GRAV_ACC.y;
         } else {
-            body.velocity = -body.velocity;
-            body.setCollision('bottom', true);
+            body.velocity.y = -body.velocity.y;
+            body.setCollision(collisionDirection.y, true);
+        }
+        if (particles[`${actual.x + sign.x}|${actual.y}`] === undefined) {
+            body.x += body.velocity.x;
+            body.velocity.x += GRAV_ACC.x;
+        } else {
+            body.velocity.x = -body.velocity.x;
+            body.setCollision(collisionDirection.x, true);
         }
     }
 }
 
-let actualX = 0;
-let actualY = 0;
-let sign = 0;
+const actual: Position = { x: 0, y: 0 };
+const sign: Position = { x: 0, y: 0 };
+const collisionDirection = { x: '', y: '' };
 let body: IBodyStore;
+let dx = 0;
+let dy = 0;
+let gapLength = 0;
+let dLength = 0;

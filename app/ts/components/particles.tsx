@@ -14,6 +14,10 @@ for (let i = 0; i < count; i += 1) {
         `${Math.floor(i % PARTICLES_IN_ROW) - 120}|${Math.floor(i / PARTICLES_IN_ROW) - 60}`
     ] = i;
 }
+for (let i = 0; i < 60; i += 1) {
+    particles[`${-120}|${-i}`] = i;
+    particles[`${120}|${-i}`] = i;
+}
 
 export function Particles() {
     return (

@@ -5,21 +5,25 @@ import { observable, action } from 'mobx';
 import { Particle } from './particles';
 
 
-export interface IStore {
-    state: {
-        x: number;
-        y: number;
-        left: boolean;
-        right: boolean;
-        top: boolean;
-        bottom: boolean;
-    };
+export interface Position {
     x: number;
     y: number;
-    velocity: number;
+}
+
+interface State extends Position {
+    left: boolean;
+    right: boolean;
+    top: boolean;
+    bottom: boolean;
+}
+
+export interface IStore extends Position {
+    state: State;
+    velocity: Position;
     updateX: (sign: number) => void;
     updateY: (sign: number) => void;
     setCollision: (target: string, value: boolean) => void;
+    parent?: Position;
 }
 
 export const Store: IStore[] = [];
@@ -35,10 +39,11 @@ const getStore = (p?: Vector3): IStore => ({
     }),
     x: p ? p.x : 0,
     y: p ? p.y : 0,
-    velocity: 0,
+    velocity: { x: 0, y: 0 },
     updateX: () => { },
     updateY: () => { },
-    setCollision: () => { }
+    setCollision: () => { },
+    parent: undefined
 });
 
 
@@ -79,7 +84,7 @@ const setCollision = (store: IStore) => (target: string, value: boolean) => {
 };
 
 
-const getConnected = (store: IStore) => observer(() => {
+const Connected = observer((store: IStore) => {
     const { x, y, left, right, top, bottom } = store.state;
     return (
         <group>
@@ -93,12 +98,13 @@ const getConnected = (store: IStore) => observer(() => {
 });
 
 
-export function Body(props: PositionProps) {
-    const store = getStore(props.position);
+export function Body(props: PositionProps & { parent?: Position }) {
+    const { position, parent } = props;
+    const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
+    store.parent = parent || Store[Store.length - 1];
     Store.push(store);
-    const Connected = getConnected(store);
-    return <Connected />;
+    return <Connected {...store} />;
 }
