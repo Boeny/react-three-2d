@@ -19,7 +19,7 @@ export function Parametric(props: Props) {
                 stacks={stacks}
             />
             <meshBasicMaterial
-                wireframe={true}
+                wireframe={false}
                 color={new Color(color || 'white')}
                 vertexColors={VertexColors}
             />

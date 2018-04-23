@@ -98,7 +98,6 @@ export function Body(props: PositionProps) {
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
-    console.log('store creation');
     Store.push(store);
     const Connected = getConnected(store);
     return <Connected />;
