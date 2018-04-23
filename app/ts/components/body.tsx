@@ -23,6 +23,7 @@ export interface IStore extends Position {
     updateX: (sign: number) => void;
     updateY: (sign: number) => void;
     setCollision: (target: string, value: boolean) => void;
+    distanceToParent: number;
     parent?: Position;
 }
 
@@ -43,22 +44,38 @@ const getStore = (p?: Vector3): IStore => ({
     updateX: () => { },
     updateY: () => { },
     setCollision: () => { },
+    distanceToParent: 0,
     parent: undefined
 });
 
 
-const updateX = (store: IStore) => (sign: number) => {
-    store.state.x += sign;
+const updateX = (store: IStore) => (dx: number) => {
+    store.state.x += dx;
 };
 
 
-const updateY = (store: IStore) => (sign: number) => {
-    store.state.y += sign;
+const updateY = (store: IStore) => (dy: number) => {
+    store.state.y += dy;
 };
 
 
 const setCollision = (store: IStore) => (target: string, value: boolean) => {
     const { state } = store;
+    if (!target) {
+        if (state.left !== false) {
+            state.left = false;
+        }
+        if (state.right !== false) {
+            state.right = false;
+        }
+        if (state.top !== false) {
+            state.top = false;
+        }
+        if (state.bottom !== false) {
+            state.bottom = false;
+        }
+        return;
+    }
     switch (target) {
         case 'left':
             if (state.left !== value) {
@@ -105,6 +122,11 @@ export function Body(props: PositionProps & { parent?: Position }) {
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
     store.parent = parent || Store[Store.length - 1];
+    if (store.parent) {
+        const dx = store.parent.x - store.x;
+        const dy = store.parent.y - store.y;
+        store.distanceToParent = Math.sqrt(dx * dx + dy * dy);
+    }
     Store.push(store);
     return <Connected {...store} />;
 }

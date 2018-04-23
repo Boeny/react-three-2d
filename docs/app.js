@@ -109852,16 +109852,32 @@ var getStore = function (p) { return ({
     updateX: function () { },
     updateY: function () { },
     setCollision: function () { },
+    distanceToParent: 0,
     parent: undefined
 }); };
-var updateX = function (store) { return function (sign) {
-    store.state.x += sign;
+var updateX = function (store) { return function (dx) {
+    store.state.x += dx;
 }; };
-var updateY = function (store) { return function (sign) {
-    store.state.y += sign;
+var updateY = function (store) { return function (dy) {
+    store.state.y += dy;
 }; };
 var setCollision = function (store) { return function (target, value) {
     var state = store.state;
+    if (!target) {
+        if (state.left !== false) {
+            state.left = false;
+        }
+        if (state.right !== false) {
+            state.right = false;
+        }
+        if (state.top !== false) {
+            state.top = false;
+        }
+        if (state.bottom !== false) {
+            state.bottom = false;
+        }
+        return;
+    }
     switch (target) {
         case 'left':
             if (state.left !== value) {
@@ -109901,6 +109917,11 @@ function Body(props) {
     store.updateY = mobx_1.action(updateY(store));
     store.setCollision = mobx_1.action(setCollision(store));
     store.parent = parent || exports.Store[exports.Store.length - 1];
+    if (store.parent) {
+        var dx = store.parent.x - store.x;
+        var dy = store.parent.y - store.y;
+        store.distanceToParent = Math.sqrt(dx * dx + dy * dy);
+    }
     exports.Store.push(store);
     return React.createElement(Connected, tslib_1.__assign({}, store));
 }
@@ -127211,8 +127232,8 @@ var MOUSE = {
     right: 2
 };
 var TIMER_DELAY = 1;
-var GAP_LENGTH = 1;
-var GRAV_ACC = { x: 0, y: -0.001 };
+var GRAV_ACC = { x: 0, y: -0.0001 };
+// const GRAV_LENGTH = 0.001;
 function App() {
     var width = window.innerWidth;
     var height = window.innerHeight;
@@ -127220,7 +127241,16 @@ function App() {
         React.createElement("scene", null,
             React.createElement(components_1.Camera, null),
             React.createElement(particles_1.Particles, null),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(-20, 0, 0), parent: { x: 0, y: 0 } }))));
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-1, 0, 0), parent: { x: 0, y: 0 } }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-2, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-3, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-4, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-5, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-6, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-7, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-8, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-9, 0, 0) }),
+            React.createElement(body_1.Body, { position: new three_1.Vector3(-10, 0, 0) }))));
 }
 exports.App = App;
 function onMouseWheel(e) {
@@ -127287,45 +127317,51 @@ function onUpdate() {
         body = body_1.Store[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        sign.x = body.velocity.x > 0 ? 1 : -1;
-        sign.y = body.velocity.y > 0 ? 1 : -1;
-        collisionDirection.x = sign.x > 0 ? 'right' : 'left';
-        collisionDirection.y = sign.y > 0 ? 'top' : 'bottom';
-        if (Math.abs(body.x - actual.x) > 1) {
-            body.updateX(sign.x); // async
-            actual.x += sign.x;
-            body.x = actual.x;
-            body.setCollision(collisionDirection.x, false);
+        sign.x = body.velocity.x === 0 ? 0 : (body.velocity.x > 0 ? 1 : -1);
+        sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
+        collisionDirection.x = sign.x === 0 ? '' : (sign.x > 0 ? 'right' : 'left');
+        collisionDirection.y = sign.y === 0 ? '' : (sign.y > 0 ? 'top' : 'bottom');
+        // if (Math.abs(actual.x - body.x) > 1) {
+        body.updateX(body.velocity.x); // async
+        // actual.x += sign.x;
+        body.x = actual.x + body.velocity.x;
+        // body.setCollision(collisionDirection.x, false);
+        // }
+        // if (Math.abs(actual.y - body.y) > 1) {
+        body.updateY(body.velocity.y); // async
+        // actual.y += sign.y;
+        body.y = actual.y + body.velocity.y;
+        // body.setCollision(collisionDirection.y, false);
+        // }
+        if (collisions) {
+            if (particles_1.particles[actual.x + sign.x + "|" + actual.y] === undefined) {
+                body.velocity.x += GRAV_ACC.x;
+                body.x += body.velocity.x;
+            }
+            else {
+                body.velocity.x = -body.velocity.x;
+                // body.setCollision(collisionDirection.x, true);
+            }
+            if (particles_1.particles[actual.x + "|" + (actual.y + sign.y)] === undefined) {
+                body.velocity.y += GRAV_ACC.y;
+                body.y += body.velocity.y;
+            }
+            else {
+                body.velocity.y = -body.velocity.y;
+                // body.setCollision(collisionDirection.y, true);
+            }
         }
-        if (Math.abs(body.y - actual.y) > 1) {
-            body.updateY(sign.y); // async
-            actual.y += sign.y;
-            body.y = actual.y;
-            body.setCollision(collisionDirection.y, false);
+        else {
+            body.velocity.x += GRAV_ACC.x;
+            body.velocity.y += GRAV_ACC.y;
         }
         if (body.parent) {
             dx = body.parent.x - body.x;
             dy = body.parent.y - body.y;
             dLength = Math.sqrt(dx * dx + dy * dy);
-            gapLength = dLength - GAP_LENGTH;
-            body.velocity.x += dx * gapLength / dLength;
-            body.velocity.y += dy * gapLength / dLength;
-        }
-        if (particles_1.particles[actual.x + "|" + (actual.y + sign.y)] === undefined) {
-            body.y += body.velocity.y;
-            body.velocity.y += GRAV_ACC.y;
-        }
-        else {
-            body.velocity.y = -body.velocity.y;
-            body.setCollision(collisionDirection.y, true);
-        }
-        if (particles_1.particles[actual.x + sign.x + "|" + actual.y] === undefined) {
-            body.x += body.velocity.x;
-            body.velocity.x += GRAV_ACC.x;
-        }
-        else {
-            body.velocity.x = -body.velocity.x;
-            body.setCollision(collisionDirection.x, true);
+            gapLength = (dLength - body.distanceToParent) / dLength;
+            body.velocity.x += dx * gapLength;
+            body.velocity.y += dy * gapLength;
         }
     }
 }
@@ -127337,6 +127373,7 @@ var dx = 0;
 var dy = 0;
 var gapLength = 0;
 var dLength = 0;
+var collisions = false;
 
 
 /***/ }),
