@@ -46,15 +46,7 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body position={new Vector3(-1, 0, 0)} parent={{ x: 0, y: 0 }} />
-                <Body position={new Vector3(-2, 0, 0)} />
-                <Body position={new Vector3(-3, 0, 0)} />
-                <Body position={new Vector3(-4, 0, 0)} />
-                <Body position={new Vector3(-5, 0, 0)} />
-                <Body position={new Vector3(-6, 0, 0)} />
-                <Body position={new Vector3(-7, 0, 0)} />
-                <Body position={new Vector3(-8, 0, 0)} />
-                <Body position={new Vector3(-9, 0, 0)} />
+                <Body position={new Vector3(-5, 0, 0)} parent={{ x: 0, y: 0 }} />
                 <Body position={new Vector3(-10, 0, 0)} />
             </scene>
         </React3>
@@ -132,32 +124,32 @@ function onUpdate() {
         sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
         collisionDirection.x = sign.x === 0 ? '' : (sign.x > 0 ? 'right' : 'left');
         collisionDirection.y = sign.y === 0 ? '' : (sign.y > 0 ? 'top' : 'bottom');
-        // if (Math.abs(actual.x - body.x) > 1) {
-        body.updateX(body.velocity.x);// async
-            // actual.x += sign.x;
-        body.x = actual.x + body.velocity.x;
-            // body.setCollision(collisionDirection.x, false);
-        // }
-        // if (Math.abs(actual.y - body.y) > 1) {
-        body.updateY(body.velocity.y);// async
-            // actual.y += sign.y;
-        body.y = actual.y + body.velocity.y;
-            // body.setCollision(collisionDirection.y, false);
-        // }
+        if (Math.abs(actual.x - body.x) > 1) {
+            body.updateX(sign.x);// async
+            actual.x += sign.x;
+            body.x = actual.x;
+            body.setCollision(collisionDirection.x, false);
+        }
+        if (Math.abs(actual.y - body.y) > 1) {
+            body.updateY(sign.y);// async
+            actual.y += sign.y;
+            body.y = actual.y;
+            body.setCollision(collisionDirection.y, false);
+        }
         if (collisions) {
             if (particles[`${actual.x + sign.x}|${actual.y}`] === undefined) {
                 body.velocity.x += GRAV_ACC.x;
                 body.x += body.velocity.x;
             } else {
                 body.velocity.x = -body.velocity.x;
-                // body.setCollision(collisionDirection.x, true);
+                body.setCollision(collisionDirection.x, true);
             }
             if (particles[`${actual.x}|${actual.y + sign.y}`] === undefined) {
                 body.velocity.y += GRAV_ACC.y;
                 body.y += body.velocity.y;
             } else {
                 body.velocity.y = -body.velocity.y;
-                // body.setCollision(collisionDirection.y, true);
+                body.setCollision(collisionDirection.y, true);
             }
         } else {
             body.velocity.x += GRAV_ACC.x;
@@ -182,4 +174,4 @@ let dx = 0;
 let dy = 0;
 let gapLength = 0;
 let dLength = 0;
-const collisions = false;
+const collisions = true;

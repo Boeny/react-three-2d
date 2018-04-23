@@ -17,10 +17,12 @@ declare namespace JSX {
         mesh: any;
         group: any;
 
+        geometry: any;
         boxGeometry: any;
         sphereGeometry: any;
         parametricGeometry: any;
 
+        lineBasicMaterial: any;
         meshBasicMaterial: any;
         meshPhongMaterial: any;
 
