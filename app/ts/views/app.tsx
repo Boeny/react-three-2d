@@ -24,7 +24,7 @@ const MOUSE = {
     right: 2
 };
 const TIMER_DELAY = 1;
-const GRAV_ACC = { x: 0, y: -0.0001 };
+const GRAV_V2 = { x: 0, y: -0.0001 };
 // const GRAV_LENGTH = 0.001;
 
 
@@ -138,22 +138,22 @@ function onUpdate() {
         }
         if (collisions) {
             if (particles[`${actual.x + sign.x}|${actual.y}`] === undefined) {
-                body.velocity.x += GRAV_ACC.x;
+                body.velocity.x += GRAV_V2.x;
                 body.x += body.velocity.x;
             } else {
                 body.velocity.x = -body.velocity.x;
                 body.setCollision(collisionDirection.x, true);
             }
             if (particles[`${actual.x}|${actual.y + sign.y}`] === undefined) {
-                body.velocity.y += GRAV_ACC.y;
+                body.velocity.y += GRAV_V2.y;
                 body.y += body.velocity.y;
             } else {
                 body.velocity.y = -body.velocity.y;
                 body.setCollision(collisionDirection.y, true);
             }
         } else {
-            body.velocity.x += GRAV_ACC.x;
-            body.velocity.y += GRAV_ACC.y;
+            body.velocity.x += GRAV_V2.x;
+            body.velocity.y += GRAV_V2.y;
         }
         if (body.parent) {
             dx = body.parent.x - body.x;
