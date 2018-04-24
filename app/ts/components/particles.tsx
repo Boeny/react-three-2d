@@ -1,39 +1,26 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
 import { Parametric } from './parametric';
+import { Body } from './body';
 
 
 const PARTICLES_IN_COLUMN = 1;// all
 const PARTICLES_IN_ROW = 240;// count in the row
-const PARTICLES_WIDTH = 5;// units
+const offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
 const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
-
-export const particles: { [key: string]: number } = {};
-for (let i = 0; i < count; i += 1) {
-    particles[
-        `${Math.floor(i % PARTICLES_IN_ROW) - 120}|${Math.floor(i / PARTICLES_IN_ROW) - 60}`
-    ] = i;
-}
-for (let i = 0; i < 60; i += 1) {
-    particles[`${-120}|${-i}`] = i;
-    particles[`${120}|${-i}`] = i;
-}
 
 export function Particles() {
     return (
-        <Parametric
-            position={new Vector3(-120 * PARTICLES_WIDTH, -60 * PARTICLES_WIDTH, 0)}
-            slices={1}
-            stacks={1}
-            parametricFunction={(u, v) => new Vector3(
-                u * PARTICLES_IN_ROW * PARTICLES_WIDTH,
-                v * PARTICLES_WIDTH,
-                0
-            )}
-        />
+        <group>
+            {Array.from(new Array(count)).map((item, i) => (
+                <Body isStatic={true} position={new Vector3(i + offset.x, offset.y, 0)} />
+            ))}
+        </group>
     );
 }
 
+
+const PARTICLES_WIDTH = 5;// units
 
 interface Props {
     x: number;

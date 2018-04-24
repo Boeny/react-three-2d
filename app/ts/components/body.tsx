@@ -27,7 +27,8 @@ export interface IStore extends Position {
     parent?: Position;
 }
 
-export const Store: IStore[] = [];
+export const Bodies: IStore[] = [];
+export const Static: { [coo: string]: IStore } = {};
 
 const getStore = (p?: Vector3): IStore => ({
     state: observable({
@@ -115,18 +116,26 @@ const Connected = observer((store: IStore) => {
 });
 
 
-export function Body(props: PositionProps & { parent?: Position }) {
-    const { position, parent } = props;
+export function getStatic(x: number, y: number): IStore | undefined {
+    return Static[`${x}|${y}`];
+}
+
+export function Body(props: PositionProps & { parent?: Position, isStatic?: boolean }) {
+    const { position, parent, isStatic } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
-    store.parent = parent || Store[Store.length - 1];
+    store.parent = parent || Bodies[Bodies.length - 1];
     if (store.parent) {
         const dx = store.parent.x - store.x;
         const dy = store.parent.y - store.y;
         store.distanceToParent = Math.sqrt(dx * dx + dy * dy);
     }
-    Store.push(store);
+    if (isStatic) {
+        Static[position ? `${position.x}|${position.y}` : '0|0'] = store;
+    } else {
+        Bodies.push(store);
+    }
     return <Connected {...store} />;
 }

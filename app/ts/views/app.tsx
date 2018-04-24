@@ -11,8 +11,8 @@ import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
-import { Particles, particles } from '~/components/particles';
-import { Body, Store as bodies, IStore as IBodyStore, Position } from '~/components/body';
+import { Particles } from '~/components/particles';
+import { Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic } from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -46,8 +46,7 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body position={new Vector3(-5, 0, 0)} parent={{ x: 0, y: 0 }} />
-                <Body position={new Vector3(-10, 0, 0)} />
+                <Body position={new Vector3(-5, 0, 0)} />
             </scene>
         </React3>
     );
@@ -137,14 +136,14 @@ function onUpdate() {
             body.setCollision(collisionDirection.y, false);
         }
         if (collisions) {
-            if (particles[`${actual.x + sign.x}|${actual.y}`] === undefined) {
+            if (getStatic(actual.x + sign.x, actual.y) === undefined) {
                 body.velocity.x += GRAV_V2.x;
                 body.x += body.velocity.x;
             } else {
                 body.velocity.x = -body.velocity.x;
                 body.setCollision(collisionDirection.x, true);
             }
-            if (particles[`${actual.x}|${actual.y + sign.y}`] === undefined) {
+            if (getStatic(actual.x, actual.y + sign.y) === undefined) {
                 body.velocity.y += GRAV_V2.y;
                 body.y += body.velocity.y;
             } else {
