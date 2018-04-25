@@ -150,7 +150,6 @@ function onUpdate() {
                 body.x += body.velocity.x;
             } else {
                 staticBody.velocity.x = body.velocity.x;
-                staticBody.force = { x: -staticBody.velocity.x, y: staticBody.velocity.y };
                 delStatic(staticBody.x, staticBody.y);
                 body.velocity.x = 0;
                 // body.setCollision(collisionDirection.x, true);
@@ -167,8 +166,8 @@ function onUpdate() {
                 }
                 body.y += body.velocity.y;
             } else {
-                staticBody.velocity.y = body.velocity.y;
-                staticBody.force = { x: staticBody.velocity.x, y: -staticBody.velocity.y };
+                staticBody.velocity.y = body.velocity.y * body.mass / staticBody.mass;
+                staticBody.force = { x: 0, y: 0 };
                 delStatic(staticBody.x, staticBody.y);
                 body.velocity.y = 0;// -body.velocity.y;
                 // body.setCollision(collisionDirection.y, true);

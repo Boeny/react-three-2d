@@ -13,7 +13,10 @@ export function Particles() {
     return (
         <group>
             {Array.from(new Array(count)).map((item, i) => (
-                <Body position={new Vector3(i + offset.x, offset.y, 0)} />// connected to each other
+                <Body
+                    mass={10}
+                    position={new Vector3(i + offset.x, offset.y, 0)}
+                />// connected to each other
             ))}
         </group>
     );

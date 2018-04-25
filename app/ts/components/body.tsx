@@ -23,6 +23,7 @@ export interface IStore extends Position {
     updateX: (sign: number) => void;
     updateY: (sign: number) => void;
     setCollision: (target: string, value: boolean) => void;
+    mass: number;
     distanceToParent: number;
     parent?: Position;
     force?: Position;
@@ -46,6 +47,7 @@ const getStore = (p?: Vector3): IStore => ({
     updateX: () => { },
     updateY: () => { },
     setCollision: () => { },
+    mass: 1,
     distanceToParent: 0
 });
 
@@ -126,12 +128,15 @@ export function delStatic(x: number, y: number) {
     delete Static[`${x}|${y}`];
 }
 
-export function Body(props: PositionProps & { parent?: Position, force?: Position }) {
-    const { position, parent, force } = props;
+export function Body(props: PositionProps & { parent?: Position, force?: Position, mass?: number }) {
+    const { position, parent, force, mass } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
+    if (mass) {
+        store.mass = mass;
+    }
     store.parent = parent;// || Bodies[Bodies.length - 1];
     if (store.parent) {
         const dx = store.parent.x - store.x;
