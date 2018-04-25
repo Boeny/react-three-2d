@@ -12,7 +12,9 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera } from '~/components';
 import { Particles } from '~/components/particles';
-import { Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic } from '~/components/body';
+import {
+    Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic
+} from '~/components/body';
 
 
 let mode: 'idle' | 'drag' | 'inertia' = 'idle';
@@ -24,7 +26,8 @@ const MOUSE = {
     right: 2
 };
 const TIMER_DELAY = 1;
-const GRAV_V2 = { x: 0, y: -0.0001 };
+const MAX_SPEED = 1;
+const GRAVITY_FORCE = { x: 0, y: -0.0001 };
 // const GRAV_LENGTH = 0.001;
 
 
@@ -46,7 +49,7 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body position={new Vector3(-5, 0, 0)} />
+                <Body position={new Vector3(-5, 0, 0)} force={GRAVITY_FORCE} />
             </scene>
         </React3>
     );
@@ -121,38 +124,55 @@ function onUpdate() {
         actual.y = body.state.y;
         sign.x = body.velocity.x === 0 ? 0 : (body.velocity.x > 0 ? 1 : -1);
         sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
-        collisionDirection.x = sign.x === 0 ? '' : (sign.x > 0 ? 'right' : 'left');
+        collisionDirection.x = body.velocity.x === 0 ? '' : (body.velocity.x > 0 ? 'right' : 'left');
         collisionDirection.y = sign.y === 0 ? '' : (sign.y > 0 ? 'top' : 'bottom');
-        if (Math.abs(actual.x - body.x) > 1) {
+        if (Math.abs(actual.x - body.x) > MAX_SPEED) {
             body.updateX(sign.x);// async
             actual.x += sign.x;
             body.x = actual.x;
-            body.setCollision(collisionDirection.x, false);
+            // body.setCollision(collisionDirection.x, false);
         }
-        if (Math.abs(actual.y - body.y) > 1) {
+        if (Math.abs(actual.y - body.y) > MAX_SPEED) {
             body.updateY(sign.y);// async
             actual.y += sign.y;
             body.y = actual.y;
-            body.setCollision(collisionDirection.y, false);
+            // body.setCollision(collisionDirection.y, false);
         }
-        if (collisions) {
-            if (getStatic(actual.x + sign.x, actual.y) === undefined) {
-                body.velocity.x += GRAV_V2.x;
+        if (body.force || sign.x !== 0) {// velocity.x !== 0
+            staticBody = getStatic(actual.x + sign.x, actual.y);
+            if (staticBody === undefined) {
+                if (body.force) {
+                    body.velocity.x += body.force.x;
+                    if (body.velocity.y > MAX_SPEED) {
+                        body.velocity.y = MAX_SPEED;
+                    }
+                }
                 body.x += body.velocity.x;
             } else {
-                body.velocity.x = -body.velocity.x;
-                body.setCollision(collisionDirection.x, true);
+                staticBody.velocity.x = body.velocity.x;
+                staticBody.force = { x: -staticBody.velocity.x, y: staticBody.velocity.y };
+                delStatic(staticBody.x, staticBody.y);
+                body.velocity.x = 0;
+                // body.setCollision(collisionDirection.x, true);
             }
-            if (getStatic(actual.x, actual.y + sign.y) === undefined) {
-                body.velocity.y += GRAV_V2.y;
+        }
+        if (body.force || sign.y !== 0) {
+            staticBody = getStatic(actual.x, actual.y + sign.y);
+            if (staticBody === undefined) {
+                if (body.force) {
+                    body.velocity.y += body.force.y;
+                    if (body.velocity.y > MAX_SPEED) {
+                        body.velocity.y = MAX_SPEED;
+                    }
+                }
                 body.y += body.velocity.y;
             } else {
-                body.velocity.y = -body.velocity.y;
-                body.setCollision(collisionDirection.y, true);
+                staticBody.velocity.y = body.velocity.y;
+                staticBody.force = { x: staticBody.velocity.x, y: -staticBody.velocity.y };
+                delStatic(staticBody.x, staticBody.y);
+                body.velocity.y = 0;// -body.velocity.y;
+                // body.setCollision(collisionDirection.y, true);
             }
-        } else {
-            body.velocity.x += GRAV_V2.x;
-            body.velocity.y += GRAV_V2.y;
         }
         if (body.parent) {
             dx = body.parent.x - body.x;
@@ -173,4 +193,4 @@ let dx = 0;
 let dy = 0;
 let gapLength = 0;
 let dLength = 0;
-const collisions = true;
+let staticBody: IBodyStore | undefined;

@@ -25,6 +25,7 @@ export interface IStore extends Position {
     setCollision: (target: string, value: boolean) => void;
     distanceToParent: number;
     parent?: Position;
+    force?: Position;
 }
 
 export const Bodies: IStore[] = [];
@@ -45,8 +46,7 @@ const getStore = (p?: Vector3): IStore => ({
     updateX: () => { },
     updateY: () => { },
     setCollision: () => { },
-    distanceToParent: 0,
-    parent: undefined
+    distanceToParent: 0
 });
 
 
@@ -119,23 +119,30 @@ const Connected = observer((store: IStore) => {
 export function getStatic(x: number, y: number): IStore | undefined {
     return Static[`${x}|${y}`];
 }
+export function setStatic(x: number, y: number, store: IStore) {
+    return Static[`${x}|${y}`] = store;
+}
+export function delStatic(x: number, y: number) {
+    delete Static[`${x}|${y}`];
+}
 
-export function Body(props: PositionProps & { parent?: Position, isStatic?: boolean }) {
-    const { position, parent, isStatic } = props;
+export function Body(props: PositionProps & { parent?: Position, force?: Position }) {
+    const { position, parent, force } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
-    store.parent = parent || Bodies[Bodies.length - 1];
+    store.parent = parent;// || Bodies[Bodies.length - 1];
     if (store.parent) {
         const dx = store.parent.x - store.x;
         const dy = store.parent.y - store.y;
         store.distanceToParent = Math.sqrt(dx * dx + dy * dy);
     }
-    if (isStatic) {
-        Static[position ? `${position.x}|${position.y}` : '0|0'] = store;
+    if (force) {
+        store.force = force;
     } else {
-        Bodies.push(store);
+        Static[position ? `${position.x}|${position.y}` : '0|0'] = store;
     }
+    Bodies.push(store);
     return <Connected {...store} />;
 }
