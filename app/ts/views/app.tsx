@@ -27,7 +27,8 @@ const MOUSE = {
 };
 const TIMER_DELAY = 1;
 const MAX_SPEED = 1;
-const HEAT_ENERGY = 0.01;
+const HEAT_ENERGY = 0.005;
+const LOOSING_COEF = 1 - HEAT_ENERGY;
 const GRAV_STRENGTH = 0.001;
 const GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
 
@@ -119,13 +120,14 @@ function onUpdate() {
             mode = 'idle';
         }
     }
+    collisions = [];
     for (let i = 0; i < bodies.length; i += 1) {
         body = bodies[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        sign.x = body.velocity.x === 0 ? 0 : (body.velocity.x > 0 ? 1 : -1);
         sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
-        if (body.force || sign.y !== 0) {
+
+        if (body.force || body.velocity.y !== 0) {
             staticBody = getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
                 if (body.force) {
@@ -135,16 +137,14 @@ function onUpdate() {
                     body.velocity.y += (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
                 }
             } else {
-                staticBody.velocity.y = body.velocity.y * body.mass / staticBody.mass - sign.y * HEAT_ENERGY;
-                setDynamic(staticBody);
-                if (staticBody.connections) {
-                    staticBody.connections.forEach(setDynamic);
-                }
+                collisions.push({
+                    staticBody,
+                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
+                });
                 body.velocity.y = 0;
-                body.force = undefined;
-                setStatic(actual.x, actual.y, body);
             }
         }
+
         if (body.parent) {
             dx = body.parent.x - body.x;
             dy = body.parent.y - body.y;
@@ -153,13 +153,7 @@ function onUpdate() {
             body.velocity.x += dx * gapLength;
             body.velocity.y += dy * gapLength;
         }
-        if (body.connections && sign.y === 0) {
-            body.connections.forEach(c => {
-                if (c.velocity.y !== 0) {
-                    body.velocity.y = c.y - body.y;
-                }
-            });
-        }
+
         if (body.velocity.x > MAX_SPEED) {
             body.velocity.x = MAX_SPEED;
         }
@@ -173,8 +167,16 @@ function onUpdate() {
             body.updateX(sign.x);
         }
         if (Math.abs(actual.y - body.y) > MAX_SPEED) {
+            delStatic(actual.x, actual.y);
             body.updateY(sign.y);
+            setStatic(actual.x, actual.y + sign.y, body);
         }
+    }
+
+    for (let i = 0; i < collisions.length; i += 1) {
+        collision = collisions[i];
+        collision.staticBody.velocity.y = collision.velocity;
+        wave(collision.staticBody);
     }
 }
 
@@ -186,18 +188,14 @@ let dy = 0;
 let gapLength = 0;
 let dLength = 0;
 let staticBody: IBodyStore | undefined;
+let collisions: { staticBody: IBodyStore, velocity: number }[] = [];
+let collision: { staticBody: IBodyStore, velocity: number };
 
-
-function setDynamic(body: IBodyStore) {
-    if (!getStatic(body.x, body.y)) {
+function wave(body: IBodyStore) {
+    if (!body.connections || body.velocity.y === 0) {
         return;
     }
-    if (!body.bounceLine) {
-        body.force = GRAVITY_FORCE;
+    for (let j = 0; j < body.connections.length; j += 1) {
+        body.connections[j].velocity.y = body.velocity.y * LOOSING_COEF;
     }
-    delStatic(body.x, body.y);
-}
-
-function getAverage<T>(arr: T[], self: T, getValueFromItem: (item: T) => number): number {
-    return arr.reduce((prev, item) => (getValueFromItem(item) + prev) / 2, getValueFromItem(self));
 }
