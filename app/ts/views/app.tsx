@@ -27,7 +27,7 @@ const MOUSE = {
 };
 const TIMER_DELAY = 1;
 const MAX_SPEED = 1;
-const HEAT_ENERGY = 0.005;
+const HEAT_ENERGY = 0.001;
 const LOOSING_COEF = 1 - HEAT_ENERGY;
 const GRAV_STRENGTH = 0.001;
 const GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
@@ -197,5 +197,6 @@ function wave(body: IBodyStore) {
     }
     for (let j = 0; j < body.connections.length; j += 1) {
         body.connections[j].velocity.y = body.velocity.y * LOOSING_COEF;
+        wave(body.connections[j]);
     }
 }

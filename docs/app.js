@@ -127276,7 +127276,7 @@ var MOUSE = {
 };
 var TIMER_DELAY = 1;
 var MAX_SPEED = 1;
-var HEAT_ENERGY = 0.005;
+var HEAT_ENERGY = 0.001;
 var LOOSING_COEF = 1 - HEAT_ENERGY;
 var GRAV_STRENGTH = 0.001;
 var GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
@@ -127421,6 +127421,7 @@ function wave(body) {
     }
     for (var j = 0; j < body.connections.length; j += 1) {
         body.connections[j].velocity.y = body.velocity.y * LOOSING_COEF;
+        wave(body.connections[j]);
     }
 }
 
