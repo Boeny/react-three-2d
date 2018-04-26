@@ -27,6 +27,8 @@ export interface IStore extends Position {
     distanceToParent: number;
     parent?: Position;
     force?: Position;
+    bounceLine?: number;
+    connections?: IStore[];
 }
 
 export const Bodies: IStore[] = [];
@@ -128,8 +130,16 @@ export function delStatic(x: number, y: number) {
     delete Static[`${x}|${y}`];
 }
 
-export function Body(props: PositionProps & { parent?: Position, force?: Position, mass?: number }) {
-    const { position, parent, force, mass } = props;
+interface Props extends PositionProps {
+    parent?: Position;
+    force?: Position;
+    mass?: number;
+    bounceLine?: number;
+    connected?: boolean;
+}
+
+export function Body(props: Props) {
+    const { position, parent, force, mass, bounceLine, connected } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
@@ -137,7 +147,20 @@ export function Body(props: PositionProps & { parent?: Position, force?: Positio
     if (mass) {
         store.mass = mass;
     }
-    store.parent = parent;// || Bodies[Bodies.length - 1];
+    if (bounceLine) {
+        store.bounceLine = bounceLine;
+    }
+    if (connected) {
+        const prev = Bodies[Bodies.length - 1];
+        store.connections = [];
+        if (prev && prev.connections) {
+            prev.connections.push(store);
+            store.connections.push(prev);
+        }
+    }
+    if (parent) {
+        store.parent = parent;
+    }
     if (store.parent) {
         const dx = store.parent.x - store.x;
         const dy = store.parent.y - store.y;

@@ -14,7 +14,9 @@ export function Particles() {
         <group>
             {Array.from(new Array(count)).map((item, i) => (
                 <Body
-                    mass={10}
+                    connected={true}
+                    bounceLine={offset.y}
+                    mass={1}
                     position={new Vector3(i + offset.x, offset.y, 0)}
                 />// connected to each other
             ))}

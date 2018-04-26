@@ -13,7 +13,7 @@ import {
 import { Camera } from '~/components';
 import { Particles } from '~/components/particles';
 import {
-    Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic
+    Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
 } from '~/components/body';
 
 
@@ -27,8 +27,9 @@ const MOUSE = {
 };
 const TIMER_DELAY = 1;
 const MAX_SPEED = 1;
-const GRAVITY_FORCE = { x: 0, y: -0.0001 };
-// const GRAV_LENGTH = 0.001;
+const HEAT_ENERGY = 0.01;
+const GRAV_STRENGTH = 0.001;
+const GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
 
 
 export function App() {
@@ -124,53 +125,24 @@ function onUpdate() {
         actual.y = body.state.y;
         sign.x = body.velocity.x === 0 ? 0 : (body.velocity.x > 0 ? 1 : -1);
         sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
-        collisionDirection.x = body.velocity.x === 0 ? '' : (body.velocity.x > 0 ? 'right' : 'left');
-        collisionDirection.y = sign.y === 0 ? '' : (sign.y > 0 ? 'top' : 'bottom');
-        if (Math.abs(actual.x - body.x) > MAX_SPEED) {
-            body.updateX(sign.x);// async
-            actual.x += sign.x;
-            body.x = actual.x;
-            // body.setCollision(collisionDirection.x, false);
-        }
-        if (Math.abs(actual.y - body.y) > MAX_SPEED) {
-            body.updateY(sign.y);// async
-            actual.y += sign.y;
-            body.y = actual.y;
-            // body.setCollision(collisionDirection.y, false);
-        }
-        if (body.force || sign.x !== 0) {// velocity.x !== 0
-            staticBody = getStatic(actual.x + sign.x, actual.y);
-            if (staticBody === undefined) {
-                if (body.force) {
-                    body.velocity.x += body.force.x;
-                    if (body.velocity.y > MAX_SPEED) {
-                        body.velocity.y = MAX_SPEED;
-                    }
-                }
-                body.x += body.velocity.x;
-            } else {
-                staticBody.velocity.x = body.velocity.x;
-                delStatic(staticBody.x, staticBody.y);
-                body.velocity.x = 0;
-                // body.setCollision(collisionDirection.x, true);
-            }
-        }
         if (body.force || sign.y !== 0) {
             staticBody = getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
                 if (body.force) {
                     body.velocity.y += body.force.y;
-                    if (body.velocity.y > MAX_SPEED) {
-                        body.velocity.y = MAX_SPEED;
-                    }
                 }
-                body.y += body.velocity.y;
+                if (body.bounceLine) {
+                    body.velocity.y += (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
+                }
             } else {
-                staticBody.velocity.y = body.velocity.y * body.mass / staticBody.mass;
-                staticBody.force = { x: 0, y: 0 };
-                delStatic(staticBody.x, staticBody.y);
-                body.velocity.y = 0;// -body.velocity.y;
-                // body.setCollision(collisionDirection.y, true);
+                staticBody.velocity.y = body.velocity.y * body.mass / staticBody.mass - sign.y * HEAT_ENERGY;
+                setDynamic(staticBody);
+                if (staticBody.connections) {
+                    staticBody.connections.forEach(setDynamic);
+                }
+                body.velocity.y = 0;
+                body.force = undefined;
+                setStatic(actual.x, actual.y, body);
             }
         }
         if (body.parent) {
@@ -181,15 +153,51 @@ function onUpdate() {
             body.velocity.x += dx * gapLength;
             body.velocity.y += dy * gapLength;
         }
+        if (body.connections && sign.y === 0) {
+            body.connections.forEach(c => {
+                if (c.velocity.y !== 0) {
+                    body.velocity.y = c.y - body.y;
+                }
+            });
+        }
+        if (body.velocity.x > MAX_SPEED) {
+            body.velocity.x = MAX_SPEED;
+        }
+        if (body.velocity.y > MAX_SPEED) {
+            body.velocity.y = MAX_SPEED;
+        }
+        body.x += body.velocity.x;
+        body.y += body.velocity.y;
+
+        if (Math.abs(actual.x - body.x) > MAX_SPEED) {
+            body.updateX(sign.x);
+        }
+        if (Math.abs(actual.y - body.y) > MAX_SPEED) {
+            body.updateY(sign.y);
+        }
     }
 }
 
 const actual: Position = { x: 0, y: 0 };
 const sign: Position = { x: 0, y: 0 };
-const collisionDirection = { x: '', y: '' };
 let body: IBodyStore;
 let dx = 0;
 let dy = 0;
 let gapLength = 0;
 let dLength = 0;
 let staticBody: IBodyStore | undefined;
+
+
+function setDynamic(body: IBodyStore) {
+    if (!getStatic(body.x, body.y)) {
+        return;
+    }
+    if (!body.bounceLine) {
+        body.force = GRAVITY_FORCE;
+    }
+    delStatic(body.x, body.y);
+}
+
+function getAverage<T>(arr: T[], self: T, getValueFromItem: (item: T) => number): number {
+    return arr.reduce((prev, item) => (getValueFromItem(item) + prev) / 2, getValueFromItem(self));
+}
