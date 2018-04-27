@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Vector3 } from 'three';
+import { Vector3, Euler } from 'three';
 import { Parametric } from './parametric';
 import { Body } from './body';
 

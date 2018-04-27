@@ -102770,7 +102770,7 @@ var PARTICLES_IN_ROW = 240; // count in the row
 var offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
 var count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 function Particles() {
-    return (React.createElement("group", null, Array.from(new Array(count)).map(function (item, i) { return (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 1, position: new three_1.Vector3(i + offset.x, offset.y, 0) }) // connected to each other
+    return (React.createElement("group", { rotation: new three_1.Euler(0, 0, 30) }, Array.from(new Array(count)).map(function (item, i) { return (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 1, position: new three_1.Vector3(i + offset.x, offset.y, 0) }) // connected to each other
     ); })));
 }
 exports.Particles = Particles;
@@ -127419,9 +127419,9 @@ function wave(body) {
     if (!body.connections || body.velocity.y === 0) {
         return;
     }
-    for (var j = 0; j < body.connections.length; j += 1) {
-        body.connections[j].velocity.y = body.velocity.y * LOOSING_COEF;
-        wave(body.connections[j]);
+    for (var i = 0; i < body.connections.length; i += 1) {
+        body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
+        wave(body.connections[i]);
     }
 }
 

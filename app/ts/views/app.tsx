@@ -17,7 +17,7 @@ import {
 } from '~/components/body';
 
 
-let mode: 'idle' | 'drag' | 'inertia' = 'idle';
+let mouseMode: 'idle' | 'drag' | 'inertia' | 'target' = 'idle';
 let dragStartPoint: Vector2 | null = null;
 let timer = 0;
 const MOUSE = {
@@ -51,7 +51,10 @@ export function App() {
             <scene>
                 <Camera />
                 <Particles />
-                <Body position={new Vector3(-5, 0, 0)} force={GRAVITY_FORCE} />
+                <Body
+                    position={new Vector3(-5, 0, 0)}
+                    force={GRAVITY_FORCE}
+                />
             </scene>
         </React3>
     );
@@ -64,14 +67,14 @@ function onMouseWheel(e: any) {
 function onMouseDown(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            if (mode === 'idle' || mode === 'inertia') {
-                mode = 'drag';
-                setCursor('pointer');
-                dragStartPoint = getMouseVector(e);
-                setCameraSpeed(null);
-            }
+            mouseMode = 'drag';
+            setCursor('pointer');
+            dragStartPoint = getMouseVector(e);
+            setCameraSpeed(null);
             break;
         case MOUSE.right:
+            mouseMode = 'target';
+            break;
         case MOUSE.wheel:
             break;
     }
@@ -80,24 +83,28 @@ function onMouseDown(e: any) {
 function onMouseUp(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            if (mode === 'drag') {
+            if (mouseMode === 'drag') {
                 if (dragStartPoint === null) {
                     return;
                 }
-                mode = 'inertia';
+                mouseMode = 'inertia';
                 setCursor('default');
                 setCameraSpeed(dragStartPoint.sub(getMouseVector(e)));
                 dragStartPoint = null;
             }
             break;
         case MOUSE.right:
+            if (mouseMode === 'target') {
+                mouseMode = 'idle';
+            }
+            break;
         case MOUSE.wheel:
             break;
     }
 }
 
 function onMouseMove(e: any) {
-    if (mode === 'drag') {
+    if (mouseMode === 'drag') {
         if (dragStartPoint === null) {
             return;
         }
@@ -113,11 +120,11 @@ function onMouseMove(e: any) {
 }
 
 function onUpdate() {
-    if (mode === 'inertia') {
+    if (mouseMode === 'inertia') {
         moveCameraWithSpeed();
         decreaseCameraSpeed();
         if (CameraStore.speed === null) {
-            mode = 'idle';
+            mouseMode = 'idle';
         }
     }
     collisions = [];
@@ -195,8 +202,8 @@ function wave(body: IBodyStore) {
     if (!body.connections || body.velocity.y === 0) {
         return;
     }
-    for (let j = 0; j < body.connections.length; j += 1) {
-        body.connections[j].velocity.y = body.velocity.y * LOOSING_COEF;
-        wave(body.connections[j]);
+    for (let i = 0; i < body.connections.length; i += 1) {
+        body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
+        wave(body.connections[i]);
     }
 }
