@@ -24,3 +24,16 @@ export function pointInTheCircle(radius: number, angle: number): Vector3 {
 export function getMouseVector(e: any): Vector2 {
     return new Vector2(e.clientX, e.clientY);
 }
+
+export function getArray(count: number): undefined[] {
+    /* tslint:disable */
+    return (Array as any).from(new Array(count));
+    /* tslint:enable */
+}
+
+export function getNumArray(count: number, start?: number): number[] {
+    return getArray(count).map((item, i) => {
+        item;
+        return i + (start || 0);
+    });
+}

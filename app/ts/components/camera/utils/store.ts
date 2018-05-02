@@ -28,15 +28,16 @@ const getSpeedSetter = (store: IStore) => (v: Vector2 | null) => {
 export const setSpeed = getSpeedSetter(Store);
 
 
-const getToWorldVector = (store: IStore) => (v: Vector2): { x: number, y: number } => {
+const getToWorldPoint = (store: IStore) => (v: Vector2): { x: number, y: number } => {
     if (store.DOM === null) {
         return { x: 0, y: 0 };
     }
     const v2 = store.DOM.localToWorld(new Vector3(v.x, v.y, 0));
+    console.log(store.DOM.projectionMatrix);
     return {
         x: v2.x,
         y: v2.y
     };
 };
 
-export const toWorldVector = getToWorldVector(Store);
+export const toWorldPoint = getToWorldPoint(Store);

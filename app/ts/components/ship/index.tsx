@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { getNumArray } from '~/utils';
 import {
     ExternalHull, SecondDeck, RollingCircle, FirstDeck, Reactor, Terminal, Rapport, Corridor
 } from './components';
-import { PI2, PI4, ARRAY_4 } from '~/constants';
+import { PI2, PI4 } from '~/constants';
 import {
     SHIP_RADIUS, TERMINAL_RADIUS, ROLLING_CIRCLE_RADIUS, terminalPos,
     corridorEndPos, FIRST_DECK_RADIUS, secondDeckWidth, secondDeckRadius
@@ -59,7 +60,7 @@ function Corridors(props: PositionProps) {
                 angle={-PI2}
                 start={FIRST_DECK_RADIUS} end={corridorEndPos}
             />
-            {ARRAY_4.map(i => (
+            {getNumArray(4, 1).map(i => (
                 <Corridor
                     key={i}
                     angle={PI4 + PI2 * i}

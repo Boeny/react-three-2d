@@ -8,11 +8,11 @@ import {
 } from '~/components/camera/actions';
 import { getMouseVector } from '~/utils';
 import {
-    decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed, toWorldVector
+    decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed, toWorldPoint
 } from '~/components/camera/utils/store';
-import { Camera, Particles, AudioComponent } from '~/components';
+import { Camera, Ground, AudioComponent, Player } from '~/components';
 import {
-    Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
+    Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
 } from '~/components/body';
 
 
@@ -26,37 +26,35 @@ const MOUSE = {
 };
 const TIMER_DELAY = 1;
 const MAX_SPEED = 1;
+const MIN_SPEED = 0.00001;
 const HEAT_ENERGY = 0.001;
 const LOOSING_COEF = 1 - HEAT_ENERGY;
-const GRAV_STRENGTH = 0.001;
-const GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
 
 
 export function App() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     return (
-        <React3
-            mainCamera={'camera'}
-            width={width}
-            height={height}
-            onAnimate={onUpdate}
-            canvasRef={setCanvas}
-            onWheel={onMouseWheel}
-            onMouseDown={onMouseDown}
-            onMouseUp={onMouseUp}
-            onMouseMove={onMouseMove}
-        >
-            <scene>
-                <Camera position={new Vector3(0, 300, 0)} />
-                <Body
-                    mass={1}
-                    position={new Vector3(0, 1, 0)}
-                    force={GRAVITY_FORCE}
-                />
-                <Particles />
-            </scene>
-        </React3>
+        <React.Fragment>
+            <React3
+                mainCamera={'camera'}
+                width={width}
+                height={height}
+                onAnimate={onUpdate}
+                canvasRef={setCanvas}
+                onWheel={onMouseWheel}
+                onMouseDown={onMouseDown}
+                onMouseUp={onMouseUp}
+                onMouseMove={onMouseMove}
+                onKeyDown={() => console.log('!')}
+            >
+                <scene>
+                    <Camera position={new Vector3(0, 300, 0)} />
+                    <Player />
+                    <Ground />
+                </scene>
+            </React3>
+        </React.Fragment>
     );
 }
 
@@ -73,7 +71,7 @@ function onMouseDown(e: any) {
             setCameraSpeed(null);
             break;
         case MOUSE.right:
-            bodies[0].target = toWorldVector(getMouseVector(e));
+            bodies[0].target = toWorldPoint(getMouseVector(e));
             break;
         case MOUSE.wheel:
             break;
@@ -140,14 +138,14 @@ function onUpdate() {
                     body.velocity.y += body.bounce * (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
                 }
             } else {
-                if (outOfBounds(body.velocity.y, 0.00001)) {
+                if (outOfBounds(body.velocity.y, MIN_SPEED)) {
                     AudioComponent(body.velocity.y);
                 }
                 collision = {// impulse transfer
                     staticBody,
                     velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
                 };
-                if (inRadius(collision.velocity, 0.00001)) {
+                if (inRadius(collision.velocity, MIN_SPEED)) {
                     collision.velocity = 0;
                 }
                 collisions.push(collision);

@@ -7,6 +7,7 @@ export { Parametric } from './parametric';
 export { WidthRing } from './ring';
 export { Container } from './container';
 export { Plane } from './plane';
-export { Particles } from './particles';
+export { Ground } from './ground';
 export { Body } from './body';
 export { AudioComponent } from './audio';
+export { Player } from './player';

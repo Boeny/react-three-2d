@@ -1,37 +1,33 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { getNumArray } from '~/utils';
 import { Parametric } from './parametric';
 import { Body } from './body';
 
 
-const PARTICLES_IN_COLUMN = 1;// all
-const PARTICLES_IN_ROW = 240;// count in the row
-const offset = { x: -PARTICLES_IN_ROW / 2, y: 0 };
-const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
+const IN_COLUMN_COUNT = 1;// all
+const IN_ROW_COUNT = 240;// count in the row
+const offset = { x: -IN_ROW_COUNT / 2, y: 0 };
+const count = IN_COLUMN_COUNT * IN_ROW_COUNT;
 
-interface ArrayObject {
-    from: (items: any[]) => any[];
-}
 
-export function Particles() {
-    /* tslint:disable */
+export function Ground() {
     return (
         <group>
-            {((Array as any) as ArrayObject).from(new Array(count)).map((item, i) => item === undefined && (
+            {getNumArray(count).map(i => (
                 <Body
-                    connected={true}
+                    connected={true}// connected to each other
                     bounceLine={offset.y}
                     mass={1000}
                     position={new Vector3(i + offset.x, offset.y, 0)}
-                />// connected to each other
+                />
             ))}
         </group>
     );
-    /* tslint:enable */
 }
 
 
-const PARTICLES_WIDTH = 5;// units
+const WIDTH_MULTIPLIER = 5;// units
 
 interface Props {
     x: number;
@@ -42,10 +38,10 @@ interface Props {
 export function Particle(props: Props) {
     return (
         <Parametric
-            position={new Vector3(props.x * PARTICLES_WIDTH, props.y * PARTICLES_WIDTH, 0)}
+            position={new Vector3(props.x * WIDTH_MULTIPLIER, props.y * WIDTH_MULTIPLIER, 0)}
             slices={1}
             stacks={1}
-            parametricFunction={(u, v) => pointInTheQuad(u, v, PARTICLES_WIDTH)}
+            parametricFunction={(u, v) => pointInTheQuad(u, v, WIDTH_MULTIPLIER)}
             color={props.color}
         />
     );

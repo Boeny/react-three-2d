@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
-import { Particle } from './particles';
+import { Particle } from './ground';
 
 
 export interface Position {
@@ -34,7 +34,7 @@ export interface IStore extends Position {
 }
 
 export const Bodies: IStore[] = [];
-export const Static: { [coo: string]: IStore } = {};
+export const Static: { [coo: string]: IStore | undefined } = {};
 
 const getStore = (p?: Vector3): IStore => ({
     state: observable({
@@ -129,7 +129,7 @@ export function setStatic(x: number, y: number, store: IStore) {
     return Static[`${x}|${y}`] = store;
 }
 export function delStatic(x: number, y: number) {
-    delete Static[`${x}|${y}`];
+    Static[`${x}|${y}`] = undefined;
 }
 
 interface Props extends PositionProps {

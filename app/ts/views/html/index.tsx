@@ -1,17 +1,13 @@
 import * as React from 'react';
-import { Store as PlanetStore } from '~/components/planet/store';
-import { setPlanet } from './actions';
 
 
 export const Html = () => (
     <div
         style={{
-            ...PlanetStore.style,
-            position: 'absolute',
-            width: 200
+            position: 'fixed',
+            width: '100%',
+            height: '100%'
         }}
-        ref={setPlanet}
     >
-        planet color
     </div>
 );

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { getNumArray } from '~/utils';
 import { WidthRing } from '~/components';
-import { ARRAY_9 } from '~/constants';
 import { CABIN_RADIUS, cabinLength } from '../constants';
 
 
@@ -14,7 +14,7 @@ export function BerthCabins(props: CabinsProps) {
     const { height, wholeLength } = props;
     return (
         <group position={new Vector3(0, height, 0)}>
-            {ARRAY_9.map(i => (
+            {getNumArray(9, 1).map(i => (
                 <BerthCabin key={i} index={i} wholeLength={wholeLength} />
             ))}
         </group>
