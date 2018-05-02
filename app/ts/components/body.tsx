@@ -29,6 +29,7 @@ export interface IStore extends Position {
     force?: Position;
     bounceLine?: number;
     connections?: IStore[];
+    target?: Position;
 }
 
 export const Bodies: IStore[] = [];

@@ -8,10 +8,9 @@ import {
 } from '~/components/camera/actions';
 import { getMouseVector } from '~/utils';
 import {
-    decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed
+    decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed, toWorldVector
 } from '~/components/camera/utils/store';
-import { Camera } from '~/components';
-import { Particles } from '~/components/particles';
+import { Camera, Particles, AudioComponent } from '~/components';
 import {
     Body, Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
 } from '~/components/body';
@@ -50,11 +49,11 @@ export function App() {
         >
             <scene>
                 <Camera />
-                <Particles />
                 <Body
                     position={new Vector3(-5, 0, 0)}
                     force={GRAVITY_FORCE}
                 />
+                <Particles />
             </scene>
         </React3>
     );
@@ -73,7 +72,7 @@ function onMouseDown(e: any) {
             setCameraSpeed(null);
             break;
         case MOUSE.right:
-            mouseMode = 'target';
+            bodies[0].target = toWorldVector(getMouseVector(e));
             break;
         case MOUSE.wheel:
             break;
@@ -94,9 +93,6 @@ function onMouseUp(e: any) {
             }
             break;
         case MOUSE.right:
-            if (mouseMode === 'target') {
-                mouseMode = 'idle';
-            }
             break;
         case MOUSE.wheel:
             break;
@@ -148,6 +144,9 @@ function onUpdate() {
                     staticBody,
                     velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
                 });
+                if (body.velocity.y > 0.00001) {
+                    AudioComponent(body.velocity.y);
+                }
                 body.velocity.y = 0;
             }
         }
@@ -156,9 +155,21 @@ function onUpdate() {
             dx = body.parent.x - body.x;
             dy = body.parent.y - body.y;
             dLength = Math.sqrt(dx * dx + dy * dy);
-            gapLength = (dLength - body.distanceToParent) / dLength;
-            body.velocity.x += dx * gapLength;
-            body.velocity.y += dy * gapLength;
+            gapLength = dLength - body.distanceToParent;
+            body.velocity.x += gapLength * dx / dLength;
+            body.velocity.y += gapLength * dy / dLength;
+        }
+
+        if (body.target) {
+            dx = body.target.x - body.x;
+            dy = body.target.y - body.y;
+            dLength = Math.sqrt(dx * dx + dy * dy);
+            if (dLength < 1) {
+                body.target = undefined;
+            } else {
+                body.velocity.x += 1 * dx / dLength;
+                body.velocity.y += 1 * dy / dLength;
+            }
         }
 
         if (body.velocity.x > MAX_SPEED) {

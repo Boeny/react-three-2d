@@ -9,3 +9,4 @@ export { Container } from './container';
 export { Plane } from './plane';
 export { Particles } from './particles';
 export { Body } from './body';
+export { AudioComponent } from './audio';
