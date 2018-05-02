@@ -7,3 +7,6 @@ export const PI4 = PI2 / 2;
 
 const GRAV_STRENGTH = 0.001;
 export const GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
+
+export const MAX_SPEED = 1;
+export const MIN_SPEED = 0.00001;

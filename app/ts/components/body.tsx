@@ -139,10 +139,11 @@ interface Props extends PositionProps {
     bounce?: number;
     bounceLine?: number;
     connected?: boolean;
+    getInstance?: (body: IStore) => void;
 }
 
 export function Body(props: Props) {
-    const { position, parent, force, mass, bounce, bounceLine, connected } = props;
+    const { position, parent, force, mass, bounce, bounceLine, connected, getInstance } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
@@ -178,5 +179,6 @@ export function Body(props: Props) {
         Static[position ? `${position.x}|${position.y}` : '0|0'] = store;
     }
     Bodies.push(store);
+    getInstance && getInstance(store);
     return <Connected {...store} />;
 }

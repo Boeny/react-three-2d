@@ -6,14 +6,16 @@ import { setCanvas, setCursor } from './html/actions';
 import {
     setZoom as setCameraZoom, shiftPosition as moveCamera, moveBySpeed as moveCameraWithSpeed
 } from '~/components/camera/actions';
-import { getMouseVector } from '~/utils';
+import { getMouseVector, clamp } from '~/utils';
 import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed, toWorldPoint
 } from '~/components/camera/utils/store';
-import { Camera, Ground, AudioComponent, Player } from '~/components';
+import { Camera, Ground, AudioComponent } from '~/components';
 import {
     Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
 } from '~/components/body';
+import { Player, Store as player } from '~/components/player';
+import { MAX_SPEED, MIN_SPEED } from '~/constants';
 
 
 let mouseMode: 'idle' | 'drag' | 'inertia' | 'target' = 'idle';
@@ -24,9 +26,14 @@ const MOUSE = {
     wheel: 1,
     right: 2
 };
+const KEY = {
+    SPACE: ' ',
+    UP: 'ArrowUp',
+    DOWN: 'ArrowDown',
+    LEFT: 'ArrowLeft',
+    RIGHT: 'ArrowRight'
+};
 const TIMER_DELAY = 1;
-const MAX_SPEED = 1;
-const MIN_SPEED = 0.00001;
 const HEAT_ENERGY = 0.001;
 const LOOSING_COEF = 1 - HEAT_ENERGY;
 
@@ -46,7 +53,7 @@ export function App() {
                 onMouseDown={onMouseDown}
                 onMouseUp={onMouseUp}
                 onMouseMove={onMouseMove}
-                onKeyDown={() => console.log('!')}
+                onKeyDown={onKeyDown}
             >
                 <scene>
                     <Camera position={new Vector3(0, 300, 0)} />
@@ -111,6 +118,23 @@ function onMouseMove(e: any) {
         } else {
             timer += 1;
         }
+    }
+}
+
+function onKeyDown(e: any) {
+    switch (e.key) {
+        case KEY.LEFT:
+            player.moveLeft();
+            break;
+        case KEY.RIGHT:
+            player.moveRight();
+            break;
+        case KEY.UP:
+            player.jump();
+            break;
+        case KEY.DOWN:
+            player.sit();
+            break;
     }
 }
 
@@ -179,16 +203,9 @@ function onUpdate() {
             }
         }*/
 
-        if (body.velocity.x < -MAX_SPEED) {
-            body.velocity.x = -MAX_SPEED;
-        } else if (body.velocity.x > MAX_SPEED) {
-            body.velocity.x = MAX_SPEED;
-        }
-        if (body.velocity.y < -MAX_SPEED) {
-            body.velocity.y = -MAX_SPEED;
-        } else if (body.velocity.y > MAX_SPEED) {
-            body.velocity.y = MAX_SPEED;
-        }
+        body.velocity.x = clamp(body.velocity.x, -MAX_SPEED, MAX_SPEED);
+        body.velocity.y = clamp(body.velocity.y, -MAX_SPEED, MAX_SPEED);
+
         body.x += body.velocity.x;
         body.y += body.velocity.y;
 

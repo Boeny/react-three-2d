@@ -3,7 +3,7 @@ const fix = require('./content-fixer').default;
 fix(
     __dirname + '/../node_modules/react-three-renderer/lib/React3.js',
     "return _react2.default.createElement('canvas', {",
-    "return _react2.default.createElement('canvas', {onKeyDown: this.props.onKeyDown,onKeyUp: this.props.onKeyUp,onMouseDown: this.props.onMouseDown,onMouseUp: this.props.onMouseUp,onClick: this.props.onClick,onWheel: this.props.onWheel,onMouseMove: this.props.onMouseMove,"
+    "return _react2.default.createElement('canvas', {tabIndex:0,onKeyDown: this.props.onKeyDown,onKeyUp: this.props.onKeyUp,onMouseDown: this.props.onMouseDown,onMouseUp: this.props.onMouseUp,onClick: this.props.onClick,onWheel: this.props.onWheel,onMouseMove: this.props.onMouseMove,"
 );
 
 fix(
