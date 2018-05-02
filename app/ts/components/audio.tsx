@@ -101,7 +101,7 @@ function synthTone(
  * @param   {number} frequency Частота сигнала
  * @returns {number} Значение сигнала в момент времени
  */
-function sin(index: number, frequency: number): number {
+export function sin(index: number, frequency: number): number {
     return Math.sin(PI_2 * frequency * index);
 }
 
@@ -111,7 +111,7 @@ function sin(index: number, frequency: number): number {
  * @param   {number} frequency Частота сигнала
  * @returns {number} Значение сигнала в момент времени
  */
-function saw(index: number, frequency: number): number {
+export function saw(index: number, frequency: number): number {
     return 2.0 * (index * frequency - Math.floor(index * frequency)) - 1.0;
 }
 
@@ -121,7 +121,7 @@ function saw(index: number, frequency: number): number {
  * @param   {number} frequency Частота сигнала
  * @returns {number} Значение сигнала в момент времени
  */
-function triangle(index: number, frequency: number): number {
+export function triangle(index: number, frequency: number): number {
     return 2.0 * Math.abs(2.0 * (index * frequency - Math.floor(index * frequency + 0.5))) - 1.0;
 }
 
@@ -139,7 +139,7 @@ function flat(index: number, frequency: number): number {
  * Функция волны типа "Шум"
  * @returns {number} Значение сигнала в момент времени
  */
-function noise(): number {
+export function noise(): number {
     return Math.random();
 }
 

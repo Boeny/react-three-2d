@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Vector3, Euler } from 'three';
+import { Vector3 } from 'three';
 import { Parametric } from './parametric';
 import { Body } from './body';
 
@@ -9,19 +9,25 @@ const PARTICLES_IN_ROW = 240;// count in the row
 const offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
 const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
+interface ArrayObject {
+    from: (items: any[]) => any[];
+}
+
 export function Particles() {
+    /* tslint:disable */
     return (
         <group>
-            {Array.from(new Array(count)).map((item, i) => (
+            {((Array as any) as ArrayObject).from(new Array(count)).map((item, i) => item === undefined && (
                 <Body
                     connected={true}
                     bounceLine={offset.y}
-                    mass={1}
+                    mass={1000}
                     position={new Vector3(i + offset.x, offset.y, 0)}
                 />// connected to each other
             ))}
         </group>
     );
+    /* tslint:enable */
 }
 
 

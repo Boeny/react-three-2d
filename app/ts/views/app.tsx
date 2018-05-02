@@ -136,11 +136,11 @@ function onUpdate() {
                 if (body.force) {
                     body.velocity.y += body.force.y;
                 }
-                if (body.bounceLine) {
-                    body.velocity.y += (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
+                if (body.bounceLine && body.bounce) {
+                    body.velocity.y += body.bounce * (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
                 }
             } else {
-                collisions.push({
+                collisions.push({// impulse transfer
                     staticBody,
                     velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
                 });
@@ -209,12 +209,14 @@ let staticBody: IBodyStore | undefined;
 let collisions: { staticBody: IBodyStore, velocity: number }[] = [];
 let collision: { staticBody: IBodyStore, velocity: number };
 
-function wave(body: IBodyStore) {
+function wave(body: IBodyStore, parent?: IBodyStore) {
     if (!body.connections || body.velocity.y === 0) {
         return;
     }
     for (let i = 0; i < body.connections.length; i += 1) {
         body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
-        wave(body.connections[i]);
+        if (body.connections[i] !== parent) {
+            wave(body.connections[i], body);
+        }
     }
 }

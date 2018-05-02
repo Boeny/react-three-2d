@@ -28,6 +28,7 @@ export interface IStore extends Position {
     parent?: Position;
     force?: Position;
     bounceLine?: number;
+    bounce?: number;
     connections?: IStore[];
     target?: Position;
 }

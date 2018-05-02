@@ -109971,8 +109971,10 @@ var PARTICLES_IN_ROW = 240; // count in the row
 var offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
 var count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 function Particles() {
-    return (React.createElement("group", null, Array.from(new Array(count)).map(function (item, i) { return (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 1, position: new three_1.Vector3(i + offset.x, offset.y, 0) }) // connected to each other
+    /* tslint:disable */
+    return (React.createElement("group", null, Array.from(new Array(count)).map(function (item, i) { return item === undefined && (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 1000, position: new three_1.Vector3(i + offset.x, offset.y, 0) }) // connected to each other
     ); })));
+    /* tslint:enable */
 }
 exports.Particles = Particles;
 var PARTICLES_WIDTH = 5; // units
@@ -127376,8 +127378,8 @@ function onUpdate() {
                 if (body.force) {
                     body.velocity.y += body.force.y;
                 }
-                if (body.bounceLine) {
-                    body.velocity.y += (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
+                if (body.bounceLine && body.bounce) {
+                    body.velocity.y += body.bounce * (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
                 }
             }
             else {
@@ -127385,7 +127387,9 @@ function onUpdate() {
                     staticBody: staticBody,
                     velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
                 });
-                components_1.AudioComponent(body.velocity.y);
+                if (body.velocity.y > 0.00001) {
+                    components_1.AudioComponent(body.velocity.y);
+                }
                 body.velocity.y = 0;
             }
         }
@@ -127442,13 +127446,15 @@ var dLength = 0;
 var staticBody;
 var collisions = [];
 var collision;
-function wave(body) {
+function wave(body, parent) {
     if (!body.connections || body.velocity.y === 0) {
         return;
     }
     for (var i = 0; i < body.connections.length; i += 1) {
         body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
-        wave(body.connections[i]);
+        if (body.connections[i] !== parent) {
+            wave(body.connections[i], body);
+        }
     }
 }
 
@@ -142121,6 +142127,7 @@ function synthTone(buffer, start, length, freq, volume, func) {
 function sin(index, frequency) {
     return Math.sin(PI_2 * frequency * index);
 }
+exports.sin = sin;
 /**
  * Пилообразная функция волны
  * @param   {number} index     Номер текущего фрейма
@@ -142130,6 +142137,7 @@ function sin(index, frequency) {
 function saw(index, frequency) {
     return 2.0 * (index * frequency - Math.floor(index * frequency)) - 1.0;
 }
+exports.saw = saw;
 /**
  * Треугольная функция волны
  * @param   {number} index     Номер текущего фрейма
@@ -142139,6 +142147,7 @@ function saw(index, frequency) {
 function triangle(index, frequency) {
     return 2.0 * Math.abs(2.0 * (index * frequency - Math.floor(index * frequency + 0.5))) - 1.0;
 }
+exports.triangle = triangle;
 /**
  * Прямоугольная функция волны
  * @param   {number} index     Номер текущего фрейма
@@ -142155,6 +142164,7 @@ function flat(index, frequency) {
 function noise() {
     return Math.random();
 }
+exports.noise = noise;
 /* Ноты **********************************************************************/
 /**
  * Опредиление частоты звучания ноты по ее номеру и октаве
