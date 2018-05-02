@@ -4,7 +4,7 @@ import { Store } from './store';
 import { setCamera } from './utils/store';
 
 
-export const Camera = observer(() => {
+export const Camera = observer((props: PositionProps) => {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const { zoom, position } = Store.state;
@@ -19,7 +19,7 @@ export const Camera = observer(() => {
             near={0.1}
             far={10}
             zoom={zoom}
-            position={position}
+            position={props.position ? position.clone().add(props.position) : position}
         />
     );
 });

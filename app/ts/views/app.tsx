@@ -48,9 +48,10 @@ export function App() {
             onMouseMove={onMouseMove}
         >
             <scene>
-                <Camera />
+                <Camera position={new Vector3(0, 300, 0)} />
                 <Body
-                    position={new Vector3(-5, 0, 0)}
+                    mass={1}
+                    position={new Vector3(0, 1, 0)}
                     force={GRAVITY_FORCE}
                 />
                 <Particles />
@@ -128,9 +129,8 @@ function onUpdate() {
         body = bodies[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
-
         if (body.force || body.velocity.y !== 0) {
+            sign.y = getSign((body.force ? body.force.y : 0) + body.velocity.y);
             staticBody = getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
                 if (body.force) {
@@ -140,15 +140,22 @@ function onUpdate() {
                     body.velocity.y += body.bounce * (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
                 }
             } else {
-                collisions.push({// impulse transfer
-                    staticBody,
-                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
-                });
-                if (body.velocity.y > 0.00001) {
+                if (outOfBounds(body.velocity.y, 0.00001)) {
                     AudioComponent(body.velocity.y);
                 }
+                collision = {// impulse transfer
+                    staticBody,
+                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
+                };
+                if (inRadius(collision.velocity, 0.00001)) {
+                    collision.velocity = 0;
+                }
+                collisions.push(collision);
                 body.velocity.y = 0;
+                sign.y = 0;
             }
+        } else {
+            sign.y = getSign(body.velocity.y);
         }
 
         if (body.parent) {
@@ -158,9 +165,11 @@ function onUpdate() {
             gapLength = dLength - body.distanceToParent;
             body.velocity.x += gapLength * dx / dLength;
             body.velocity.y += gapLength * dy / dLength;
+            sign.x = getSign(body.velocity.x);
+            sign.y = getSign(body.velocity.y);
         }
 
-        if (body.target) {
+        /*if (body.target) {
             dx = body.target.x - body.x;
             dy = body.target.y - body.y;
             dLength = Math.sqrt(dx * dx + dy * dy);
@@ -170,21 +179,25 @@ function onUpdate() {
                 body.velocity.x += 1 * dx / dLength;
                 body.velocity.y += 1 * dy / dLength;
             }
-        }
+        }*/
 
-        if (body.velocity.x > MAX_SPEED) {
+        if (body.velocity.x < -MAX_SPEED) {
+            body.velocity.x = -MAX_SPEED;
+        } else if (body.velocity.x > MAX_SPEED) {
             body.velocity.x = MAX_SPEED;
         }
-        if (body.velocity.y > MAX_SPEED) {
+        if (body.velocity.y < -MAX_SPEED) {
+            body.velocity.y = -MAX_SPEED;
+        } else if (body.velocity.y > MAX_SPEED) {
             body.velocity.y = MAX_SPEED;
         }
         body.x += body.velocity.x;
         body.y += body.velocity.y;
 
-        if (Math.abs(actual.x - body.x) > MAX_SPEED) {
+        if (outOfBounds(actual.x - body.x, MAX_SPEED)) {
             body.updateX(sign.x);
         }
-        if (Math.abs(actual.y - body.y) > MAX_SPEED) {
+        if (outOfBounds(actual.y - body.y, MAX_SPEED)) {
             delStatic(actual.x, actual.y);
             body.updateY(sign.y);
             setStatic(actual.x, actual.y + sign.y, body);
@@ -219,4 +232,15 @@ function wave(body: IBodyStore, parent?: IBodyStore) {
             wave(body.connections[i], body);
         }
     }
+}
+
+function inRadius(n: number, distance: number): boolean {
+    return n > -distance && n < distance;
+}
+function outOfBounds(n: number, bound: number): boolean {
+    return n < -bound || n > bound;
+}
+
+function getSign(velocity: number): number {
+    return velocity === 0 ? 0 : (velocity > 0 ? 1 : -1);
 }

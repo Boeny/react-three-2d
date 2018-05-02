@@ -6,7 +6,7 @@ import { Body } from './body';
 
 const PARTICLES_IN_COLUMN = 1;// all
 const PARTICLES_IN_ROW = 240;// count in the row
-const offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
+const offset = { x: -PARTICLES_IN_ROW / 2, y: 0 };
 const count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 
 interface ArrayObject {

@@ -136,18 +136,22 @@ interface Props extends PositionProps {
     parent?: Position;
     force?: Position;
     mass?: number;
+    bounce?: number;
     bounceLine?: number;
     connected?: boolean;
 }
 
 export function Body(props: Props) {
-    const { position, parent, force, mass, bounceLine, connected } = props;
+    const { position, parent, force, mass, bounce, bounceLine, connected } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
     if (mass) {
         store.mass = mass;
+    }
+    if (bounce) {
+        store.bounce = bounce;
     }
     if (bounceLine) {
         store.bounceLine = bounceLine;

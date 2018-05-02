@@ -102856,13 +102856,16 @@ function delStatic(x, y) {
 }
 exports.delStatic = delStatic;
 function Body(props) {
-    var position = props.position, parent = props.parent, force = props.force, mass = props.mass, bounceLine = props.bounceLine, connected = props.connected;
+    var position = props.position, parent = props.parent, force = props.force, mass = props.mass, bounce = props.bounce, bounceLine = props.bounceLine, connected = props.connected;
     var store = getStore(position);
     store.updateX = mobx_1.action(updateX(store));
     store.updateY = mobx_1.action(updateY(store));
     store.setCollision = mobx_1.action(setCollision(store));
     if (mass) {
         store.mass = mass;
+    }
+    if (bounce) {
+        store.bounce = bounce;
     }
     if (bounceLine) {
         store.bounceLine = bounceLine;
@@ -109968,7 +109971,7 @@ var parametric_1 = __webpack_require__(67);
 var body_1 = __webpack_require__(68);
 var PARTICLES_IN_COLUMN = 1; // all
 var PARTICLES_IN_ROW = 240; // count in the row
-var offset = { x: -PARTICLES_IN_ROW / 2, y: -60 };
+var offset = { x: -PARTICLES_IN_ROW / 2, y: 0 };
 var count = PARTICLES_IN_COLUMN * PARTICLES_IN_ROW;
 function Particles() {
     /* tslint:disable */
@@ -127300,8 +127303,8 @@ function App() {
     var height = window.innerHeight;
     return (React.createElement(React3, { mainCamera: 'camera', width: width, height: height, onAnimate: onUpdate, canvasRef: actions_1.setCanvas, onWheel: onMouseWheel, onMouseDown: onMouseDown, onMouseUp: onMouseUp, onMouseMove: onMouseMove },
         React.createElement("scene", null,
-            React.createElement(components_1.Camera, null),
-            React.createElement(body_1.Body, { position: new three_1.Vector3(-5, 0, 0), force: GRAVITY_FORCE }),
+            React.createElement(components_1.Camera, { position: new three_1.Vector3(0, 300, 0) }),
+            React.createElement(body_1.Body, { mass: 1, position: new three_1.Vector3(0, 1, 0), force: GRAVITY_FORCE }),
             React.createElement(components_1.Particles, null))));
 }
 exports.App = App;
@@ -127371,8 +127374,8 @@ function onUpdate() {
         body = body_1.Bodies[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        sign.y = body.velocity.y === 0 ? 0 : (body.velocity.y > 0 ? 1 : -1);
         if (body.force || body.velocity.y !== 0) {
+            sign.y = getSign((body.force ? body.force.y : 0) + body.velocity.y);
             staticBody = body_1.getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
                 if (body.force) {
@@ -127383,15 +127386,23 @@ function onUpdate() {
                 }
             }
             else {
-                collisions.push({
-                    staticBody: staticBody,
-                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
-                });
-                if (body.velocity.y > 0.00001) {
+                if (outOfBounds(body.velocity.y, 0.00001)) {
                     components_1.AudioComponent(body.velocity.y);
                 }
+                collision = {
+                    staticBody: staticBody,
+                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
+                };
+                if (inRadius(collision.velocity, 0.00001)) {
+                    collision.velocity = 0;
+                }
+                collisions.push(collision);
                 body.velocity.y = 0;
+                sign.y = 0;
             }
+        }
+        else {
+            sign.y = getSign(body.velocity.y);
         }
         if (body.parent) {
             dx = body.parent.x - body.x;
@@ -127400,31 +127411,38 @@ function onUpdate() {
             gapLength = dLength - body.distanceToParent;
             body.velocity.x += gapLength * dx / dLength;
             body.velocity.y += gapLength * dy / dLength;
+            sign.x = getSign(body.velocity.x);
+            sign.y = getSign(body.velocity.y);
         }
-        if (body.target) {
+        /*if (body.target) {
             dx = body.target.x - body.x;
             dy = body.target.y - body.y;
             dLength = Math.sqrt(dx * dx + dy * dy);
             if (dLength < 1) {
                 body.target = undefined;
-            }
-            else {
+            } else {
                 body.velocity.x += 1 * dx / dLength;
                 body.velocity.y += 1 * dy / dLength;
             }
+        }*/
+        if (body.velocity.x < -MAX_SPEED) {
+            body.velocity.x = -MAX_SPEED;
         }
-        if (body.velocity.x > MAX_SPEED) {
+        else if (body.velocity.x > MAX_SPEED) {
             body.velocity.x = MAX_SPEED;
         }
-        if (body.velocity.y > MAX_SPEED) {
+        if (body.velocity.y < -MAX_SPEED) {
+            body.velocity.y = -MAX_SPEED;
+        }
+        else if (body.velocity.y > MAX_SPEED) {
             body.velocity.y = MAX_SPEED;
         }
         body.x += body.velocity.x;
         body.y += body.velocity.y;
-        if (Math.abs(actual.x - body.x) > MAX_SPEED) {
+        if (outOfBounds(actual.x - body.x, MAX_SPEED)) {
             body.updateX(sign.x);
         }
-        if (Math.abs(actual.y - body.y) > MAX_SPEED) {
+        if (outOfBounds(actual.y - body.y, MAX_SPEED)) {
             body_1.delStatic(actual.x, actual.y);
             body.updateY(sign.y);
             body_1.setStatic(actual.x, actual.y + sign.y, body);
@@ -127456,6 +127474,15 @@ function wave(body, parent) {
             wave(body.connections[i], body);
         }
     }
+}
+function inRadius(n, distance) {
+    return n > -distance && n < distance;
+}
+function outOfBounds(n, bound) {
+    return n < -bound || n > bound;
+}
+function getSign(velocity) {
+    return velocity === 0 ? 0 : (velocity > 0 ? 1 : -1);
 }
 
 
@@ -141689,11 +141716,11 @@ var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(65);
 var store_1 = __webpack_require__(45);
 var store_2 = __webpack_require__(113);
-exports.Camera = mobx_react_1.observer(function () {
+exports.Camera = mobx_react_1.observer(function (props) {
     var width = window.innerWidth;
     var height = window.innerHeight;
     var _a = store_1.Store.state, zoom = _a.zoom, position = _a.position;
-    return (React.createElement("orthographicCamera", { ref: store_2.setCamera, name: 'camera', left: -width / 2, right: width / 2, top: height / 2, bottom: -height / 2, near: 0.1, far: 10, zoom: zoom, position: position }));
+    return (React.createElement("orthographicCamera", { ref: store_2.setCamera, name: 'camera', left: -width / 2, right: width / 2, top: height / 2, bottom: -height / 2, near: 0.1, far: 10, zoom: zoom, position: props.position ? position.clone().add(props.position) : position }));
 });
 /*
 <perspectiveCamera
