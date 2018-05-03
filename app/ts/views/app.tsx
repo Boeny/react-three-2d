@@ -10,9 +10,9 @@ import { getMouseVector, clamp } from '~/utils';
 import {
     decreaseSpeed as decreaseCameraSpeed, setSpeed as setCameraSpeed, toWorldPoint
 } from '~/components/camera/utils/store';
-import { Camera, Ground, AudioComponent } from '~/components';
+import { Camera, Ground, AudioComponent, Stick } from '~/components';
 import {
-    Bodies as bodies, IStore as IBodyStore, Position, getStatic// , delStatic, setStatic
+    Bodies as bodies, IStore as IBodyStore, getStatic, delStatic, setStatic// , Position
 } from '~/components/body';
 import { Player, Store as player } from '~/components/player';
 import { MAX_SPEED, MIN_SPEED } from '~/constants';
@@ -34,7 +34,7 @@ const KEY = {
     RIGHT: 'ArrowRight'
 };
 const TIMER_DELAY = 1;
-const HEAT_ENERGY = 0.001;
+const HEAT_ENERGY = 0.00001;
 const LOOSING_COEF = 1 - HEAT_ENERGY;
 
 
@@ -58,12 +58,17 @@ export function App() {
                 <scene>
                     <Camera position={new Vector3(0, 300, 0)} />
                     <Player />
+                    <Stick
+                        length={10}
+                        getPosition={i => new Vector3(-10, i + 1, 0)}
+                    />
                     <Ground />
                 </scene>
             </React3>
         </React.Fragment>
     );
 }
+
 
 function onMouseWheel(e: any) {
     setCameraZoom(e.deltaY);
@@ -146,79 +151,27 @@ function onUpdate() {
             mouseMode = 'idle';
         }
     }
-    collisions = [];
+    // collisions = [];
     for (let i = 0; i < bodies.length; i += 1) {
-        body = bodies[i];
-        actual.x = body.state.x;
-        actual.y = body.state.y;
-
-        if (body.force && body.force.x !== 0 || body.velocity.x !== 0) {
-            sign.x = getSign((body.force ? body.force.x : 0) + body.velocity.x);
-            staticBody = getStatic(actual.x + sign.x, actual.y);
-            if (staticBody === undefined) {
-                if (body.force) {
-                    body.velocity.x += body.force.x;
-                }
-            } else {
-                if (outOfBounds(body.velocity.x, MIN_SPEED)) {
-                    AudioComponent(body.velocity.x);
-                }
-                // TODO: collision.velocity = { y: body.velocity.y,  x: }
-                collision = {// impulse transfer
-                    staticBody,
-                    velocity: LOOSING_COEF * body.velocity.x * body.mass / staticBody.mass
-                };
-                if (inRadius(collision.velocity, MIN_SPEED)) {
-                    collision.velocity = 0;
-                }
-                collisions.push(collision);
-                body.velocity.x = 0;
-                sign.x = 0;
-            }
-        } else {
-            sign.x = getSign(body.velocity.x);
-        }
-
-        if (body.force && body.force.y !== 0 || body.velocity.y !== 0) {
-            sign.y = getSign((body.force ? body.force.y : 0) + body.velocity.y);
-            staticBody = getStatic(actual.x, actual.y + sign.y);
-            if (staticBody === undefined) {
-                if (body.force) {
-                    body.velocity.y += body.force.y;
-                }
-                if (body.bounceLine && body.bounce) {
-                    body.velocity.y += body.bounce * (body.bounceLine - body.y) / 100 - sign.y * HEAT_ENERGY;
-                }
-            } else {
-                if (outOfBounds(body.velocity.y, MIN_SPEED)) {
-                    AudioComponent(body.velocity.y);
-                }
-                collision = {// impulse transfer
-                    staticBody,
-                    velocity: LOOSING_COEF * body.velocity.y * body.mass / staticBody.mass
-                };
-                if (inRadius(collision.velocity, MIN_SPEED)) {
-                    collision.velocity = 0;
-                }
-                collisions.push(collision);
-                body.velocity.y = 0;
-                sign.y = 0;
-            }
-        } else {
-            sign.y = getSign(body.velocity.y);
-        }
-
+        const body = bodies[i];
+        const actual = {
+            x: body.state.x,
+            y: body.state.y
+        };
+        const signVector = {
+            x: handleCollision(body, 'x'),
+            y: handleCollision(body, 'y')
+        };
         if (body.parent) {
-            dx = body.parent.x - body.x;
-            dy = body.parent.y - body.y;
-            dLength = Math.sqrt(dx * dx + dy * dy);
-            gapLength = dLength - body.distanceToParent;
+            const dx = body.parent.x - body.x;
+            const dy = body.parent.y - body.y;
+            const dLength = Math.sqrt(dx * dx + dy * dy);
+            const gapLength = dLength - body.distanceToParent;
             body.velocity.x += gapLength * dx / dLength;
             body.velocity.y += gapLength * dy / dLength;
-            sign.x = getSign(body.velocity.x);
-            sign.y = getSign(body.velocity.y);
+            signVector.x = getSign(body.velocity.x);
+            signVector.y = getSign(body.velocity.y);
         }
-
         /*if (body.target) {
             dx = body.target.x - body.x;
             dy = body.target.y - body.y;
@@ -230,60 +183,105 @@ function onUpdate() {
                 body.velocity.y += 1 * dy / dLength;
             }
         }*/
-
+        if (inRadius(body.velocity.x, MIN_SPEED)) {
+            body.velocity.x = 0;
+        }
+        if (inRadius(body.velocity.y, MIN_SPEED)) {
+            body.velocity.y = 0;
+        }
         body.velocity.x = clamp(body.velocity.x, -MAX_SPEED, MAX_SPEED);
         body.velocity.y = clamp(body.velocity.y, -MAX_SPEED, MAX_SPEED);
-
         body.x += body.velocity.x;
         body.y += body.velocity.y;
-
         if (outOfBounds(actual.x - body.x, MAX_SPEED)) {
-            body.updateX(sign.x);
+            delStatic(actual);
+            body.updateX(signVector.x);
+            actual.x += signVector.x;
+            setStatic(actual, body);
         }
         if (outOfBounds(actual.y - body.y, MAX_SPEED)) {
-            // delStatic(actual.x, actual.y);
-            body.updateY(sign.y);
-            // setStatic(actual.x, actual.y + sign.y, body);
+            delStatic(actual);
+            body.updateY(signVector.y);
+            actual.y += signVector.y;
+            setStatic(actual, body);
         }
     }
-
-    for (let i = 0; i < collisions.length; i += 1) {
+    /*for (let i = 0; i < collisions.length; i += 1) {
         collision = collisions[i];
-        collision.staticBody.velocity.y = collision.velocity;
+        collision.staticBody.velocity = collision.velocity;
         wave(collision.staticBody);
-    }
+    }*/
 }
 
-const actual: Position = { x: 0, y: 0 };
-const sign: Position = { x: 0, y: 0 };
-let body: IBodyStore;
-let dx = 0;
-let dy = 0;
-let gapLength = 0;
-let dLength = 0;
-let staticBody: IBodyStore | undefined;
-let collisions: { staticBody: IBodyStore, velocity: number }[] = [];
-let collision: { staticBody: IBodyStore, velocity: number };
+/*
+interface Collision {
+    staticBody: IBodyStore;
+    velocity: Position;
+}
+let collision: Collision;
+let collisions: Collision[] = [];
+
 
 function wave(body: IBodyStore, parent?: IBodyStore) {
-    if (!body.connections || body.velocity.y === 0) {
+    if (!body.connections) {
         return;
     }
-    for (let i = 0; i < body.connections.length; i += 1) {
-        body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
-        if (body.connections[i] !== parent) {
-            wave(body.connections[i], body);
+    if (outOfBounds(body.velocity.x, MIN_SPEED)) {
+        for (let i = 0; i < body.connections.length; i += 1) {
+            body.connections[i].velocity.x = body.velocity.x * LOOSING_COEF;
+            if (body.connections[i] !== parent) {
+                wave(body.connections[i], body);
+            }
+        }
+        return;
+    }
+    if (outOfBounds(body.velocity.y, MIN_SPEED)) {
+        for (let i = 0; i < body.connections.length; i += 1) {
+            body.connections[i].velocity.y = body.velocity.y * LOOSING_COEF;
+            if (body.connections[i] !== parent) {
+                wave(body.connections[i], body);
+            }
         }
     }
 }
-
+*/
 function inRadius(n: number, distance: number): boolean {
     return n > -distance && n < distance;
 }
+
 function outOfBounds(n: number, bound: number): boolean {
     return n < -bound || n > bound;
 }
 
 function getSign(velocity: number): number {
     return velocity === 0 ? 0 : (velocity > 0 ? 1 : -1);
+}
+
+function handleCollision(bodyStore: IBodyStore, coo: 'x' | 'y'): number {
+    const velocity = bodyStore.velocity[coo];
+    const acceleration = bodyStore.force ? bodyStore.force[coo] : 0;
+    if (velocity === 0 && acceleration === 0) {
+        return getSign(velocity);
+    }
+    const sign = getSign(velocity + acceleration);
+    const collider = coo === 'x' ?
+        getStatic(bodyStore.state.x + sign, bodyStore.state.y) :
+        getStatic(bodyStore.state.x, bodyStore.state.y + sign);
+    if (collider === undefined) {
+        bodyStore.velocity[coo] += acceleration;
+        return sign;
+    }
+    if (outOfBounds(velocity, MIN_SPEED)) {
+        AudioComponent(velocity);
+    }
+    let colliderVelocity = collider.velocity[coo];
+    colliderVelocity = LOOSING_COEF * (
+        velocity * bodyStore.mass + colliderVelocity * collider.mass
+    ) / (bodyStore.mass + collider.mass);
+    if (inRadius(colliderVelocity, MIN_SPEED)) {
+        colliderVelocity = 0;
+    }
+    bodyStore.velocity[coo] = colliderVelocity;
+    collider.velocity[coo] = colliderVelocity;
+    return sign;
 }

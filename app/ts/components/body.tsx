@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
-import { Particle } from './ground';
+import { Particle } from './particle';
 
 
 export interface Position {
@@ -25,6 +25,7 @@ export interface IStore extends Position {
     setCollision: (target: string, value: boolean) => void;
     mass: number;
     distanceToParent: number;
+    name?: string;
     parent?: Position;
     force?: Position;
     bounceLine?: number;
@@ -109,15 +110,8 @@ const setCollision = (store: IStore) => (target: string, value: boolean) => {
 
 
 const Connected = observer((store: IStore) => {
-    const { x, y, left, right, top, bottom } = store.state;
     return (
-        <group>
-            <Particle {...store.state} />
-            {left ? <Particle x={x + 1} y={y} color={'red'} /> : null}
-            {right ? <Particle x={x - 1} y={y} color={'red'} /> : null}
-            {top ? <Particle x={x} y={y + 1} color={'red'} /> : null}
-            {bottom ? <Particle x={x} y={y - 1} color={'red'} /> : null}
-        </group>
+        <Particle {...store.state} />
     );
 });
 
@@ -125,14 +119,15 @@ const Connected = observer((store: IStore) => {
 export function getStatic(x: number, y: number): IStore | undefined {
     return Static[`${x}|${y}`];
 }
-export function setStatic(x: number, y: number, store: IStore) {
-    return Static[`${x}|${y}`] = store;
+export function setStatic(position: Position, store: IStore) {
+    return Static[`${position.x}|${position.y}`] = store;
 }
-export function delStatic(x: number, y: number) {
-    Static[`${x}|${y}`] = undefined;
+export function delStatic(position: Position) {
+    Static[`${position.x}|${position.y}`] = undefined;
 }
 
 interface Props extends PositionProps {
+    name?: string;
     parent?: Position;
     force?: Position;
     mass?: number;
@@ -143,11 +138,15 @@ interface Props extends PositionProps {
 }
 
 export function Body(props: Props) {
-    const { position, parent, force, mass, bounce, bounceLine, connected, getInstance } = props;
+    const { name, position, parent, force, mass, bounce, bounceLine, connected, getInstance } = props;
     const store = getStore(position);
     store.updateX = action(updateX(store));
     store.updateY = action(updateY(store));
     store.setCollision = action(setCollision(store));
+
+    if (name) {
+        store.name = name;
+    }
     if (mass) {
         store.mass = mass;
     }
@@ -175,9 +174,8 @@ export function Body(props: Props) {
     }
     if (force) {
         store.force = force;
-    } else {
-        Static[position ? `${position.x}|${position.y}` : '0|0'] = store;
     }
+    setStatic(position || { x: 0, y: 0 }, store);
     Bodies.push(store);
     getInstance && getInstance(store);
     return <Connected {...store} />;

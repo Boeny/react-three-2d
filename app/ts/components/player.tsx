@@ -44,8 +44,9 @@ export const Store: IStore = {
 export function Player() {
     return (
         <Body
+            name={'player'}
             getInstance={body => Store.instance = body}
-            mass={2}
+            mass={10}
             position={new Vector3(0, 1, 0)}
             force={GRAVITY_FORCE}
         />

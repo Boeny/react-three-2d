@@ -11,3 +11,4 @@ export { Ground } from './ground';
 export { Body } from './body';
 export { AudioComponent } from './audio';
 export { Player } from './player';
+export { Stick } from './stick';
