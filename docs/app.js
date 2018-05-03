@@ -100160,8 +100160,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ROOT_ELEMENT_ID = 'root';
 exports.PI2 = Math.PI / 2;
 exports.PI4 = exports.PI2 / 2;
-var GRAV_STRENGTH = 0.001;
-exports.GRAVITY_FORCE = { x: 0, y: -GRAV_STRENGTH };
+var GRAVITY_STRENGTH = 0.001;
+exports.GRAVITY_FORCE = { x: 0, y: -GRAVITY_STRENGTH };
 exports.MAX_SPEED = 1;
 exports.MIN_SPEED = 0.00001;
 
@@ -110012,7 +110012,7 @@ var IN_ROW_COUNT = 240; // count in the row
 var offset = { x: -IN_ROW_COUNT / 2, y: 0 };
 var count = IN_COLUMN_COUNT * IN_ROW_COUNT;
 function Ground() {
-    return (React.createElement("group", null, utils_1.getNumArray(count).map(function (i) { return (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 1000, position: new three_1.Vector3(i + offset.x, offset.y, 0) })); })));
+    return (React.createElement("group", null, utils_1.getNumArray(count).map(function (i) { return (React.createElement(body_1.Body, { connected: true, bounceLine: offset.y, mass: 10000, position: new three_1.Vector3(i + offset.x, offset.y, 0) })); })));
 }
 exports.Ground = Ground;
 var WIDTH_MULTIPLIER = 5; // units
@@ -110041,14 +110041,14 @@ var ACCELERATION = 0.05;
 exports.Store = {
     acceleration: ACCELERATION,
     instance: undefined,
-    moveLeft: function () {
-        if (this.instance) {
-            this.instance.velocity.x = utils_1.clampByMin(this.instance.velocity.x - this.acceleration, -constants_1.MAX_SPEED);
-        }
-    },
     moveRight: function () {
         if (this.instance) {
             this.instance.velocity.x = utils_1.clampByMax(this.instance.velocity.x + this.acceleration, constants_1.MAX_SPEED);
+        }
+    },
+    moveLeft: function () {
+        if (this.instance) {
+            this.instance.velocity.x = utils_1.clampByMin(this.instance.velocity.x - this.acceleration, -constants_1.MAX_SPEED);
         }
     },
     jump: function () {
@@ -127475,7 +127475,35 @@ function onUpdate() {
         body = body_1.Bodies[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        if (body.force || body.velocity.y !== 0) {
+        if (body.force && body.force.x !== 0 || body.velocity.x !== 0) {
+            sign.x = getSign((body.force ? body.force.x : 0) + body.velocity.x);
+            staticBody = body_1.getStatic(actual.x + sign.x, actual.y);
+            if (staticBody === undefined) {
+                if (body.force) {
+                    body.velocity.x += body.force.x;
+                }
+            }
+            else {
+                if (outOfBounds(body.velocity.x, constants_1.MIN_SPEED)) {
+                    components_1.AudioComponent(body.velocity.x);
+                }
+                // TODO: collision.velocity = { y: body.velocity.y,  x: }
+                collision = {
+                    staticBody: staticBody,
+                    velocity: LOOSING_COEF * body.velocity.x * body.mass / staticBody.mass
+                };
+                if (inRadius(collision.velocity, constants_1.MIN_SPEED)) {
+                    collision.velocity = 0;
+                }
+                collisions.push(collision);
+                body.velocity.x = 0;
+                sign.x = 0;
+            }
+        }
+        else {
+            sign.x = getSign(body.velocity.x);
+        }
+        if (body.force && body.force.y !== 0 || body.velocity.y !== 0) {
             sign.y = getSign((body.force ? body.force.y : 0) + body.velocity.y);
             staticBody = body_1.getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
@@ -127534,9 +127562,9 @@ function onUpdate() {
             body.updateX(sign.x);
         }
         if (outOfBounds(actual.y - body.y, constants_1.MAX_SPEED)) {
-            body_1.delStatic(actual.x, actual.y);
+            // delStatic(actual.x, actual.y);
             body.updateY(sign.y);
-            body_1.setStatic(actual.x, actual.y + sign.y, body);
+            // setStatic(actual.x, actual.y + sign.y, body);
         }
     }
     for (var i = 0; i < collisions.length; i += 1) {

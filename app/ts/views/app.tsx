@@ -12,7 +12,7 @@ import {
 } from '~/components/camera/utils/store';
 import { Camera, Ground, AudioComponent } from '~/components';
 import {
-    Bodies as bodies, IStore as IBodyStore, Position, getStatic, delStatic, setStatic
+    Bodies as bodies, IStore as IBodyStore, Position, getStatic// , delStatic, setStatic
 } from '~/components/body';
 import { Player, Store as player } from '~/components/player';
 import { MAX_SPEED, MIN_SPEED } from '~/constants';
@@ -151,7 +151,35 @@ function onUpdate() {
         body = bodies[i];
         actual.x = body.state.x;
         actual.y = body.state.y;
-        if (body.force || body.velocity.y !== 0) {
+
+        if (body.force && body.force.x !== 0 || body.velocity.x !== 0) {
+            sign.x = getSign((body.force ? body.force.x : 0) + body.velocity.x);
+            staticBody = getStatic(actual.x + sign.x, actual.y);
+            if (staticBody === undefined) {
+                if (body.force) {
+                    body.velocity.x += body.force.x;
+                }
+            } else {
+                if (outOfBounds(body.velocity.x, MIN_SPEED)) {
+                    AudioComponent(body.velocity.x);
+                }
+                // TODO: collision.velocity = { y: body.velocity.y,  x: }
+                collision = {// impulse transfer
+                    staticBody,
+                    velocity: LOOSING_COEF * body.velocity.x * body.mass / staticBody.mass
+                };
+                if (inRadius(collision.velocity, MIN_SPEED)) {
+                    collision.velocity = 0;
+                }
+                collisions.push(collision);
+                body.velocity.x = 0;
+                sign.x = 0;
+            }
+        } else {
+            sign.x = getSign(body.velocity.x);
+        }
+
+        if (body.force && body.force.y !== 0 || body.velocity.y !== 0) {
             sign.y = getSign((body.force ? body.force.y : 0) + body.velocity.y);
             staticBody = getStatic(actual.x, actual.y + sign.y);
             if (staticBody === undefined) {
@@ -213,9 +241,9 @@ function onUpdate() {
             body.updateX(sign.x);
         }
         if (outOfBounds(actual.y - body.y, MAX_SPEED)) {
-            delStatic(actual.x, actual.y);
+            // delStatic(actual.x, actual.y);
             body.updateY(sign.y);
-            setStatic(actual.x, actual.y + sign.y, body);
+            // setStatic(actual.x, actual.y + sign.y, body);
         }
     }
 

@@ -18,7 +18,7 @@ export function Ground() {
                 <Body
                     connected={true}// connected to each other
                     bounceLine={offset.y}
-                    mass={1000}
+                    mass={10000}
                     position={new Vector3(i + offset.x, offset.y, 0)}
                 />
             ))}

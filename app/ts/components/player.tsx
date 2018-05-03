@@ -19,14 +19,14 @@ const ACCELERATION = 0.05;
 export const Store: IStore = {
     acceleration: ACCELERATION,
     instance: undefined,
-    moveLeft() {
-        if (this.instance) {
-            this.instance.velocity.x = clampByMin(this.instance.velocity.x - this.acceleration, -MAX_SPEED);
-        }
-    },
     moveRight() {
         if (this.instance) {
             this.instance.velocity.x = clampByMax(this.instance.velocity.x + this.acceleration, MAX_SPEED);
+        }
+    },
+    moveLeft() {
+        if (this.instance) {
+            this.instance.velocity.x = clampByMin(this.instance.velocity.x - this.acceleration, -MAX_SPEED);
         }
     },
     jump() {
