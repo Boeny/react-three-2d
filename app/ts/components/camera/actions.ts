@@ -18,24 +18,28 @@ const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
         store.state.zoom *= width / (width + 2 * dz * store.state.zoom);
     }
 };
+
 export const setZoom = action(getZoomSetterAction(Store));
 
 
 const getPositionSetterAction = (store: State) => (v: Vector3) => {
     store.position = v;
 };
+
 export const setPosition = action(getPositionSetterAction(Store.state));
 
 
-const getShiftPosition = (store: State) => (v: Vector2) => {
+const getUpdatePositionAction = (store: State) => (v: Vector2) => {
     setPosition(store.position.clone().add(new Vector3(v.x / store.zoom, - v.y / store.zoom, 0)));
 };
-export const shiftPosition = getShiftPosition(Store.state);
+
+export const updatePosition = getUpdatePositionAction(Store.state);
 
 
-const getMoveBySpeed = (store: IStore) => () => {
+const getMoveBySpeedAction = (store: IStore) => () => {
     if (store.speed !== null) {
-        shiftPosition(store.speed);
+        updatePosition(store.speed);
     }
 };
-export const moveBySpeed = getMoveBySpeed(Store);
+
+export const moveBySpeed = getMoveBySpeedAction(Store);

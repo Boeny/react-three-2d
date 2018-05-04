@@ -1,32 +1,22 @@
 import * as React from 'react';
-import { Vector3 } from 'three';
-import { getNumArray } from '~/utils';
-import { Body } from './body';
+import { Vector2 } from 'three';
+import { Stick } from './stick';
 
 
 const IN_COLUMN_COUNT = 1;// all
+
 const IN_ROW_COUNT = 240;// count in the row
-const offset = { x: -IN_ROW_COUNT / 2, y: 0 };
-const count = IN_COLUMN_COUNT * IN_ROW_COUNT;
 
+const offset = {
+    x: -IN_ROW_COUNT / 2,
+    y: 0
+};
 
-export function Ground() {
+export function Ground(props: PositionProps) {
     return (
-        <group>
-            {getNumArray(count).map(i => (
-                <Body
-                    mass={10000}
-                    position={new Vector3(i + offset.x, offset.y, 0)}
-                />
-            ))}
-        </group>
+        <Stick
+            length={IN_COLUMN_COUNT * IN_ROW_COUNT}
+            getPosition={i => new Vector2(i + offset.x, offset.y).add(props.position || new Vector2())}
+        />
     );
 }
-/*
-getNumArray(count).map(i => (
-    <Body
-        mass={10000}
-        position={new Vector3(i + offset.x, offset.y, 0)}
-    />
-))
-*/

@@ -37,21 +37,3 @@ export function getNumArray(count: number, start?: number): number[] {
         return i + (start || 0);
     });
 }
-
-export function clampByMin(n: number, min: number): number {
-    return n < min ? min : n;
-}
-
-export function clampByMax(n: number, max: number): number {
-    return n > max ? max : n;
-}
-
-export function clamp(n: number, min: number, max: number): number {
-    if (n < min) {
-        return min;
-    }
-    if (n > max) {
-        return max;
-    }
-    return n;
-}

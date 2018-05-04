@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Euler, Color, VertexColors, Vector3 } from 'three';
+import { Color, VertexColors, Vector3 } from 'three';
 
 
 interface Props extends PositionProps {
@@ -10,9 +10,9 @@ interface Props extends PositionProps {
 }
 
 export function Parametric(props: Props) {
-    const { angle, color, position, slices, stacks, parametricFunction } = props;
+    const { color, position, slices, stacks, parametricFunction } = props;
     return (
-        <mesh rotation={new Euler(0, 0, angle || 0)} position={position}>
+        <mesh position={position ? new Vector3(position.x, position.y, 0) : undefined}>
             <parametricGeometry
                 parametricFunction={parametricFunction}
                 slices={slices}

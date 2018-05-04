@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Vector3 } from 'three';
+import { Vector2, Vector3 } from 'three';
 import { Parametric } from './parametric';
 
 
@@ -14,7 +14,7 @@ interface Props {
 export function Particle(props: Props) {
     return (
         <Parametric
-            position={new Vector3(props.x * WIDTH_MULTIPLIER, props.y * WIDTH_MULTIPLIER, 0)}
+            position={new Vector2(props.x * WIDTH_MULTIPLIER, props.y * WIDTH_MULTIPLIER)}
             slices={1}
             stacks={1}
             parametricFunction={(u, v) => pointInTheQuad(u, v, WIDTH_MULTIPLIER)}

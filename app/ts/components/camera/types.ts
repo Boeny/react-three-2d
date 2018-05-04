@@ -9,4 +9,7 @@ export interface IStore {
     state: State;
     DOM: OrthographicCamera | null;
     speed: Vector2 | null;
+    setCamera: (el: any) => void;
+    setSpeed: (v: Vector2 | null) => void;
+    decreaseSpeed: () => void;
 }
