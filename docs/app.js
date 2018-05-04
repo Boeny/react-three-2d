@@ -108413,24 +108413,32 @@ module.exports = ShaderMaterialDescriptor;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Store = {
+    isMovingLeft: false,
+    isMovingRight: false,
+    isMovingUp: false,
+    isMovingDown: false,
     instance: undefined,
     moveRight: function () {
         if (this.instance) {
+            this.isMovingRight = true;
             this.instance.velocity.x = 1;
         }
     },
     moveLeft: function () {
         if (this.instance) {
+            this.isMovingLeft = true;
             this.instance.velocity.x = -1;
         }
     },
     moveUp: function () {
         if (this.instance) {
+            this.isMovingUp = true;
             this.instance.velocity.y = 1;
         }
     },
     moveDown: function () {
         if (this.instance) {
+            this.isMovingDown = true;
             this.instance.velocity.y = -1;
         }
     },
@@ -108442,6 +108450,42 @@ exports.Store = {
     stopY: function () {
         if (this.instance) {
             this.instance.velocity.y = 0;
+        }
+    },
+    stopMovingLeft: function () {
+        this.isMovingLeft = false;
+        if (this.isMovingRight) {
+            this.moveRight();
+        }
+        else {
+            this.stopX();
+        }
+    },
+    stopMovingRight: function () {
+        this.isMovingRight = false;
+        if (this.isMovingLeft) {
+            this.moveLeft();
+        }
+        else {
+            this.stopX();
+        }
+    },
+    stopMovingUp: function () {
+        this.isMovingUp = false;
+        if (this.isMovingDown) {
+            this.moveDown();
+        }
+        else {
+            this.stopY();
+        }
+    },
+    stopMovingDown: function () {
+        this.isMovingDown = false;
+        if (this.isMovingUp) {
+            this.moveUp();
+        }
+        else {
+            this.stopY();
         }
     }
 };
@@ -141339,12 +141383,16 @@ exports.onKeyDown = onKeyDown;
 function onKeyUp(e) {
     switch (e.key) {
         case constants_2.KEY.LEFT:
+            store_2.Store.stopMovingLeft();
+            break;
         case constants_2.KEY.RIGHT:
-            store_2.Store.stopX();
+            store_2.Store.stopMovingRight();
             break;
         case constants_2.KEY.UP:
+            store_2.Store.stopMovingUp();
+            break;
         case constants_2.KEY.DOWN:
-            store_2.Store.stopY();
+            store_2.Store.stopMovingDown();
             break;
     }
 }

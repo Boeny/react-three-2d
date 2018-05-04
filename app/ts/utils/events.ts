@@ -91,12 +91,16 @@ export function onKeyDown(e: any) {
 export function onKeyUp(e: any) {
     switch (e.key) {
         case KEY.LEFT:
+            player.stopMovingLeft();
+            break;
         case KEY.RIGHT:
-            player.stopX();
+            player.stopMovingRight();
             break;
         case KEY.UP:
+            player.stopMovingUp();
+            break;
         case KEY.DOWN:
-            player.stopY();
+            player.stopMovingDown();
             break;
     }
 }
