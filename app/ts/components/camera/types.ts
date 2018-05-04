@@ -13,6 +13,7 @@ export interface IStore {
 }
 
 interface ConnectedStore {
+    position: { x: number, y: number };
     velocity: Vector2;
     update: (v: Vector2) => void;
 }

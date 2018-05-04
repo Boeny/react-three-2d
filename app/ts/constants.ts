@@ -19,3 +19,5 @@ export const KEY = {
 export const TIMER_DELAY = 1;
 
 export const MAX_SPEED = 1;
+
+export const MIN_SPEED = 1;

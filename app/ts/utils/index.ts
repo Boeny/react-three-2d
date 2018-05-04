@@ -52,6 +52,6 @@ export function clamped(n: number, border: number): boolean {
     return n >= -border && n <= border;
 }
 
-export function clampedV2(v: Vector2, border: number): boolean {
+export function clampedVector(v: Vector2, border: number): boolean {
     return clamped(v.x, border) && clamped(v.y, border);
 }
