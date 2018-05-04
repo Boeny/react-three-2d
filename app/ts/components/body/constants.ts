@@ -1,6 +1,6 @@
 import { IStore } from './types';
 
 
-export const Bodies: IStore[] = [];
+export const Movable: IStore[] = [];
 
-export const Static: { [coo: string]: IStore | undefined } = {};
+export const Colliders: { [coo: string]: IStore | undefined } = {};

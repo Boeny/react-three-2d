@@ -1,4 +1,5 @@
 import { IStore } from './types';
+import { MAX_SPEED } from '~/constants';
 
 
 export const Store: IStore = {
@@ -10,25 +11,25 @@ export const Store: IStore = {
     moveRight() {
         if (this.instance) {
             this.isMovingRight = true;
-            this.instance.velocity.x = 1;
+            this.instance.velocity.x = MAX_SPEED;
         }
     },
     moveLeft() {
         if (this.instance) {
             this.isMovingLeft = true;
-            this.instance.velocity.x = -1;
+            this.instance.velocity.x = -MAX_SPEED;
         }
     },
     moveUp() {
         if (this.instance) {
             this.isMovingUp = true;
-            this.instance.velocity.y = 1;
+            this.instance.velocity.y = MAX_SPEED;
         }
     },
     moveDown() {
         if (this.instance) {
             this.isMovingDown = true;
-            this.instance.velocity.y = -1;
+            this.instance.velocity.y = -MAX_SPEED;
         }
     },
 

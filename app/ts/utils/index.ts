@@ -37,3 +37,21 @@ export function getNumArray(count: number, start?: number): number[] {
         return i + (start || 0);
     });
 }
+
+export function clamp(n: number, border: number): number {
+    if (n > border) {
+        return border;
+    }
+    if (n < -border) {
+        return -border;
+    }
+    return n;
+}
+
+export function clamped(n: number, border: number): boolean {
+    return n >= -border && n <= border;
+}
+
+export function clampedV2(v: Vector2, border: number): boolean {
+    return clamped(v.x, border) && clamped(v.y, border);
+}

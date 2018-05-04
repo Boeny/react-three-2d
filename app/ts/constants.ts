@@ -2,10 +2,6 @@
 
 export const ROOT_ELEMENT_ID = 'root';
 
-export const PI2 = Math.PI / 2;
-
-export const PI4 = PI2 / 2;
-
 export const MOUSE = {
     left: 0,
     wheel: 1,
@@ -21,3 +17,5 @@ export const KEY = {
 };
 
 export const TIMER_DELAY = 1;
+
+export const MAX_SPEED = 1;

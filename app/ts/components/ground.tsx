@@ -15,6 +15,9 @@ const offset = {
 export function Ground(props: PositionProps) {
     return (
         <Stick
+            isStatic={true}
+            hasCollider={true}
+            color={'brown'}
             length={IN_COLUMN_COUNT * IN_ROW_COUNT}
             getPosition={i => new Vector2(i + offset.x, offset.y).add(props.position || new Vector2())}
         />

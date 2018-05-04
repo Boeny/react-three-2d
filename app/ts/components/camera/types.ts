@@ -1,15 +1,18 @@
-import { Vector3, Vector2, OrthographicCamera } from 'three';
+import { Vector2 } from 'three';
 
 export interface State {
     zoom: number;
-    position: Vector3;
+    position: Vector2;
 }
 
 export interface IStore {
     state: State;
-    DOM: OrthographicCamera | null;
-    speed: Vector2 | null;
-    setCamera: (el: any) => void;
-    setSpeed: (v: Vector2 | null) => void;
-    decreaseSpeed: () => void;
+    setSpeed: (v: Vector2) => void;
+    updateConnected: (v: Vector2) => void;
+    connected?: ConnectedStore;
+}
+
+interface ConnectedStore {
+    velocity: Vector2;
+    update: (v: Vector2) => void;
 }

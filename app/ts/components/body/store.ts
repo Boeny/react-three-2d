@@ -4,11 +4,12 @@ import { update } from './actions';
 import { IStore } from './types';
 
 
-export function getStore(p?: Vector2): IStore {
+export function getStore(afterUpdate?: (pos: Vector2) => void): IStore {
     const store: IStore = {
+        afterUpdate,
         position: observable({
-            x: p ? p.x : 0,
-            y: p ? p.y : 0
+            x: 0,
+            y: 0
         }),
         velocity: new Vector2(),
         update() {}

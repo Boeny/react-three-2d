@@ -1,16 +1,16 @@
 import { Vector2 } from 'three';
 import { IStore } from './types';
-import { Static } from './constants';
+import { Colliders } from './constants';
 
 
-export function getStatic(x: number, y: number): IStore | undefined {
-    return Static[`${x}|${y}`];
+export function getCollider(x: number, y: number): IStore | undefined {
+    return Colliders[`${x}|${y}`];
 }
 
-export function setStatic(position: Vector2, store: IStore) {
-    return Static[`${position.x}|${position.y}`] = store;
+export function setCollider(position: Vector2, store: IStore) {
+    return Colliders[`${position.x}|${position.y}`] = store;
 }
 
-export function delStatic(position: Vector2) {
-    Static[`${position.x}|${position.y}`] = undefined;
+export function delCollider(position: Vector2) {
+    Colliders[`${position.x}|${position.y}`] = undefined;
 }

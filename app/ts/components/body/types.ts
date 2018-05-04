@@ -6,4 +6,5 @@ export interface IStore {
     velocity: Vector2;
     update: (v: Vector2) => void;
     name?: string;
+    afterUpdate?: (pos: Vector2) => void;
 }

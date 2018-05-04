@@ -2,18 +2,26 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
+import { setPosition } from './actions';
+import { Body } from '../body';
 
 
-export const Camera = observer((props: PositionProps) => {
+export function Camera(props: PositionProps) {
+    return (
+        <group>
+            <CameraPosition {...props} />
+            <CameraComponent {...props} />
+        </group>
+    );
+}
+
+export const CameraComponent = observer((props: PositionProps) => {
     const width = window.innerWidth;
     const height = window.innerHeight;
-    const { zoom } = Store.state;
-    const position = props.position ? (
-        Store.state.position.add(new Vector3(props.position.x, props.position.y, 0))
-    ) : Store.state.position;
+    const { zoom, position } = Store.state;
+    const pos2 = props.position ? props.position.clone().add(position) : position;
     return (
         <orthographicCamera
-            ref={(el: any) => Store.setCamera(el)}
             name={'camera'}
             left={-width / 2}
             right={width / 2}
@@ -22,7 +30,20 @@ export const Camera = observer((props: PositionProps) => {
             near={0.1}
             far={10}
             zoom={zoom}
-            position={position}
+            position={new Vector3(pos2.x, pos2.y, 5)}
         />
     );
 });
+
+
+function CameraPosition(props: PositionProps) {
+    return (
+        <Body
+            getInstance={body => Store.connected = body}
+            name={'camera'}
+            afterUpdate={setPosition}
+            color={'yellow'}
+            position={props.position}
+        />
+    );
+}

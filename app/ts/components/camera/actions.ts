@@ -1,7 +1,7 @@
 import { action } from 'mobx';
 import { Store } from './store';
-import { Vector3, Vector2 } from 'three';
-import { IStore, State } from './types';
+import { Vector2 } from 'three';
+import { IStore } from './types';
 import { ZOOM_SHIFT } from './constants';
 
 
@@ -11,8 +11,6 @@ const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     if (newZoom < 0) {
         if (store.state.zoom <= 1) {
             store.state.zoom *= width / (width - 2 * dz * store.state.zoom);
-        } else {
-            store.state.zoom += Math.sqrt(store.state.zoom / 10);
         }
     } else {
         store.state.zoom *= width / (width + 2 * dz * store.state.zoom);
@@ -22,24 +20,8 @@ const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
 export const setZoom = action(getZoomSetterAction(Store));
 
 
-const getPositionSetterAction = (store: State) => (v: Vector3) => {
-    store.position = v;
+const getPositionSetterAction = (store: IStore) => (v: Vector2) => {
+    store.state.position = v;
 };
 
-export const setPosition = action(getPositionSetterAction(Store.state));
-
-
-const getUpdatePositionAction = (store: State) => (v: Vector2) => {
-    setPosition(store.position.clone().add(new Vector3(v.x / store.zoom, - v.y / store.zoom, 0)));
-};
-
-export const updatePosition = getUpdatePositionAction(Store.state);
-
-
-const getMoveBySpeedAction = (store: IStore) => () => {
-    if (store.speed !== null) {
-        updatePosition(store.speed);
-    }
-};
-
-export const moveBySpeed = getMoveBySpeedAction(Store);
+export const setPosition = action(getPositionSetterAction(Store));

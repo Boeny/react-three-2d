@@ -6,15 +6,15 @@ import { Parametric } from './parametric';
 const WIDTH_MULTIPLIER = 5;// units
 
 interface Props {
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
     color?: string;
 }
 
 export function Particle(props: Props) {
     return (
         <Parametric
-            position={new Vector2(props.x * WIDTH_MULTIPLIER, props.y * WIDTH_MULTIPLIER)}
+            position={new Vector2((props.x || 0) * WIDTH_MULTIPLIER, (props.y || 0) * WIDTH_MULTIPLIER)}
             slices={1}
             stacks={1}
             parametricFunction={(u, v) => pointInTheQuad(u, v, WIDTH_MULTIPLIER)}
