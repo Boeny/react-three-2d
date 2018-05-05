@@ -5,22 +5,21 @@ import { getStore } from './store';
 import { setCollider } from './utils';
 import { IStore } from './types';
 import { Particle } from '../particle';
-import { Movable } from './constants';
+import { Store as Movable } from '../movable/store';
 
 
 interface ConnectedProps {
     store: IStore;
     color?: string;
-    position: Vector2;
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { position } = props.store;
+    const { store, color } = props;
     return (
         <Particle
-            x={position.x + props.position.x}
-            y={position.y + props.position.y}
-            color={props.color}
+            x={store.position.x}
+            y={store.position.y}
+            color={color}
         />
     );
 });
@@ -39,7 +38,7 @@ interface Props {
 export function Body(props: Props) {
     const { name, getInstance, color, hasCollider, isStatic, afterUpdate } = props;
     const position = props.position || new Vector2();
-    const store = getStore(afterUpdate);
+    const store = getStore(position, afterUpdate);
     if (name) {
         store.name = name;
     }
@@ -54,7 +53,6 @@ export function Body(props: Props) {
         <Connected
             store={store}
             color={color}
-            position={position}
         />
     );
 }

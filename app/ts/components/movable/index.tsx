@@ -1,6 +1,9 @@
 import * as React from 'react';
+import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { Box } from './box';
+import { Store } from './store';
+import { Box } from '../box';
+import { Particle } from '../particle';
 
 
 export function Movable(props: PositionProps) {
@@ -20,10 +23,18 @@ export function Movable(props: PositionProps) {
 
 
 const Content = observer((props: PositionProps) => {
-    props;
+    const position = props.position || new Vector2();
+    const { bodies } = Store;
     return (
         <group>
-
+            {bodies.map((body, i) => body && (
+                <Particle
+                    key={i}
+                    x={position.x + i - bodies.length}
+                    y={position.y}
+                    color={'grey'}
+                />
+            ))}
         </group>
     );
 });

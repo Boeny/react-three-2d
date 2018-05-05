@@ -2,13 +2,14 @@ import { Vector2 } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
+import { Store as Movable } from '~/components/movable/store';
 import { setCursor } from '~/views/html/actions';
 import { setZoom as setCameraZoom } from '~/components/camera/actions';
 import { getMouseVector } from '~/utils';
 import { getCollider } from '~/components/body/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
-import { Movable } from '~/components/body/constants';
 import { MOUSE, KEY, TIMER_DELAY } from '~/constants';
+import { CAMERA_STOPPING_SPEED } from '~/components/camera/constants';
 
 
 let dragStartPoint: Vector2 | null = null;
@@ -25,7 +26,6 @@ export function onMouseDown(e: any) {
             events.setMode('drag');
             setCursor('pointer');
             dragStartPoint = getMouseVector(e);
-            camera.setSpeed(new Vector2());
             break;
         case MOUSE.right:
             break;
@@ -105,24 +105,34 @@ export function onKeyUp(e: any) {
 }
 
 export function onAnimate() {
-    for (let i = 0; i < Movable.length; i += 1) {
-        const body = Movable[i];
-        checkCollision(body, 'x');
-        checkCollision(body, 'y');
+    for (let i = 0; i < Movable.bodies.length; i += 1) {
+        checkCollision(Movable.bodies[i], 'x');
+        checkCollision(Movable.bodies[i], 'y');
     }
 }
 
 function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     const velocity = body.velocity[coo];
+    if (velocity === 0) {
+        return;
+    }
     const collider = coo === 'x' ?
         getCollider(body.position.x + velocity, body.position.y) :
         getCollider(body.position.x, body.position.y + velocity);
-    if (body.velocity[coo] === 0 || collider) {
+    if (collider) {
+        body.velocity[coo] = 0;
         return;
     }
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-    if (body.name !== 'player' || !camera.connected) {
+    if (body.name === 'camera') {
+        if (velocity > 0) {
+            body.velocity[coo] -= velocity > CAMERA_STOPPING_SPEED ? CAMERA_STOPPING_SPEED : 0;
+        } else {
+            body.velocity[coo] -= velocity < -CAMERA_STOPPING_SPEED ? -CAMERA_STOPPING_SPEED : 0;
+        }
         return;
     }
-    camera.updateConnected(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+    if (body.name === 'player' && camera.connected) {
+        camera.updateConnected(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+    }
 }
