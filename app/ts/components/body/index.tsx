@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { getStore } from './store';
-import { setCollider } from './utils';
+import { setCollider } from '../colliders/utils';
 import { IStore } from './types';
 import { Particle } from '../particle';
 import { Store as Movable } from '../movable/store';
@@ -14,11 +14,11 @@ interface ConnectedProps {
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { store, color } = props;
+    const { position, color } = props.store;
     return (
         <Particle
-            x={store.position.x}
-            y={store.position.y}
+            x={position.x}
+            y={position.y}
             color={color}
         />
     );
@@ -38,7 +38,7 @@ interface Props {
 export function Body(props: Props) {
     const { name, getInstance, color, hasCollider, isStatic, afterUpdate } = props;
     const position = props.position || new Vector2();
-    const store = getStore(position, afterUpdate);
+    const store = getStore(position, color || 'white', afterUpdate);
     if (name) {
         store.name = name;
     }
@@ -50,9 +50,6 @@ export function Body(props: Props) {
     }
     getInstance && getInstance(store);
     return (
-        <Connected
-            store={store}
-            color={color}
-        />
+        <Connected store={store} />
     );
 }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { Stick } from './stick';
+import { Particle } from './particle';
 
 
 interface Props {
@@ -15,11 +16,17 @@ interface Props {
 
 export function Box(props: Props) {
     const { width, height, position, children, ...rest } = props;
-    const width2 = width / 2;
-    const height2 = height ? height / 2 : width2;
+    const width2 = Math.floor(width / 2);
+    const height2 = height ? Math.floor(height / 2) : width2;
     const pos = position || new Vector2();
     return (
         <group>
+            <Particle
+                x={pos.x - width2}
+                y={pos.y - height2}
+                width={width}
+                height={height || width}
+            />
             <Stick
                 {...rest}
                 length={height || width}

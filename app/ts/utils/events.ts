@@ -6,7 +6,7 @@ import { Store as Movable } from '~/components/movable/store';
 import { setCursor } from '~/views/html/actions';
 import { setZoom as setCameraZoom } from '~/components/camera/actions';
 import { getMouseVector } from '~/utils';
-import { getCollider } from '~/components/body/utils';
+import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { MOUSE, KEY, TIMER_DELAY } from '~/constants';
 import { CAMERA_STOPPING_SPEED } from '~/components/camera/constants';
@@ -125,10 +125,13 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     }
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     if (body.name === 'camera') {
-        if (velocity > 0) {
-            body.velocity[coo] -= velocity > CAMERA_STOPPING_SPEED ? CAMERA_STOPPING_SPEED : 0;
+        if (velocity > CAMERA_STOPPING_SPEED) {
+            body.velocity[coo] -= CAMERA_STOPPING_SPEED;
+        } else
+        if (velocity < -CAMERA_STOPPING_SPEED) {
+            body.velocity[coo] += CAMERA_STOPPING_SPEED;
         } else {
-            body.velocity[coo] -= velocity < -CAMERA_STOPPING_SPEED ? -CAMERA_STOPPING_SPEED : 0;
+            body.velocity[coo] = 0;
         }
         return;
     }

@@ -4,9 +4,10 @@ import { update } from './actions';
 import { IStore } from './types';
 
 
-export function getStore(position: Vector2, afterUpdate?: (pos: Vector2) => void): IStore {
+export function getStore(position: Vector2, color: string, afterUpdate?: (pos: Vector2) => void): IStore {
     const store: IStore = {
         afterUpdate,
+        color,
         position: observable({
             x: position.x,
             y: position.y
