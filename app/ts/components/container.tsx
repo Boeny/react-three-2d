@@ -15,7 +15,7 @@ interface Props extends PositionProps {
 export function Container(props: Props) {
     const { data, borderColor } = props;
     const count = data.length;
-    const height = Math.floor((count - 1) / WIDTH);
+    const height = count > 0 ? Math.floor((count - 1) / WIDTH) + 1 : 0;
     const position = props.position || new Vector2();
     return (
         <Box
