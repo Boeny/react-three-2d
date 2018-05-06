@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { Vector2, Vector3 } from 'three';
 import { Parametric } from './parametric';
+import { WIDTH_SCALE } from '~/constants';
 
-
-const WIDTH_MULTIPLIER = 5;// units
 
 interface Props {
     x?: number;
@@ -15,14 +14,14 @@ interface Props {
 
 export function Particle(props: Props) {
     const { x, y, color } = props;
-    const width = (props.width || 1) * WIDTH_MULTIPLIER;
-    const height = props.height ? props.height * WIDTH_MULTIPLIER : width;
+    const width = (props.width || 1) * WIDTH_SCALE;
+    const height = props.height ? props.height * WIDTH_SCALE : width;
     if (width <= 0 && height <= 0) {
         return null;
     }
     return (
         <Parametric
-            position={new Vector2((x || 0) * WIDTH_MULTIPLIER, (y || 0) * WIDTH_MULTIPLIER)}
+            position={new Vector2((x || 0) * WIDTH_SCALE, (y || 0) * WIDTH_SCALE)}
             slices={1}
             stacks={1}
             parametricFunction={(u, v) => pointInTheQuad(u, v, width, height)}
