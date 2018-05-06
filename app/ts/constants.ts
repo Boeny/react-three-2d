@@ -21,3 +21,5 @@ export const TIMER_DELAY = 1;
 export const MAX_SPEED = 1;
 
 export const MIN_SPEED = 0.1;
+
+export const SHOW_AS_WIREFRAME = false;

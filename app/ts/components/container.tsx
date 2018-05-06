@@ -15,15 +15,16 @@ interface Props extends PositionProps {
 export function Container(props: Props) {
     const { data, borderColor } = props;
     const count = data.length;
-    const height = count > 0 ? Math.floor((count - 1) / WIDTH) + 1 : 0;
+    const width = WIDTH > count ? count : WIDTH;
+    const height = count > 0 ? Math.floor(count / WIDTH) + 1 : 0;
     const position = props.position || new Vector2();
     return (
         <Box
             isStatic={true}
             hasCollider={true}
             color={borderColor || 'grey'}
-            width={(WIDTH > count ? count : WIDTH) + 1}
-            height={height}
+            width={width + 2}
+            height={height + 2}
             position={props.position}
         >
             <Content

@@ -17,6 +17,9 @@ export function Particle(props: Props) {
     const { x, y, color } = props;
     const width = (props.width || 1) * WIDTH_MULTIPLIER;
     const height = props.height ? props.height * WIDTH_MULTIPLIER : width;
+    if (width <= 0 && height <= 0) {
+        return null;
+    }
     return (
         <Parametric
             position={new Vector2((x || 0) * WIDTH_MULTIPLIER, (y || 0) * WIDTH_MULTIPLIER)}

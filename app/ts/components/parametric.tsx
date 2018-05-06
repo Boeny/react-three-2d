@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Color, VertexColors, Vector3 } from 'three';
+import { SHOW_AS_WIREFRAME } from '~/constants';
 
 
 interface Props extends PositionProps {
@@ -19,7 +20,7 @@ export function Parametric(props: Props) {
                 stacks={stacks}
             />
             <meshBasicMaterial
-                wireframe={false}
+                wireframe={SHOW_AS_WIREFRAME}
                 color={new Color(color || 'white')}
                 vertexColors={VertexColors}
             />

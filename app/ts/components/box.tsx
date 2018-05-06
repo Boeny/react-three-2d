@@ -21,10 +21,10 @@ export function Box(props: Props) {
     return (
         <group>
             <Particle
-                x={pos.x}
-                y={pos.y}
-                width={width}
-                height={height}
+                x={pos.x + 1}
+                y={pos.y + 1}
+                width={width - 1}
+                height={height - 1}
             />
             <Stick
                 {...rest}
@@ -34,17 +34,17 @@ export function Box(props: Props) {
             <Stick
                 {...rest}
                 length={width}
-                getPosition={i => (new Vector2(i, height)).add(pos)}
+                getPosition={i => (new Vector2(i, height - 1)).add(pos)}
             />
             <Stick
                 {...rest}
-                length={height}
-                getPosition={i => (new Vector2(0, i)).add(pos)}
+                length={height - 2}
+                getPosition={i => (new Vector2(0, i + 1)).add(pos)}
             />
             <Stick
                 {...rest}
-                length={height}
-                getPosition={i => (new Vector2(width, i)).add(pos)}
+                length={height - 2}
+                getPosition={i => (new Vector2(width - 1, i + 1)).add(pos)}
             />
             {children}
         </group>
