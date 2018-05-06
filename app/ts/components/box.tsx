@@ -15,37 +15,36 @@ interface Props {
 }
 
 export function Box(props: Props) {
-    const { width, height, position, children, ...rest } = props;
-    const width2 = Math.floor(width / 2);
-    const height2 = height ? Math.floor(height / 2) : width2;
+    const { width, position, children, ...rest } = props;
     const pos = position || new Vector2();
+    const height = props.height || width;
     return (
         <group>
             <Particle
-                x={pos.x - width2}
-                y={pos.y - height2}
+                x={pos.x}
+                y={pos.y}
                 width={width}
-                height={height || width}
-            />
-            <Stick
-                {...rest}
-                length={height || width}
-                getPosition={i => (new Vector2(width2, i - height2)).add(pos)}
-            />
-            <Stick
-                {...rest}
-                length={height || width}
-                getPosition={i => (new Vector2(-width2, i - height2)).add(pos)}
+                height={height}
             />
             <Stick
                 {...rest}
                 length={width}
-                getPosition={i => (new Vector2(i - width2, height2)).add(pos)}
+                getPosition={i => (new Vector2(i, 0)).add(pos)}
             />
             <Stick
                 {...rest}
                 length={width}
-                getPosition={i => (new Vector2(i - width2, -height2)).add(pos)}
+                getPosition={i => (new Vector2(i, height)).add(pos)}
+            />
+            <Stick
+                {...rest}
+                length={height}
+                getPosition={i => (new Vector2(0, i)).add(pos)}
+            />
+            <Stick
+                {...rest}
+                length={height}
+                getPosition={i => (new Vector2(width, i)).add(pos)}
             />
             {children}
         </group>

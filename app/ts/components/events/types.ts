@@ -1,6 +1,6 @@
 
 
-export type Mode = 'idle' | 'drag' | 'target';
+export type Mode = 'idle' | 'drag';
 
 export interface State {
     mouseMode: Mode;

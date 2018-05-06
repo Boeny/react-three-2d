@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { Mode } from './types';
@@ -7,15 +8,16 @@ import { Particle } from '../particle';
 
 
 export function Events(props: PositionProps) {
+    const position = props.position || new Vector2();
     return (
         <Box
             isStatic={true}
             hasCollider={true}
             color={'blue'}
             width={20}
-            position={props.position}
+            position={position}
         >
-            <Content {...props} />
+            <Content position={(new Vector2(1, 1)).add(position)} />
         </Box>
     );
 }
@@ -47,6 +49,5 @@ function getColorByMode(mode: Mode): string {
     switch (mode) {
         case 'idle': return 'blue';
         case 'drag': return 'orange';
-        case 'target': return 'red';
     }
 }
