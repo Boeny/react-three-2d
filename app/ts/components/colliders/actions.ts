@@ -3,8 +3,8 @@ import { Store } from './store';
 import { IStore } from './types';
 
 
-export const getAddColliderAction = (store: IStore) => (el: string) => {
-    store.colliders.push({ color: el });
+export const getAddColliderAction = (store: IStore) => (el: { name: string, color: string }) => {
+    store.colliders.push(el);
 };
 
 export const addCollider = action(getAddColliderAction(Store));

@@ -9,7 +9,10 @@ export function getCollider(x: number, y: number): IBodyStore | undefined {
 }
 
 export function setCollider(position: Vector2, store: IBodyStore) {
-    addCollider(store.color);
+    addCollider({
+        name: store.name || '',
+        color: store.color
+    });
     return Colliders[`${position.x}|${position.y}`] = store;
 }
 

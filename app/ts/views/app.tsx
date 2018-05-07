@@ -3,7 +3,8 @@ import * as React3 from 'react3';
 import * as events from '~/utils/events';
 import { Vector2 } from 'three';
 import { setCanvas } from './html/actions';
-import { Camera, Player, Events, Movable, Colliders, Enemies } from '~/components';
+import { Camera, Player, Events, Movable, Colliders, Enemies, Constants } from '~/components';
+import { Html } from './html';
 
 
 export function App() {
@@ -11,6 +12,7 @@ export function App() {
     const height = window.innerHeight;
     return (
         <React.Fragment>
+            <Html />
             <React3
                 mainCamera={'camera'}
                 width={width}
@@ -25,6 +27,7 @@ export function App() {
                     <Enemies />
                     <Movable position={new Vector2(-40, -20)} />
                     <Colliders position={new Vector2(40, -20)} />
+                    <Constants position={new Vector2(0, -20)} />
                 </scene>
             </React3>
         </React.Fragment>

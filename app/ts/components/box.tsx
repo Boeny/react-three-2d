@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { Stick } from './stick';
+// import { Stick } from './stick';
 import { Particle } from './particle';
 
 
@@ -16,6 +16,7 @@ interface Props {
 
 export function Box(props: Props) {
     const { width, position, children, ...rest } = props;
+    rest;
     const pos = position || new Vector2();
     const height = props.height || width;
     return (
@@ -23,10 +24,16 @@ export function Box(props: Props) {
             <Particle
                 x={pos.x + 1}
                 y={pos.y + 1}
-                width={width - 1}
-                height={height - 1}
+                width={width - 2}
+                height={height - 2}
             />
-            <Stick
+            {children}
+        </group>
+    );
+}
+
+/*
+<Stick
                 {...rest}
                 length={width}
                 getPosition={i => (new Vector2(i, 0)).add(pos)}
@@ -46,7 +53,4 @@ export function Box(props: Props) {
                 length={height - 2}
                 getPosition={i => (new Vector2(width - 1, i + 1)).add(pos)}
             />
-            {children}
-        </group>
-    );
-}
+*/

@@ -2,7 +2,8 @@ import { Vector2 } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
-import { Store as Movable } from '~/components/movable/store';
+import { Store as movable } from '~/components/movable/store';
+import { Store as html } from '~/views/html/store';
 import { setCursor } from '~/views/html/actions';
 import { setZoom as setCameraZoom } from '~/components/camera/actions';
 import { getMouseVector } from '~/utils';
@@ -105,9 +106,9 @@ export function onKeyUp(e: any) {
 }
 
 export function onAnimate() {
-    for (let i = 0; i < Movable.bodies.length; i += 1) {
-        checkCollision(Movable.bodies[i], 'x');
-        checkCollision(Movable.bodies[i], 'y');
+    for (let i = 0; i < movable.bodies.length; i += 1) {
+        checkCollision(movable.bodies[i], 'x');
+        checkCollision(movable.bodies[i], 'y');
     }
 }
 
@@ -121,8 +122,10 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
+        html.content = collider.name || null;
         return;
     }
+    html.content = null;
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     if (body.name === 'camera') {
         if (velocity > CAMERA_STOPPING_SPEED) {
