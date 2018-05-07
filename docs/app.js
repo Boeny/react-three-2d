@@ -110058,7 +110058,7 @@ function Box(props) {
     var pos = position || new three_1.Vector2();
     var height = props.height || width;
     return (React.createElement("group", null,
-        React.createElement(particle_1.Particle, { x: pos.x + 1, y: pos.y + 1, width: width - 2, height: height - 2 }),
+        React.createElement(particle_1.Particle, { color: '#cccccc', x: pos.x + 1, y: pos.y + 1, width: width - 2, height: height - 2 }),
         children));
 }
 exports.Box = Box;
