@@ -2,12 +2,12 @@ import { action } from 'mobx';
 import { Store } from './store';
 import { Vector2 } from 'three';
 import { IStore } from './types';
-import { ZOOM_SHIFT } from './constants';
+import { ZOOM_MULT } from './constants';
 
 
 const getZoomSetterAction = (store: IStore) => (newZoom: number) => {
     const width = window.innerWidth;
-    const dz = ZOOM_SHIFT;
+    const dz = ZOOM_MULT;
     if (newZoom < 0) {
         if (store.state.zoom <= 1) {
             store.state.zoom *= width / (width - 2 * dz * store.state.zoom);

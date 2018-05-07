@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as React3 from 'react3';
+import { Store as html } from './html/store';
 import * as events from '~/utils/events';
 import { Vector2 } from 'three';
-import { setCanvas } from './html/actions';
 import { Camera, Player, Events, Movable, Colliders, Enemies, Constants } from '~/components';
 import { Html } from './html';
 
@@ -17,7 +17,7 @@ export function App() {
                 mainCamera={'camera'}
                 width={width}
                 height={height}
-                canvasRef={setCanvas}
+                canvasRef={html.setCanvas}
                 {...events}
             >
                 <scene>

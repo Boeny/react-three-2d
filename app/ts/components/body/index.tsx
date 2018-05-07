@@ -43,7 +43,7 @@ export function Body(props: Props) {
         store.name = name;
     }
     if (hasCollider) {
-        setCollider(position, store);
+        setCollider(store);
     }
     if (!isStatic) {
         Movable.push(store);

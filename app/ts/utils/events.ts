@@ -4,18 +4,15 @@ import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
-import { setCursor } from '~/views/html/actions';
 import { setZoom as setCameraZoom } from '~/components/camera/actions';
-import { getMouseVector } from '~/utils';
+import { getMouseVector, toScreenVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
-import { MOUSE, KEY, TIMER_DELAY } from '~/constants';
+import { MOUSE, KEY } from '~/constants';
 import { CAMERA_STOPPING_SPEED } from '~/components/camera/constants';
 
 
 let dragStartPoint: Vector2 | null = null;
-let timer = 0;
-
 
 export function onWheel(e: any) {
     setCameraZoom(e.deltaY);
@@ -25,7 +22,7 @@ export function onMouseDown(e: any) {
     switch (e.button) {
         case MOUSE.left:
             events.setMode('drag');
-            setCursor('pointer');
+            html.setCursor('pointer');
             dragStartPoint = getMouseVector(e);
             break;
         case MOUSE.right:
@@ -43,7 +40,7 @@ export function onMouseUp(e: any) {
                     return;
                 }
                 events.setMode('idle');
-                setCursor('default');
+                html.setCursor('default');
                 camera.setSpeed(new Vector2());
                 dragStartPoint = null;
             }
@@ -60,14 +57,9 @@ export function onMouseMove(e: any) {
         if (dragStartPoint === null) {
             return;
         }
-        if (timer > TIMER_DELAY) {
-            timer = 0;
-            const v = getMouseVector(e);
-            camera.setSpeed(dragStartPoint.sub(v));
-            dragStartPoint = v;
-        } else {
-            timer += 1;
-        }
+        const v = getMouseVector(e);
+        camera.setSpeed(dragStartPoint.sub(v));
+        dragStartPoint = v;
     }
 }
 
@@ -122,10 +114,16 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
-        html.content = collider.name || null;
+        html.setContent({
+            name: collider.name,
+            position: toScreenVector(new Vector2(
+                collider.position.x - body.position.x,
+                collider.position.y - body.position.y
+            ))
+        });
         return;
     }
-    html.content = null;
+    html.setContent(null);
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     if (body.name === 'camera') {
         if (velocity > CAMERA_STOPPING_SPEED) {

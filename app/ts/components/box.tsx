@@ -34,23 +34,23 @@ export function Box(props: Props) {
 
 /*
 <Stick
-                {...rest}
-                length={width}
-                getPosition={i => (new Vector2(i, 0)).add(pos)}
-            />
-            <Stick
-                {...rest}
-                length={width}
-                getPosition={i => (new Vector2(i, height - 1)).add(pos)}
-            />
-            <Stick
-                {...rest}
-                length={height - 2}
-                getPosition={i => (new Vector2(0, i + 1)).add(pos)}
-            />
-            <Stick
-                {...rest}
-                length={height - 2}
-                getPosition={i => (new Vector2(width - 1, i + 1)).add(pos)}
-            />
+    {...rest}
+    length={width}
+    getPosition={i => (new Vector2(i, 0)).add(pos)}
+/>
+<Stick
+    {...rest}
+    length={width}
+    getPosition={i => (new Vector2(i, height - 1)).add(pos)}
+/>
+<Stick
+    {...rest}
+    length={height - 2}
+    getPosition={i => (new Vector2(0, i + 1)).add(pos)}
+/>
+<Stick
+    {...rest}
+    length={height - 2}
+    getPosition={i => (new Vector2(width - 1, i + 1)).add(pos)}
+/>
 */

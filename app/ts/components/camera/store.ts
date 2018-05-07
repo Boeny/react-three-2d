@@ -1,8 +1,8 @@
 import { observable } from 'mobx';
 import { Vector2 } from 'three';
-import { clamped } from '~/utils';
+import { clamped, toWorldVector } from '~/utils';
 import { IStore } from './types';
-import { MAX_SPEED, WIDTH_SCALE } from '~/constants';
+import { MAX_SPEED } from '~/constants';
 import { MIN_CAMERA_SPEED } from './constants';
 
 
@@ -24,6 +24,6 @@ export const Store: IStore = {
         if (!this.connected) {
             return;
         }
-        this.connected.update(v.clone().multiplyScalar(WIDTH_SCALE));
+        this.connected.update(toWorldVector(v.clone()));
     }
 };

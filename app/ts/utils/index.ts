@@ -1,4 +1,5 @@
 import { Color, Vector3, Vector2 } from 'three';
+import { WIDTH_SCALE } from '~/constants';
 
 
 export function convertToColor(color: string): Color {
@@ -54,4 +55,12 @@ export function clamped(n: number, border: number): boolean {
 
 export function clampedVector(v: Vector2, border: number): boolean {
     return clamped(v.x, border) && clamped(v.y, border);
+}
+
+export function toWorldVector(v: Vector2) {
+    return v.multiplyScalar(WIDTH_SCALE);
+}
+
+export function toScreenVector(v: Vector2) {
+    return v.multiplyScalar(1 / WIDTH_SCALE);
 }

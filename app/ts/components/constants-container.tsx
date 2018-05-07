@@ -6,7 +6,7 @@ import { Container } from './container';
 export function Constants(props: PositionProps) {
     return (
         <Container
-            borderColor={'green'}
+            borderColor={'grey'}
             data={Object.keys(constants).map(name => ({
                 name,
                 color: 'grey'

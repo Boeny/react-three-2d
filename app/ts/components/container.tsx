@@ -1,18 +1,23 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { observer } from 'mobx-react';
+// import { observer } from 'mobx-react';
 import { Box } from './box';
 import { Particle } from './particle';
 
 
 const WIDTH = 20;
 
+interface Data {
+    color: string;
+    name?: string;
+}
+
 interface Props extends PositionProps {
-    data: { color: string }[];
+    data: Data[];
     borderColor?: string;
 }
 
-export function Container(props: Props) {
+export const Container = ((props: Props) => {
     const { data, borderColor } = props;
     const count = data.length;
     const width = WIDTH > count ? count : WIDTH;
@@ -33,15 +38,15 @@ export function Container(props: Props) {
             />
         </Box>
     );
-}
+});
 
 
 interface ContentProps {
-    data: { color: string }[];
+    data: Data[];
     position: Vector2;
 }
 
-const Content = observer((props: ContentProps) => {
+const Content = ((props: ContentProps) => {
     const position = props.position || new Vector2();
     const { data } = props;
     return (
@@ -49,8 +54,10 @@ const Content = observer((props: ContentProps) => {
             {data.map((item, i) => (
                 <Particle
                     key={i}
+                    hasCollider={true}
                     x={position.x + (i % WIDTH)}
                     y={position.y + Math.floor(i / WIDTH)}
+                    name={item.name}
                     color={item.color}
                 />
             ))}

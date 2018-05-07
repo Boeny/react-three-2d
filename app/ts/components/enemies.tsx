@@ -19,6 +19,7 @@ function Enemy() {
         <Body
             name={'enemy'}
             color={'red'}
+            hasCollider={true}
             position={new Vector2(20, 20)}
         />
     );
