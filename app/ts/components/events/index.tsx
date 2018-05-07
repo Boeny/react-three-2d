@@ -1,12 +1,10 @@
 import * as React from 'react';
 import * as constants from '../camera/constants';
 import { Vector2 } from 'three';
-import { observer } from 'mobx-react';
 import { Store } from './store';
-import { Mode } from './types';
 import { Box } from '../box';
-import { Particle } from '../particle';
 import { Container } from '../container';
+import { Mode, getColorByMouseMode, getColorByKeyMode } from './mode';
 
 
 export function Events(props: PositionProps) {
@@ -29,10 +27,19 @@ interface Props {
     position: Vector2;
 }
 
-const Content = observer((props: Props) => {
+const Content = ((props: Props) => {
     return (
         <group>
-            <MouseMode position={(new Vector2(5, 1)).add(props.position)} />
+            <Mode
+                position={(new Vector2(5, 1)).add(props.position)}
+                state={Store.state}
+                getColor={getColorByMouseMode}
+            />
+            <Mode
+                position={(new Vector2(10, 1)).add(props.position)}
+                state={Store.state}
+                getColor={getColorByKeyMode}
+            />
             <Container
                 borderColor={'grey'}
                 data={Object.keys(constants).map(name => ({
@@ -44,21 +51,3 @@ const Content = observer((props: Props) => {
         </group>
     );
 });
-
-const MouseMode = observer((props: PositionProps) => {
-    const { position } = props;
-    return (
-        <Particle
-            x={position ? position.x : 0}
-            y={position ? position.y : 0}
-            color={getColorByMode(Store.state.mouseMode)}
-        />
-    );
-});
-
-function getColorByMode(mode: Mode): string {
-    switch (mode) {
-        case 'idle': return 'blue';
-        case 'drag': return 'orange';
-    }
-}

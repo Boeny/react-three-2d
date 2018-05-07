@@ -21,7 +21,7 @@ export function onWheel(e: any) {
 export function onMouseDown(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            events.setMode('drag');
+            events.setMouseMode('drag');
             html.setCursor('pointer');
             dragStartPoint = getMouseVector(e);
             break;
@@ -39,7 +39,7 @@ export function onMouseUp(e: any) {
                 if (dragStartPoint === null) {
                     return;
                 }
-                events.setMode('idle');
+                events.setMouseMode('idle');
                 html.setCursor('default');
                 camera.setSpeed(new Vector2());
                 dragStartPoint = null;
@@ -63,7 +63,10 @@ export function onMouseMove(e: any) {
     }
 }
 
-export function onKeyDown(e: any) {
+export function onKeyDown(e: KeyboardEvent) {
+    if (e.shiftKey) {
+        events.setKeyMode({ type: 'step', key: e.key });
+    }
     switch (e.key) {
         case KEY.LEFT:
             player.moveLeft();
@@ -80,8 +83,13 @@ export function onKeyDown(e: any) {
     }
 }
 
-export function onKeyUp(e: any) {
-    switch (e.key) {
+export function onKeyUp(e: KeyboardEvent) {
+    events.setKeyMode({ type: 'idle' });
+    stop(e.key);
+}
+
+function stop(key: string) {
+    switch (key) {
         case KEY.LEFT:
             player.stopMovingLeft();
             break;
@@ -101,6 +109,9 @@ export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
         checkCollision(movable.bodies[i], 'x');
         checkCollision(movable.bodies[i], 'y');
+        if (events.state.keyMode.type === 'step' && movable.bodies[i].name === 'player') {
+            stop(events.state.keyMode.key);
+        }
     }
 }
 
