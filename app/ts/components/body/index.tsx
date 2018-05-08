@@ -5,7 +5,7 @@ import { getStore } from './store';
 import { setCollider } from '../colliders/utils';
 import { IStore } from './types';
 import { Particle } from '../particle';
-import { Store as Movable } from '../movable/store';
+import { Store as movable } from '../movable/store';
 
 
 interface ConnectedProps {
@@ -46,7 +46,7 @@ export function Body(props: Props) {
         setCollider(store);
     }
     if (!isStatic) {
-        Movable.push(store);
+        movable.add(store);
     }
     getInstance && getInstance(store);
     return (

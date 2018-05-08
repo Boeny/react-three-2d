@@ -1,13 +1,12 @@
-// import { observable } from 'mobx';
-import { push } from './actions';
-import { IStore } from './types';
+// import { observable, runInAction } from 'mobx';
+import { IStore, IBodyStore } from './types';
 
 
-const Store: IStore = {
+export const Store: IStore = {
     bodies: [],// observable([]),
-    push() {}
+    add(el: IBodyStore) {
+        // runInAction(() => {
+        this.bodies.push(el);
+        // });
+    }
 };
-
-Store.push = push(Store);
-
-export { Store };

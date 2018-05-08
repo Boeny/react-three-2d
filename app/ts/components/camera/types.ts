@@ -9,6 +9,8 @@ export interface IStore {
     state: State;
     setSpeed: (v: Vector2) => void;
     updateConnected: (v: Vector2) => void;
+    setZoom: (newZoom: number) => void;
+    setPosition: (v: Vector2) => void;
     connected?: ConnectedStore;
 }
 

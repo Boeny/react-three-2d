@@ -1,9 +1,9 @@
-import { observable } from 'mobx';
+import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
 import { clamped, toWorldVector } from '~/utils';
 import { IStore } from './types';
 import { MAX_SPEED } from '~/constants';
-import { MIN_CAMERA_SPEED } from './constants';
+import { MIN_CAMERA_SPEED, ZOOM_MULT } from './constants';
 
 
 export const Store: IStore = {
@@ -21,9 +21,27 @@ export const Store: IStore = {
         );
     },
     updateConnected(v: Vector2) {
-        if (!this.connected) {
-            return;
+        if (this.connected) {
+            this.connected.update(toWorldVector(v.clone()));
         }
-        this.connected.update(toWorldVector(v.clone()));
+    },
+    setZoom(newZoom: number) {
+        const width = window.innerWidth;
+        const dz = ZOOM_MULT;
+        const { zoom } = this.state;
+        runInAction(() => {
+            if (newZoom >= 0) {
+                this.state.zoom *= width / (width + 2 * dz * zoom);
+                return;
+            }
+            if (zoom <= 1) {
+                this.state.zoom *= width / (width - 2 * dz * zoom);
+            }
+        });
+    },
+    setPosition(v: Vector2) {
+        runInAction(() => {
+            this.state.position = v;
+        });
     }
 };

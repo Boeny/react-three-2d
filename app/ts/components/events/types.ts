@@ -1,7 +1,7 @@
 
 
 export type MouseMode = 'idle' | 'drag';
-export type KeyMode = { type: 'idle' } | { type: 'step', key: string };
+export type KeyMode = 'idle' | 'step';
 
 export interface State {
     mouseMode: MouseMode;

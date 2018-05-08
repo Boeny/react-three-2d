@@ -1,5 +1,5 @@
 import { Vector2 } from 'three';
-import { addCollider } from './actions';
+import { Store } from './store';
 import { Collider } from './types';
 import { Colliders } from './constants';
 
@@ -9,7 +9,7 @@ export function getCollider(x: number, y: number): Collider | undefined {
 }
 
 export function setCollider(store: Collider) {
-    addCollider({
+    Store.add({
         name: store.name || '',
         color: store.color
     });

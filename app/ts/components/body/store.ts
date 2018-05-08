@@ -1,11 +1,10 @@
-import { observable } from 'mobx';
+import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { update } from './actions';
 import { IStore } from './types';
 
 
 export function getStore(position: Vector2, color: string, afterUpdate?: (pos: Vector2) => void): IStore {
-    const store: IStore = {
+    return {
         afterUpdate,
         color,
         position: observable({
@@ -13,8 +12,14 @@ export function getStore(position: Vector2, color: string, afterUpdate?: (pos: V
             y: position.y
         }),
         velocity: new Vector2(),
-        update() {}
+        update(v: Vector2) {
+            runInAction(() => {
+                this.position.x += v.x;
+                this.position.y += v.y;
+                this.afterUpdate && this.afterUpdate(
+                    new Vector2(this.position.x, this.position.y)
+                );
+            });
+        }
     };
-    store.update = update(store);
-    return store;
 }

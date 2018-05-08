@@ -9,7 +9,6 @@ import { getMouseVector, toScreenVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { MOUSE, KEY } from '~/constants';
-import { CAMERA_STOPPING_SPEED } from '~/components/camera/constants';
 
 
 let dragStartPoint: Vector2 | null = null;
@@ -35,15 +34,13 @@ export function onMouseDown(e: any) {
 export function onMouseUp(e: any) {
     switch (e.button) {
         case MOUSE.left:
-            if (events.state.mouseMode === 'drag') {
-                if (dragStartPoint === null) {
-                    return;
-                }
-                events.setMouseMode('idle');
-                html.setCursor('default');
-                camera.setSpeed(new Vector2());
-                dragStartPoint = null;
+            if (dragStartPoint === null) {
+                return;
             }
+            events.setMouseMode('idle');
+            html.setCursor('default');
+            camera.setSpeed(new Vector2());
+            dragStartPoint = null;
             break;
         case MOUSE.right:
             break;
@@ -53,19 +50,17 @@ export function onMouseUp(e: any) {
 }
 
 export function onMouseMove(e: any) {
-    if (events.state.mouseMode === 'drag') {
-        if (dragStartPoint === null) {
-            return;
-        }
-        const v = getMouseVector(e);
-        camera.setSpeed(dragStartPoint.sub(v));
-        dragStartPoint = v;
+    if (dragStartPoint === null || events.state.mouseMode !== 'drag') {
+        return;
     }
+    const v = getMouseVector(e);
+    camera.setSpeed(dragStartPoint.sub(v));
+    dragStartPoint = v;
 }
 
 export function onKeyDown(e: KeyboardEvent) {
     if (e.shiftKey) {
-        events.setKeyMode({ type: 'step', key: e.key });
+        events.setKeyMode('step');
     }
     switch (e.key) {
         case KEY.LEFT:
@@ -84,12 +79,8 @@ export function onKeyDown(e: KeyboardEvent) {
 }
 
 export function onKeyUp(e: KeyboardEvent) {
-    events.setKeyMode({ type: 'idle' });
-    stop(e.key);
-}
-
-function stop(key: string) {
-    switch (key) {
+    events.setKeyMode('idle');
+    switch (e.key) {
         case KEY.LEFT:
             player.stopMovingLeft();
             break;
@@ -109,9 +100,6 @@ export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
         checkCollision(movable.bodies[i], 'x');
         checkCollision(movable.bodies[i], 'y');
-        if (events.state.keyMode.type === 'step' && movable.bodies[i].name === 'player') {
-            stop(events.state.keyMode.key);
-        }
     }
 }
 
@@ -136,18 +124,10 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     }
     html.setContent(null);
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-    if (body.name === 'camera') {
-        if (velocity > CAMERA_STOPPING_SPEED) {
-            body.velocity[coo] -= CAMERA_STOPPING_SPEED;
-        } else
-        if (velocity < -CAMERA_STOPPING_SPEED) {
-            body.velocity[coo] += CAMERA_STOPPING_SPEED;
-        } else {
-            body.velocity[coo] = 0;
-        }
-        return;
-    }
     if (body.name === 'player' && camera.connected) {
         camera.updateConnected(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+    }
+    if (events.state.keyMode === 'step') {
+        body.velocity[coo] = 0;
     }
 }
