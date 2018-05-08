@@ -4,7 +4,6 @@ import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
-import { setZoom as setCameraZoom } from '~/components/camera/actions';
 import { getMouseVector, toScreenVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
@@ -14,7 +13,7 @@ import { MOUSE, KEY } from '~/constants';
 let dragStartPoint: Vector2 | null = null;
 
 export function onWheel(e: any) {
-    setCameraZoom(e.deltaY);
+    camera.setZoom(e.deltaY);
 }
 
 export function onMouseDown(e: any) {

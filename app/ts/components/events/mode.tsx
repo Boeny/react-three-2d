@@ -30,7 +30,7 @@ export function getColorByMouseMode(state: State): string {
 }
 
 export function getColorByKeyMode(state: State): string {
-    switch (state.keyMode.type) {
+    switch (state.keyMode) {
         case 'idle': return 'blue';
         case 'step': return 'orange';
     }

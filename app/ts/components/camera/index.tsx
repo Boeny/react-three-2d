@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { setPosition } from './actions';
 import { Body } from '../body';
 
 
@@ -41,7 +40,7 @@ function CameraPosition(props: PositionProps) {
         <Body
             getInstance={body => Store.connected = body}
             name={'camera'}
-            afterUpdate={setPosition}
+            afterUpdate={v => Store.setPosition(v)}
             color={'yellow'}
             position={props.position}
         />
