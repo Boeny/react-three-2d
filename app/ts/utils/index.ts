@@ -57,10 +57,14 @@ export function clampedVector(v: Vector2, border: number): boolean {
     return clamped(v.x, border) && clamped(v.y, border);
 }
 
-export function toWorldVector(v: Vector2) {
+export function toWorldVector(v: Vector2): Vector2 {
     return v.multiplyScalar(WIDTH_SCALE);
 }
 
-export function toScreenVector(v: Vector2) {
+export function toScreenVector(v: Vector2): Vector2 {
     return v.multiplyScalar(1 / WIDTH_SCALE);
+}
+
+export function boolColor(v: boolean): string {
+    return v ? 'orange' : 'blue';
 }

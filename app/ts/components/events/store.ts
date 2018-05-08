@@ -1,20 +1,20 @@
 import { observable, runInAction } from 'mobx';
-import { IStore, MouseMode, KeyMode } from './types';
+import { IStore } from './types';
 
 
 export const Store: IStore = {
     state: observable({
-        mouseMode: 'idle' as MouseMode,
-        keyMode: 'idle' as KeyMode
+        mouseDragMode: false,
+        stepMode: false
     }),
-    setMouseMode(mode: MouseMode) {
+    setMouseDragMode(mode: boolean) {
         runInAction(() => {
-            this.state.mouseMode = mode;
+            this.state.mouseDragMode = mode;
         });
     },
-    setKeyMode(mode: KeyMode) {
+    setStepMode(mode: boolean) {
         runInAction(() => {
-            this.state.keyMode = mode;
+            this.state.stepMode = mode;
         });
     }
 };

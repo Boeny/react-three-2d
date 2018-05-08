@@ -4,7 +4,7 @@ import { Vector2 } from 'three';
 import { Store } from './store';
 import { Box } from '../box';
 import { Container } from '../container';
-import { Mode, getColorByMouseMode, getColorByKeyMode } from './mode';
+import { Mode } from './mode';
 
 
 export function Events(props: PositionProps) {
@@ -32,13 +32,13 @@ const Content = ((props: Props) => {
         <group>
             <Mode
                 position={(new Vector2(5, 1)).add(props.position)}
+                field={'mouseDragMode'}
                 state={Store.state}
-                getColor={getColorByMouseMode}
             />
             <Mode
                 position={(new Vector2(10, 1)).add(props.position)}
+                field={'stepMode'}
                 state={Store.state}
-                getColor={getColorByKeyMode}
             />
             <Container
                 borderColor={'grey'}

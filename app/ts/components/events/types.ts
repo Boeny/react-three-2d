@@ -1,15 +1,12 @@
 
 
-export type MouseMode = 'idle' | 'drag';
-export type KeyMode = 'idle' | 'step';
-
 export interface State {
-    mouseMode: MouseMode;
-    keyMode: KeyMode;
+    mouseDragMode: boolean;
+    stepMode: boolean;
 }
 
 export interface IStore {
     state: State;
-    setMouseMode: (mode: MouseMode) => void;
-    setKeyMode: (mode: KeyMode) => void;
+    setMouseDragMode: (mode: boolean) => void;
+    setStepMode: (mode: boolean) => void;
 }

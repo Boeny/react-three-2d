@@ -2,36 +2,23 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { State } from './types';
+import { boolColor } from '~/utils';
 import { Particle } from '../particle';
 
 
 interface Props {
     position: Vector2;
+    field: keyof State;
     state: State;
-    getColor: (state: State) => string;
 }
 
 export const Mode = observer((props: Props) => {
-    const { position, state, getColor } = props;
+    const { position, state, field } = props;
     return (
         <Particle
             x={position ? position.x : 0}
             y={position ? position.y : 0}
-            color={getColor(state)}
+            color={boolColor(state[field])}
         />
     );
 });
-
-export function getColorByMouseMode(state: State): string {
-    switch (state.mouseMode) {
-        case 'idle': return 'blue';
-        case 'drag': return 'orange';
-    }
-}
-
-export function getColorByKeyMode(state: State): string {
-    switch (state.keyMode) {
-        case 'idle': return 'blue';
-        case 'step': return 'orange';
-    }
-}
