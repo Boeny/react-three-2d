@@ -4,19 +4,19 @@ import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
-import { getMouseVector, toScreenVector } from '~/utils';
+import { getMouseVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
-import { MOUSE, KEY } from '~/constants';
+import { MOUSE, KEY, TAILS_ENABLED } from '~/constants';
 
 
 let dragStartPoint: Vector2 | null = null;
 
-export function onWheel(e: any) {
+export function onWheel(e: MouseWheelEvent) {
     camera.setZoom(e.deltaY);
 }
 
-export function onMouseDown(e: any) {
+export function onMouseDown(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
             events.setMouseDragMode(true);
@@ -30,7 +30,7 @@ export function onMouseDown(e: any) {
     }
 }
 
-export function onMouseUp(e: any) {
+export function onMouseUp(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
             if (dragStartPoint === null) {
@@ -48,7 +48,7 @@ export function onMouseUp(e: any) {
     }
 }
 
-export function onMouseMove(e: any) {
+export function onMouseMove(e: MouseEvent) {
     if (dragStartPoint === null || events.state.mouseDragMode === false) {
         return;
     }
@@ -97,6 +97,9 @@ export function onKeyUp(e: KeyboardEvent) {
 
 export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
+        if (TAILS_ENABLED && movable.bodies[i].tail) {
+            movable.bodies[i].updateHistory();
+        }
         checkCollision(movable.bodies[i], 'x');
         checkCollision(movable.bodies[i], 'y');
     }
@@ -112,13 +115,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
-        html.setContent({
-            name: collider.name,
-            position: toScreenVector(new Vector2(
-                collider.position.x - body.position.x,
-                collider.position.y - body.position.y
-            ))
-        });
+        html.setContent(collider);
         return;
     }
     html.setContent(null);

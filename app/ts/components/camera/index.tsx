@@ -20,7 +20,6 @@ export const CameraComponent = observer((props: PositionProps) => {
     const height = window.innerHeight;
     const { zoom, position } = Store.state;
     const pos2 = props.position ? props.position.clone().add(position) : position;
-    console.log(zoom);
     return (
         <perspectiveCamera
             name={'camera'}
@@ -53,6 +52,7 @@ function CameraPosition(props: PositionProps) {
             name={'camera'}
             afterUpdate={v => Store.setPosition(v)}
             color={'yellow'}
+            tail={true}
             position={props.position}
         />
     );

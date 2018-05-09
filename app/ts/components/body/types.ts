@@ -3,9 +3,12 @@ import { Vector2 } from 'three';
 
 export interface IStore {
     position: { x: number, y: number };
+    history: { x: number, y: number }[];
     velocity: Vector2;
     color: string;
     update: (v: Vector2) => void;
+    updateHistory: () => void;
     name?: string;
+    tail?: boolean;
     afterUpdate?: (pos: Vector2) => void;
 }

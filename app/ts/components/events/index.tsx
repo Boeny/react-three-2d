@@ -31,19 +31,21 @@ const Content = ((props: Props) => {
     return (
         <group>
             <Mode
-                position={(new Vector2(5, 1)).add(props.position)}
+                title={'mouse click'}
+                position={(new Vector2(1, 3)).add(props.position)}
                 field={'mouseDragMode'}
                 state={Store.state}
             />
             <Mode
-                position={(new Vector2(10, 1)).add(props.position)}
+                title={'shift key'}
+                position={(new Vector2(3, 3)).add(props.position)}
                 field={'stepMode'}
                 state={Store.state}
             />
             <Container
                 borderColor={'grey'}
                 data={Object.keys(constants).map(name => ({
-                    name,
+                    name: `${name} = ${(constants as { [key: string]: string | number })[name]}`,
                     color: 'grey'
                 }))}
                 position={props.position}

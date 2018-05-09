@@ -7,7 +7,7 @@ export function Player(props: PositionProps) {
     return (
         <Body
             name={'player'}
-            hasCollider={true}
+            tail={true}
             getInstance={body => Store.instance = body}
             position={props.position}
         />

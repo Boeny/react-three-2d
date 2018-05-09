@@ -5,7 +5,7 @@ import { WIDTH_SCALE } from'~/constants';
 
 
 export const Html = observer(() => {
-    const { content, position } = Store;
+    const { content } = Store;
     if (content === null) {
         return null;
     }
@@ -13,12 +13,12 @@ export const Html = observer(() => {
         <div
             style={{
                 position: 'fixed',
-                color: '#fff',
+                color: '#ff3939',
                 top: '50%',
                 left: '50%',
                 height: 20,
-                marginLeft: (WIDTH_SCALE - content.length * 7.6) / 2 + position.x,
-                marginTop: - position.y - 30
+                marginLeft: (WIDTH_SCALE - content.length * 7.6) / 2,
+                marginTop: -48
             }}
         >
             {content}

@@ -22,7 +22,7 @@ export function Box(props: Props) {
     return (
         <group>
             <Particle
-                color={'#cccccc'}
+                color={'#999999'}
                 x={pos.x + 1}
                 y={pos.y + 1}
                 width={width - 2}

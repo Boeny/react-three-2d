@@ -11,6 +11,5 @@ export interface IStore {
 }
 
 export interface ConnectedStore {
-    position: Vector2;
     name?: string;
 }
