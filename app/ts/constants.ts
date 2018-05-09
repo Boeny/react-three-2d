@@ -22,4 +22,4 @@ export const MIN_SPEED = 0.1;
 
 export const SHOW_AS_WIREFRAME = false;
 
-export const WIDTH_SCALE = 10;
+export const WIDTH_SCALE = 1;

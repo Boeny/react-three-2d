@@ -49,6 +49,14 @@ export function clamp(n: number, border: number): number {
     return n;
 }
 
+export function clampByMin(n: number, min: number): number {
+    return n < min ? min : n;
+}
+
+export function clampByMax(n: number, max: number): number {
+    return n > max ? max : n;
+}
+
 export function clamped(n: number, border: number): boolean {
     return n >= -border && n <= border;
 }

@@ -1,14 +1,14 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { clamped, toWorldVector } from '~/utils';
+import { clamped, toWorldVector, clampByMin, clampByMax } from '~/utils';
 import { IStore } from './types';
 import { MAX_SPEED } from '~/constants';
-import { MIN_CAMERA_SPEED, ZOOM_MULT } from './constants';
+import { MIN_CAMERA_SPEED, ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR } from './constants';
 
 
 export const Store: IStore = {
     state: observable({
-        zoom: 1,
+        zoom: CAMERA_NEAR,
         position: new Vector2()
     }),
     setSpeed(cameraSpeed: Vector2) {
@@ -25,17 +25,22 @@ export const Store: IStore = {
             this.connected.update(toWorldVector(v.clone()));
         }
     },
-    setZoom(newZoom: number) {
+    setZoom(delta: number) {
+        if (delta === 0) {
+            return;
+        }
         const width = window.innerWidth;
-        const dz = ZOOM_MULT;
         const { zoom } = this.state;
+        const dz = 2 * ZOOM_SCREEN_DELTA * zoom;
         runInAction(() => {
-            if (newZoom >= 0) {
-                this.state.zoom *= width / (width + 2 * dz * zoom);
+            // zoom in
+            if (delta < 0) {
+                this.state.zoom = clampByMin(zoom * width / (width + dz), CAMERA_NEAR);
                 return;
             }
-            if (zoom <= 1) {
-                this.state.zoom *= width / (width - 2 * dz * zoom);
+            // zoom out
+            if (width > dz) {
+                this.state.zoom = clampByMax(zoom * width / (width - dz), CAMERA_FAR);
             }
         });
     },
