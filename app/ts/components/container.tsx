@@ -54,6 +54,7 @@ const Content = ((props: ContentProps) => {
             {data.map((item, i) => (
                 <Particle
                     key={i}
+                    zIndex={1}
                     hasCollider={true}
                     x={position.x + (i % WIDTH)}
                     y={position.y + Math.floor(i / WIDTH)}

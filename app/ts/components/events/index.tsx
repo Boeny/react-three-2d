@@ -1,6 +1,8 @@
 import * as React from 'react';
 import * as constants from '../camera/constants';
 import { Vector2 } from 'three';
+import { observer } from 'mobx-react';
+import { Store as camera } from '../camera/store';
 import { Store } from './store';
 import { Box } from '../box';
 import { Container } from '../container';
@@ -28,28 +30,46 @@ interface Props {
 }
 
 const Content = ((props: Props) => {
+    const { position } = props;
     return (
         <group>
             <Mode
-                title={'mouse click'}
-                position={(new Vector2(1, 3)).add(props.position)}
+                position={(new Vector2(1, 5)).add(position)}
                 field={'mouseDragMode'}
                 state={Store.state}
             />
             <Mode
-                title={'shift key'}
-                position={(new Vector2(3, 3)).add(props.position)}
+                position={(new Vector2(3, 5)).add(position)}
                 field={'stepMode'}
                 state={Store.state}
             />
+            <CameraProps position={position} />
             <Container
                 borderColor={'grey'}
-                data={Object.keys(constants).map(name => ({
-                    name: `${name} = ${(constants as { [key: string]: string | number })[name]}`,
-                    color: 'grey'
-                }))}
-                position={props.position}
+                data={Object.keys(constants).map(name => {
+                    const c = (constants as { [key: string]: any })[name];
+                    return {
+                        name: `${name} = ${typeof c === 'object' ? '[Object]' : c}`,
+                        color: 'grey'
+                    };
+                })}
+                position={position}
             />
         </group>
+    );
+});
+
+
+const CameraProps = ((props: Props) => {
+    debugger;
+    return (
+        <Container
+            borderColor={'#6bd6f1'}
+            data={[{
+                name: `zoom = ${camera.state.zoom}`,
+                color: '#6bd6f1'
+            }]}
+            position={props.position}
+        />
     );
 });

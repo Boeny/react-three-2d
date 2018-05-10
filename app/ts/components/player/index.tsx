@@ -7,7 +7,6 @@ export function Player(props: PositionProps) {
     return (
         <Body
             name={'player'}
-            tail={true}
             getInstance={body => Store.instance = body}
             position={props.position}
         />

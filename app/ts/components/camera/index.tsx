@@ -52,7 +52,6 @@ function CameraPosition(props: PositionProps) {
             name={'camera'}
             afterUpdate={v => Store.setPosition(v)}
             color={'yellow'}
-            tail={true}
             position={props.position}
         />
     );

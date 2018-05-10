@@ -1,5 +1,5 @@
 import { Color, Vector3, Vector2 } from 'three';
-import { WIDTH_SCALE } from '~/constants';
+import { WIDTH_SCALE, COLORS } from '~/constants';
 
 
 export function convertToColor(color: string): Color {
@@ -74,5 +74,5 @@ export function toScreenVector(v: Vector2): Vector2 {
 }
 
 export function boolColor(v: boolean): string {
-    return v ? 'orange' : 'blue';
+    return v ? COLORS.TRUE : COLORS.FALSE;
 }

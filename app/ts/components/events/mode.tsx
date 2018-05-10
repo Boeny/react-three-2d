@@ -10,7 +10,6 @@ interface Props {
     position: Vector2;
     field: keyof State;
     state: State;
-    title?: string;
 }
 
 export const Mode = observer((props: Props) => {
@@ -18,6 +17,7 @@ export const Mode = observer((props: Props) => {
     return (
         <Particle
             hasCollider={true}
+            zIndex={1}
             name={`${field} = ${state[field]}`}
             x={position ? position.x : 0}
             y={position ? position.y : 0}

@@ -3,12 +3,12 @@ import { Vector2 } from 'three';
 import { clamped, toWorldVector, clampByMin, clampByMax } from '~/utils';
 import { IStore } from './types';
 import { MAX_SPEED } from '~/constants';
-import { MIN_CAMERA_SPEED, ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR } from './constants';
+import { MIN_CAMERA_SPEED, ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
 
 
 export const Store: IStore = {
     state: observable({
-        zoom: CAMERA_NEAR,
+        zoom: CAMERA_INIT_ZOOM,
         position: new Vector2()
     }),
     setSpeed(cameraSpeed: Vector2) {

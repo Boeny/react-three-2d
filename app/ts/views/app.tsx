@@ -21,13 +21,13 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Events position={new Vector2(-20, 10)} />
+                    <Camera />
                     <Player />
                     <Enemies />
+                    <Events position={new Vector2(-20, 10)} />
                     <Movable position={new Vector2(-40, -20)} />
                     <Colliders position={new Vector2(40, -20)} />
                     <Constants position={new Vector2(0, -20)} />
-                    <Camera />
                 </scene>
             </React3>
         </React.Fragment>

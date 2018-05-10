@@ -7,7 +7,7 @@ import { Store as html } from '~/views/html/store';
 import { getMouseVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
-import { MOUSE, KEY, TAILS_ENABLED } from '~/constants';
+import { MOUSE, KEY } from '~/constants';
 
 
 let dragStartPoint: Vector2 | null = null;
@@ -97,9 +97,6 @@ export function onKeyUp(e: KeyboardEvent) {
 
 export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
-        if (TAILS_ENABLED && movable.bodies[i].tail) {
-            movable.bodies[i].updateHistory();
-        }
         checkCollision(movable.bodies[i], 'x');
         checkCollision(movable.bodies[i], 'y');
     }

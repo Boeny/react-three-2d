@@ -20,7 +20,6 @@ function Enemy() {
             name={'enemy'}
             color={'red'}
             hasCollider={true}
-            tail={true}
             position={new Vector2(20, 20)}
         />
     );

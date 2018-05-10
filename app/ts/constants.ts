@@ -24,4 +24,9 @@ export const SHOW_AS_WIREFRAME = false;
 
 export const WIDTH_SCALE = 1;
 
-export const TAILS_ENABLED = true;
+export const COLORS = {
+    TRUE: '#ffa500',
+    FALSE: '#0000ff'
+};
+
+export const Z_INDEX_STEP = 0.1;
