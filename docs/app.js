@@ -101171,17 +101171,19 @@ var Particle = /** @class */ (function (_super) {
         }
     };
     Particle.prototype.render = function () {
-        var _a = this.props, color = _a.color, zIndex = _a.zIndex;
-        var width = (this.props.width || 1) * constants_1.WIDTH_SCALE;
-        var height = (this.props.height || this.props.width || 1) * constants_1.WIDTH_SCALE;
-        if (width <= 0 && height <= 0) {
+        var _a = this.props, color = _a.color, zIndex = _a.zIndex, noBorder = _a.noBorder;
+        var width = this.props.width === undefined ? constants_1.WIDTH_SCALE : this.props.width * constants_1.WIDTH_SCALE;
+        var height = this.props.height === undefined ? width : this.props.height * constants_1.WIDTH_SCALE;
+        if (width <= 0 || height <= 0) {
             return null;
         }
         var x = this.props.x * constants_1.WIDTH_SCALE;
         var y = this.props.y * constants_1.WIDTH_SCALE;
         var z = zIndex ? zIndex * constants_1.Z_INDEX_STEP : 0;
         return (React.createElement("group", null,
-            React.createElement(Quad, { x: x, y: y, z: z, width: width, height: height, color: '#000000' }),
+            noBorder ?
+                null :
+                React.createElement(Quad, { x: x, y: y, z: z, width: width, height: height, color: '#000000' }),
             React.createElement(Quad, { x: x + 0.1, y: y + 0.1, z: z + constants_1.Z_INDEX_STEP, width: width - 0.2, height: height - 0.2, color: color })));
     };
     return Particle;
@@ -101204,6 +101206,7 @@ function pointInTheQuad(u, v, width, height, z) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(6);
 var three_1 = __webpack_require__(13);
+// import { observer } from 'mobx-react';
 var box_1 = __webpack_require__(118);
 var particle_1 = __webpack_require__(46);
 var WIDTH = 20;
@@ -101213,7 +101216,7 @@ exports.Container = (function (props) {
     var width = WIDTH > count ? count : WIDTH;
     var height = count > 0 ? Math.floor(count / WIDTH) + 1 : 0;
     var position = props.position || new three_1.Vector2();
-    return (React.createElement(box_1.Box, { hasCollider: true, color: borderColor || 'grey', width: width + 2, height: height + 2, position: props.position },
+    return (React.createElement(box_1.Box, { color: borderColor || 'grey', width: width + 2, height: height + 2, position: props.position },
         React.createElement(Content, { data: data, position: (new three_1.Vector2(1, 1)).add(position) })));
 });
 var Content = (function (props) {
@@ -110125,10 +110128,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(6);
 var particle_1 = __webpack_require__(46);
 function Box(props) {
-    var width = props.width, position = props.position, children = props.children, color = props.color, hasCollider = props.hasCollider;
+    var width = props.width, position = props.position, children = props.children, color = props.color;
     var height = props.height || width;
     return (React.createElement("group", null,
-        React.createElement(particle_1.Particle, { color: color, x: position.x, y: position.y, width: width, height: height, hasCollider: hasCollider }),
+        React.createElement(particle_1.Particle, { zIndex: -1, color: color, x: position.x, y: position.y, width: width, height: height, noBorder: true }),
+        React.createElement(particle_1.Particle, { color: '#000000', x: position.x + 1, y: position.y + 1, width: width - 2, height: height - 2, noBorder: true }),
         children));
 }
 exports.Box = Box;
@@ -127437,11 +127441,11 @@ function App() {
                 React.createElement(components_1.Player, { position: new three_1.Vector2() }),
                 React.createElement(components_1.Enemies, null),
                 React.createElement(components_1.Events, { position: new three_1.Vector2(-20, 10) }),
+                React.createElement(components_1.Movable, { position: new three_1.Vector2(-40, -20) }),
                 React.createElement(components_1.Colliders, { position: new three_1.Vector2(40, -20) }),
                 React.createElement(components_1.Constants, { position: new three_1.Vector2(0, -20) })))));
 }
 exports.App = App;
-// <Movable position={new Vector2(-40, -20)} />
 
 
 /***/ }),
@@ -141863,7 +141867,7 @@ var container_1 = __webpack_require__(47);
 var mode_1 = __webpack_require__(283);
 function Events(props) {
     var position = props.position || new three_1.Vector2();
-    return (React.createElement(box_1.Box, { hasCollider: true, color: '#cccccc', width: 20, position: position },
+    return (React.createElement(box_1.Box, { color: '#cccccc', width: 20, position: position },
         React.createElement(Content, { position: (new three_1.Vector2(1, 1)).add(position) })));
 }
 exports.Events = Events;

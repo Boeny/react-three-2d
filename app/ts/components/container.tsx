@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { observer } from 'mobx-react';
+// import { observer } from 'mobx-react';
 import { Box } from './box';
 import { Particle } from './particle';
 

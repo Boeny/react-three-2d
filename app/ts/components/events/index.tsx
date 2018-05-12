@@ -32,7 +32,7 @@ const Content = ((props: Props) => {
     return (
         <group>
             <Mode
-                position={(new Vector2(0, 7)).add(position)}
+                position={(new Vector2(1, 7)).add(position)}
                 field={'mouseDragMode'}
                 state={Store.state}
             />

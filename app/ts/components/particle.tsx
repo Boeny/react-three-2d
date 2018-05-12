@@ -37,9 +37,9 @@ export class Particle extends React.Component<Props> {
 
     render() {
         const { color, zIndex } = this.props;
-        const width = (this.props.width || 1) * WIDTH_SCALE;
-        const height = (this.props.height || this.props.width || 1) * WIDTH_SCALE;
-        if (width <= 0 && height <= 0) {
+        const width =  this.props.width === undefined ? WIDTH_SCALE : this.props.width * WIDTH_SCALE;
+        const height = this.props.height === undefined ? width : this.props.height * WIDTH_SCALE;
+        if (width <= 0 || height <= 0) {
             return null;
         }
         const x = this.props.x * WIDTH_SCALE;
