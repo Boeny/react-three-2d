@@ -51,5 +51,5 @@ declare interface ElementStore {
 }
 
 declare interface PositionProps {
-    position?: THREE.Vector2;
+    position: THREE.Vector2;
 }

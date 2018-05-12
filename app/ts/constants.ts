@@ -20,7 +20,7 @@ export const MAX_SPEED = 1;
 
 export const MIN_SPEED = 0.1;
 
-export const SHOW_AS_WIREFRAME = false;
+export const SHOW_AS_WIREFRAME: boolean = false;
 
 export const WIDTH_SCALE = 1;
 
@@ -30,3 +30,5 @@ export const COLORS = {
 };
 
 export const Z_INDEX_STEP = 0.1;
+
+export const MOUSE_DRAG_MODE_ENABLED: boolean = false;

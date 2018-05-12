@@ -6,4 +6,5 @@ export { IBodyStore };
 export interface IStore {
     bodies: IBodyStore[];
     add: (el: IBodyStore) => void;
+    del: (el: IBodyStore) => void;
 }

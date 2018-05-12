@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { IStore } from './types';
-
+import { MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 
 export const Store: IStore = {
     state: observable({
@@ -8,9 +8,13 @@ export const Store: IStore = {
         stepMode: false
     }),
     setMouseDragMode(mode: boolean) {
+        if (MOUSE_DRAG_MODE_ENABLED === false) {
+            return false;
+        }
         runInAction(() => {
             this.state.mouseDragMode = mode;
         });
+        return true;
     },
     setStepMode(mode: boolean) {
         runInAction(() => {

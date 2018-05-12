@@ -7,6 +7,6 @@ export interface State {
 
 export interface IStore {
     state: State;
-    setMouseDragMode: (mode: boolean) => void;
+    setMouseDragMode: (mode: boolean) => boolean;
     setStepMode: (mode: boolean) => void;
 }

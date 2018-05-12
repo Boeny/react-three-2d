@@ -1,8 +1,8 @@
-import { Vector2 } from 'three';
 import { Store } from './store';
 import { Collider } from './types';
-import { Colliders } from './constants';
 
+
+const Colliders: { [coo: string]: Collider | undefined } = {};
 
 export function getCollider(x: number, y: number): Collider | undefined {
     return Colliders[`${x}|${y}`];
@@ -16,6 +16,6 @@ export function setCollider(store: Collider) {
     return Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 
-export function delCollider(position: Vector2) {
+export function delCollider(position: { x: number, y: number }) {
     Colliders[`${position.x}|${position.y}`] = undefined;
 }

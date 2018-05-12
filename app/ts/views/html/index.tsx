@@ -10,17 +10,15 @@ export const Html = observer(() => {
         return null;
     }
     return (
-        <div
-            style={{
-                position: 'fixed',
-                color: '#ff3939',
-                top: '50%',
-                left: '50%',
-                height: 20,
-                marginLeft: (WIDTH_SCALE - content.length * 7.6) / 2,
-                marginTop: -48
-            }}
-        >
+        <div style={{
+            position: 'fixed',
+            color: '#ff3939',
+            top: '50%',
+            left: '50%',
+            height: 20,
+            marginLeft: (WIDTH_SCALE - content.length * 7.6) / 2,
+            marginTop: -48
+        }} >
             {content}
         </div>
     );

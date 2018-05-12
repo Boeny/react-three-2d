@@ -7,6 +7,7 @@ export interface State {
 
 export interface IStore {
     state: State;
+    velocity: Vector2;
     setSpeed: (v: Vector2) => void;
     updateConnected: (v: Vector2) => void;
     setZoom: (newZoom: number) => void;

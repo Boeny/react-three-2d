@@ -25,7 +25,6 @@ export const Container = ((props: Props) => {
     const position = props.position || new Vector2();
     return (
         <Box
-            isStatic={true}
             hasCollider={true}
             color={borderColor || 'grey'}
             width={width + 2}

@@ -3,6 +3,7 @@ import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { Body } from '../body';
+import { SHOW_CAMERA_POSITION } from './constants';
 
 
 export function Camera(props: PositionProps) {
@@ -14,7 +15,7 @@ export function Camera(props: PositionProps) {
     );
 }
 
-export const CameraComponent = observer((props: PositionProps) => {
+const CameraComponent = observer((props: PositionProps) => {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const { zoom, position } = Store.state;
@@ -30,21 +31,12 @@ export const CameraComponent = observer((props: PositionProps) => {
         />
     );
 });
-/*
-<orthographicCamera
-    name={'camera'}
-    left={-width / 2}
-    right={width / 2}
-    top={height / 2}
-    bottom={-height / 2}
-    near={0.1}
-    far={10}
-    zoom={zoom}
-    position={new Vector3(pos2.x, pos2.y, 5)}
-/>
-*/
+
 
 function CameraPosition(props: PositionProps) {
+    if (SHOW_CAMERA_POSITION === false) {
+        return null;
+    }
     return (
         <Body
             getInstance={body => Store.connected = body}

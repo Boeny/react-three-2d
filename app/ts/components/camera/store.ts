@@ -11,6 +11,7 @@ export const Store: IStore = {
         zoom: CAMERA_INIT_ZOOM,
         position: new Vector2()
     }),
+    velocity: new Vector2(),
     setSpeed(cameraSpeed: Vector2) {
         if (!this.connected) {
             return;

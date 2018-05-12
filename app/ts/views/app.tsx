@@ -21,8 +21,8 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Camera />
-                    <Player />
+                    <Camera position={new Vector2()} />
+                    <Player position={new Vector2()} />
                     <Enemies />
                     <Events position={new Vector2(-20, 10)} />
                     <Movable position={new Vector2(-40, -20)} />

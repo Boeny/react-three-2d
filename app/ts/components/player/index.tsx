@@ -7,6 +7,7 @@ export function Player(props: PositionProps) {
     return (
         <Body
             name={'player'}
+            color={'#ffffff'}
             getInstance={body => Store.instance = body}
             position={props.position}
         />

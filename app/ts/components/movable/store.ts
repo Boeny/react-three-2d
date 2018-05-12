@@ -8,5 +8,11 @@ export const Store: IStore = {
         // runInAction(() => {
         this.bodies.push(el);
         // });
+    },
+    del(el: IBodyStore) {
+        const i = this.bodies.indexOf(el);
+        // runInAction(() => {
+        this.bodies.splice(i, 1);
+        // });
     }
 };

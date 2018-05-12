@@ -1,8 +1,7 @@
 import * as React from 'react';
-import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { getStore } from './store';
-import { setCollider } from '../colliders/utils';
+import { getStore, InitialParams } from './store';
+import { setCollider, delCollider } from '../colliders/utils';
 import { IStore } from './types';
 import { Particle } from '../particle';
 import { Store as movable } from '../movable/store';
@@ -25,31 +24,52 @@ const Connected = observer((props: ConnectedProps) => {
 });
 
 
-interface Props {
-    name?: string;
-    color?: string;
+interface Props extends InitialParams {
     hasCollider?: boolean;
-    isStatic?: boolean;
-    position?: Vector2;
+    isMovable?: boolean;
     getInstance?: (body: IStore) => void;
-    afterUpdate?: (pos: Vector2) => void;
 }
 
-export function Body(props: Props) {
-    const { name, color, hasCollider, isStatic, getInstance, afterUpdate } = props;
-    const position = props.position || new Vector2();
-    const store = getStore(position, color || 'white', afterUpdate);
-    if (name) {
-        store.name = name;
+interface State {
+    store: IStore | null;
+}
+
+export class Body extends React.Component<Props, State> {
+
+    constructor(props: Props) {
+        super(props);
+        this.state = { store: null };
     }
-    if (hasCollider) {
-        setCollider(store);
+
+    componentDidMount() {
+        const { hasCollider, isMovable, getInstance, ...rest } = this.props;
+        const store = getStore(rest);
+        if (hasCollider) {
+            setCollider(store);
+        }
+        if (isMovable === false) {
+            movable.add(store);
+        }
+        getInstance && getInstance(store);
+        this.setState({ store });
     }
-    if (!isStatic) {
-        movable.add(store);
+
+    componentWillUnmount() {
+        const { store } = this.state;
+        if (store === null) {
+            return;
+        }
+        if (this.props.hasCollider) {
+            delCollider(store.position);
+        }
+        if (this.props.isMovable === false) {
+            movable.del(store);
+        }
     }
-    getInstance && getInstance(store);
-    return (
-        <Connected store={store} />
-    );
+
+    render() {
+        return (
+            this.state.store === null ? null : <Connected store={this.state.store} />
+        );
+    }
 }

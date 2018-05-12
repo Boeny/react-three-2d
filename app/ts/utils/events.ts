@@ -19,9 +19,10 @@ export function onWheel(e: MouseWheelEvent) {
 export function onMouseDown(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            events.setMouseDragMode(true);
-            html.setCursor('pointer');
-            dragStartPoint = getMouseVector(e);
+            if (events.setMouseDragMode(true)) {
+                html.setCursor('pointer');
+                dragStartPoint = getMouseVector(e);
+            }
             break;
         case MOUSE.right:
             break;
@@ -33,13 +34,14 @@ export function onMouseDown(e: MouseEvent) {
 export function onMouseUp(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            if (dragStartPoint === null) {
+            if (dragStartPoint === null || events.state.mouseDragMode === false) {
                 return;
             }
-            events.setMouseDragMode(false);
-            html.setCursor('default');
-            camera.setSpeed(new Vector2());
-            dragStartPoint = null;
+            if (events.setMouseDragMode(false)) {
+                html.setCursor('default');
+                camera.setSpeed(new Vector2());
+                dragStartPoint = null;
+            }
             break;
         case MOUSE.right:
             break;
@@ -97,8 +99,10 @@ export function onKeyUp(e: KeyboardEvent) {
 
 export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
-        checkCollision(movable.bodies[i], 'x');
-        checkCollision(movable.bodies[i], 'y');
+        const body = movable.bodies[i];
+        checkCollision(body, 'x');
+        checkCollision(body, 'y');
+        body.onEveryTick && body.onEveryTick();
     }
 }
 

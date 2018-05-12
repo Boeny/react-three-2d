@@ -7,19 +7,19 @@ import { Body } from './body';
 interface Props {
     length: number;
     getPosition: (i: number) => Vector2;
-    color?: string;
-    isStatic?: boolean;
+    color: string;
+    isMovable?: boolean;
     hasCollider?: boolean;
 }
 
 export function Stick(props: Props) {
-    const { length, getPosition, color, isStatic, hasCollider } = props;
+    const { length, getPosition, color, isMovable, hasCollider } = props;
     return (
         <group>
             {getNumArray(length).map(i => (
                 <Body
                     key={i}
-                    isStatic={isStatic}
+                    isMovable={isMovable}
                     hasCollider={hasCollider}
                     position={getPosition(i)}
                     color={color}

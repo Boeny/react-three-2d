@@ -1,12 +1,15 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore } from './types';
+import { IStore, CommonParams } from './types';
 
 
-export function getStore(position: Vector2, color: string, afterUpdate?: (pos: Vector2) => void): IStore {
+export interface InitialParams extends CommonParams {
+    position: Vector2;
+}
+
+export function getStore({ position, ...common }: InitialParams): IStore {
     return {
-        afterUpdate,
-        color,
+        ...common,
         position: observable({
             x: position.x,
             y: position.y

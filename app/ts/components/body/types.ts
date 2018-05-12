@@ -1,12 +1,16 @@
 import { Vector2 } from 'three';
 
 
-export interface IStore {
+export interface IStore extends CommonParams {
     position: { x: number, y: number };
     velocity: Vector2;
-    color: string;
     update: (v: Vector2) => void;
-    name?: string;
     tail?: boolean;
+}
+
+export interface CommonParams {
+    color: string;
+    name?: string;
     afterUpdate?: (pos: Vector2) => void;
+    onEveryTick?: () => void;
 }
