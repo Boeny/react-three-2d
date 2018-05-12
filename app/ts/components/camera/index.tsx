@@ -3,7 +3,6 @@ import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { Body } from '../body';
-import { CAMERA_NEAR, CAMERA_FAR } from './constants';
 
 
 export function Camera(props: PositionProps) {
@@ -25,8 +24,8 @@ export const CameraComponent = observer((props: PositionProps) => {
             name={'camera'}
             fov={75}
             aspect={width / height}
-            near={CAMERA_NEAR}
-            far={CAMERA_FAR}
+            near={0.1}
+            far={1000}
             position={new Vector3(pos2.x, pos2.y, zoom)}
         />
     );

@@ -15,18 +15,18 @@ interface Props {
 }
 
 export function Box(props: Props) {
-    const { width, position, children, ...rest } = props;
+    const { width, position, children, color, ...rest } = props;
     rest;
     const pos = position || new Vector2();
     const height = props.height || width;
     return (
         <group>
             <Particle
-                color={'#999999'}
-                x={pos.x + 1}
-                y={pos.y + 1}
-                width={width - 2}
-                height={height - 2}
+                color={color}
+                x={pos.x}
+                y={pos.y}
+                width={width}
+                height={height}
             />
             {children}
         </group>

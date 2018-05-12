@@ -9,7 +9,7 @@ export function Constants(props: PositionProps) {
             borderColor={'grey'}
             data={Object.keys(constants).map(name => ({
                 name,
-                color: 'grey'
+                color: '#999999'
             }))}
             position={props.position}
         />
