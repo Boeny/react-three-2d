@@ -13,7 +13,6 @@ export function Events(props: PositionProps) {
     const position = props.position || new Vector2();
     return (
         <Box
-            hasCollider={true}
             color={'#cccccc'}
             width={20}
             position={position}

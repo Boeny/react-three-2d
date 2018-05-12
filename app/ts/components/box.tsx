@@ -8,8 +8,6 @@ interface Props {
     color: string;
     width: number;
     height?: number;
-    isMovable?: boolean;
-    hasCollider?: boolean;
     children?: any;
 }
 
@@ -19,11 +17,19 @@ export function Box(props: Props) {
     return (
         <group>
             <Particle
+                zIndex={-1}
                 color={color}
                 x={position.x}
                 y={position.y}
                 width={width}
                 height={height}
+            />
+            <Particle
+                color={color}
+                x={position.x + 1}
+                y={position.y + 1}
+                width={width - 2}
+                height={height - 2}
             />
             {children}
         </group>

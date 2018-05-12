@@ -56,11 +56,11 @@ export class Particle extends React.Component<Props> {
                     color={'#000000'}
                 />
                 <Quad
-                    x={x + 0.01}
-                    y={y + 0.01}
+                    x={x + 0.1}
+                    y={y + 0.1}
                     z={z + Z_INDEX_STEP}
-                    width={width - 0.02}
-                    height={height - 0.02}
+                    width={width - 0.2}
+                    height={height - 0.2}
                     color={color}
                 />
             </group>

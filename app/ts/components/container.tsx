@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-// import { observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Box } from './box';
 import { Particle } from './particle';
 
@@ -25,7 +25,6 @@ export const Container = ((props: Props) => {
     const position = props.position || new Vector2();
     return (
         <Box
-            hasCollider={true}
             color={borderColor || 'grey'}
             width={width + 2}
             height={height + 2}

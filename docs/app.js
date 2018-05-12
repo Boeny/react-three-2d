@@ -92927,7 +92927,7 @@ exports.COLORS = {
     TRUE: '#ffa500',
     FALSE: '#0000ff'
 };
-exports.Z_INDEX_STEP = 0.1;
+exports.Z_INDEX_STEP = 0.01;
 exports.MOUSE_DRAG_MODE_ENABLED = false;
 
 
@@ -101182,7 +101182,7 @@ var Particle = /** @class */ (function (_super) {
         var z = zIndex ? zIndex * constants_1.Z_INDEX_STEP : 0;
         return (React.createElement("group", null,
             React.createElement(Quad, { x: x, y: y, z: z, width: width, height: height, color: '#000000' }),
-            React.createElement(Quad, { x: x + 0.01, y: y + 0.01, z: z + constants_1.Z_INDEX_STEP, width: width - 0.02, height: height - 0.02, color: color })));
+            React.createElement(Quad, { x: x + 0.1, y: y + 0.1, z: z + constants_1.Z_INDEX_STEP, width: width - 0.2, height: height - 0.2, color: color })));
     };
     return Particle;
 }(React.Component));
@@ -101204,7 +101204,6 @@ function pointInTheQuad(u, v, width, height, z) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(6);
 var three_1 = __webpack_require__(13);
-// import { observer } from 'mobx-react';
 var box_1 = __webpack_require__(118);
 var particle_1 = __webpack_require__(46);
 var WIDTH = 20;
@@ -102986,7 +102985,7 @@ var Body = /** @class */ (function (_super) {
         if (hasCollider) {
             utils_1.setCollider(store);
         }
-        if (isMovable === false) {
+        if (isMovable) {
             store_2.Store.add(store);
         }
         getInstance && getInstance(store);
@@ -103000,7 +102999,7 @@ var Body = /** @class */ (function (_super) {
         if (this.props.hasCollider) {
             utils_1.delCollider(store.position);
         }
-        if (this.props.isMovable === false) {
+        if (this.props.isMovable) {
             store_2.Store.del(store);
         }
     };
@@ -110126,10 +110125,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(6);
 var particle_1 = __webpack_require__(46);
 function Box(props) {
-    var width = props.width, position = props.position, children = props.children, color = props.color;
+    var width = props.width, position = props.position, children = props.children, color = props.color, hasCollider = props.hasCollider;
     var height = props.height || width;
     return (React.createElement("group", null,
-        React.createElement(particle_1.Particle, { color: color, x: position.x, y: position.y, width: width, height: height }),
+        React.createElement(particle_1.Particle, { color: color, x: position.x, y: position.y, width: width, height: height, hasCollider: hasCollider }),
         children));
 }
 exports.Box = Box;
@@ -127438,11 +127437,11 @@ function App() {
                 React.createElement(components_1.Player, { position: new three_1.Vector2() }),
                 React.createElement(components_1.Enemies, null),
                 React.createElement(components_1.Events, { position: new three_1.Vector2(-20, 10) }),
-                React.createElement(components_1.Movable, { position: new three_1.Vector2(-40, -20) }),
                 React.createElement(components_1.Colliders, { position: new three_1.Vector2(40, -20) }),
                 React.createElement(components_1.Constants, { position: new three_1.Vector2(0, -20) })))));
 }
 exports.App = App;
+// <Movable position={new Vector2(-40, -20)} />
 
 
 /***/ }),
@@ -141841,7 +141840,7 @@ var React = __webpack_require__(6);
 var store_1 = __webpack_require__(115);
 var body_1 = __webpack_require__(70);
 function Player(props) {
-    return (React.createElement(body_1.Body, { name: 'player', color: '#ffffff', getInstance: function (body) { return store_1.Store.instance = body; }, position: props.position }));
+    return (React.createElement(body_1.Body, { name: 'player', color: '#ffffff', isMovable: true, getInstance: function (body) { return store_1.Store.instance = body; }, position: props.position }));
 }
 exports.Player = Player;
 

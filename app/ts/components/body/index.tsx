@@ -47,7 +47,7 @@ export class Body extends React.Component<Props, State> {
         if (hasCollider) {
             setCollider(store);
         }
-        if (isMovable === false) {
+        if (isMovable) {
             movable.add(store);
         }
         getInstance && getInstance(store);
@@ -62,7 +62,7 @@ export class Body extends React.Component<Props, State> {
         if (this.props.hasCollider) {
             delCollider(store.position);
         }
-        if (this.props.isMovable === false) {
+        if (this.props.isMovable) {
             movable.del(store);
         }
     }

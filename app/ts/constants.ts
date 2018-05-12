@@ -29,6 +29,6 @@ export const COLORS = {
     FALSE: '#0000ff'
 };
 
-export const Z_INDEX_STEP = 0.1;
+export const Z_INDEX_STEP = 0.01;
 
 export const MOUSE_DRAG_MODE_ENABLED: boolean = false;
