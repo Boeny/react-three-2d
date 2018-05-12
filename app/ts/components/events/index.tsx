@@ -6,6 +6,7 @@ import { Store as camera } from '../camera/store';
 import { Store } from './store';
 import { Box } from '../box';
 import { Container } from '../container';
+import { Constants } from '../constants-container';
 import { Mode } from './mode';
 
 
@@ -32,12 +33,12 @@ const Content = ((props: Props) => {
     return (
         <group>
             <Mode
-                position={(new Vector2(1, 7)).add(position)}
+                position={(new Vector2(0, 7)).add(position)}
                 field={'mouseDragMode'}
                 state={Store.state}
             />
             <Mode
-                position={(new Vector2(2, 7)).add(position)}
+                position={(new Vector2(1, 7)).add(position)}
                 field={'stepMode'}
                 state={Store.state}
             />
@@ -49,16 +50,9 @@ const Content = ((props: Props) => {
                 }]}
                 position={(new Vector2(0, 3)).add(position)}
             />
-            <Container
-                borderColor={'grey'}
-                data={Object.keys(constants).map(name => {
-                    const c = (constants as { [key: string]: any })[name];
-                    return {
-                        name: `${name} = ${typeof c === 'object' ? '[Object]' : c}`,
-                        color: '#999999'
-                    };
-                })}
+            <Constants
                 position={position}
+                data={constants}
             />
         </group>
     );

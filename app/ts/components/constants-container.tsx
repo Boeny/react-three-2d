@@ -1,17 +1,25 @@
 import * as React from 'react';
-import * as constants from '~/constants';
 import { Container } from './container';
 
 
-export function Constants(props: PositionProps) {
+interface Props extends PositionProps {
+    data: { [key: string]: any };
+}
+
+export function Constants(props: Props) {
+    const { position, data } = props;
     return (
         <Container
             borderColor={'grey'}
-            data={Object.keys(constants).map(name => ({
-                name,
-                color: '#999999'
-            }))}
-            position={props.position}
+            data={Object.keys(data).map(name => {
+                const c = (data as any)[name];
+                return {
+                    name: name.split('_').join(' ').toLowerCase() + ' = '
+                        + (typeof c === 'object' ? '[Object]' : c),
+                    color: '#999999'
+                };
+            })}
+            position={position}
         />
     );
 }

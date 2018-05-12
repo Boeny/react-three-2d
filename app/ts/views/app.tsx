@@ -1,7 +1,8 @@
 import * as React from 'react';
-import * as React3 from 'react3';
-import { Store as html } from './html/store';
 import * as events from '~/utils/events';
+import * as React3 from 'react3';
+import * as constants from '~/constants';
+import { Store as html } from './html/store';
 import { Vector2 } from 'three';
 import { Camera, Player, Events, Movable, Colliders, Enemies, Constants } from '~/components';
 import { Html } from './html';
@@ -27,7 +28,10 @@ export function App() {
                     <Events position={new Vector2(-20, 10)} />
                     <Movable position={new Vector2(-40, -20)} />
                     <Colliders position={new Vector2(40, -20)} />
-                    <Constants position={new Vector2(0, -20)} />
+                    <Constants
+                        position={new Vector2(0, -20)}
+                        data={constants}
+                    />
                 </scene>
             </React3>
         </React.Fragment>
