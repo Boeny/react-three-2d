@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { observable, action } from 'mobx';
+import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { getNumArray } from '~/utils';
@@ -19,77 +19,113 @@ export function Enemies() {
 }
 
 
+interface Position {
+    x: number;
+    y: number;
+}
+
 interface IStore {
+    speedVector: Vector2;
+    timer: number;
     state: {
         tick: boolean;
         mover: IBodyStore | null;
-        position: { x: number, y: number };
+        position: Position;
     };
-    timer: number;
+    setMover: (el: IBodyStore) => void;
+    setPosition: (v: Position) => void;
+    checkTickByTimer: () => void;
 }
 
-const Store: IStore = {
-    state: observable({
-        tick: false,
-        mover: null,
-        position: { x: 0, y: 0 }
-    }),
-    timer: 0
-};
-
-
-const setMover = action((el: IBodyStore) => {
-    Store.state.mover = el;
-    setPosition(el.position);
-});
-
-const setPosition = action((v: { x: number, y: number }) => {
-    Store.state.position = { x: v.x, y: v.y };
-});
-
-const checkTickByTimer = action(() => {
-    Store.timer += 1;
-    if (Store.timer > 30) {
-        Store.state.tick = false;
-        Store.timer = 0;
-        return;
-    }
-    if (Store.timer > 20) {
-        if (Store.state.tick) {
-            if (Store.state.mover) {
-                Store.state.mover.velocity.y = 0;
+function getStore(speedVector: Vector2): IStore {
+    return {
+        speedVector,
+        timer: 0,
+        state: observable({
+            tick: false,
+            mover: null,
+            position: { x: 0, y: 0 }
+        }),
+        setMover(el: IBodyStore) {
+            runInAction(() => {
+                this.state.mover = el;
+            });
+            this.setPosition(el.position);
+        },
+        setPosition(v: Position) {
+            console.log('!');
+            runInAction(() => {
+                this.state.position = { x: v.x, y: v.y };
+            });
+        },
+        checkTickByTimer() {
+            this.timer += 1;
+            if (this.timer > 30) {
+                runInAction(() => {
+                    this.state.tick = false;
+                    this.timer = 0;
+                });
+                return;
             }
-        } else {
-            Store.state.tick = true;
-            if (Store.state.mover) {
-                Store.state.mover.velocity.y = -MAX_SPEED;
+            if (this.timer > 20) {
+                runInAction(() => {
+                    if (this.state.tick) {
+                        if (this.state.mover) {
+                            this.state.mover.velocity.x = 0;
+                            this.state.mover.velocity.y = 0;
+                        }
+                    } else {
+                        this.state.tick = true;
+                        if (this.state.mover) {
+                            this.state.mover.velocity = this.speedVector;
+                        }
+                    }
+                });
             }
         }
-    }
-});
+    };
+}
 
 
 function Enemy() {
+    const s1 = getStore(new Vector2(MAX_SPEED, 0));
+    const s2 = getStore(new Vector2(0, -MAX_SPEED));
     return (
         <group>
             <Body
-                getInstance={setMover}
+                getInstance={el => s1.setMover(el)}
                 name={'mover'}
                 color={'red'}
                 hasCollider={true}
                 isMovable={true}
-                onEveryTick={checkTickByTimer}
-                afterUpdate={setPosition}
+                onEveryTick={() => s1.checkTickByTimer()}
+                afterUpdate={v => s1.setPosition(v)}
+                position={new Vector2(15, 15)}
+            />
+            <Generator offset={new Vector2(1, 0)} connected={s1} />
+            <Body
+                getInstance={el => s2.setMover(el)}
+                name={'mover'}
+                color={'red'}
+                hasCollider={true}
+                isMovable={true}
+                onEveryTick={() => s2.checkTickByTimer()}
+                afterUpdate={v => s2.setPosition(v)}
                 position={new Vector2(20, 20)}
             />
-            <Generator />
+            <Generator offset={new Vector2(0, -1)} connected={s2} />
         </group>
     );
 }
 
 
-const Generator = observer(() => {
-    const { mover, tick, position } = Store.state;
+interface GeneratorProps {
+    offset: Vector2;
+    connected: IStore;
+}
+
+const Generator = observer((props: GeneratorProps) => {
+    const { mover, tick, position } = props.connected.state;
     if (mover === null) {
         return null;
     }
@@ -97,7 +133,7 @@ const Generator = observer(() => {
         <Body
             name={'generator'}
             color={tick ? '#ffffff' : '#49b4d0'}
-            position={new Vector2(position.x, position.y - 1)}
+            position={(new Vector2(position.x, position.y)).add(props.offset)}
         />
     );
 });

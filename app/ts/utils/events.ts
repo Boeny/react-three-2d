@@ -116,10 +116,14 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
-        html.setContent(collider);
+        if (body.name === 'player') {
+            html.setContent(collider);
+        }
         return;
     }
-    html.setContent(null);
+    if (body.name === 'player') {
+        html.setContent(null);
+    }
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     if (body.name === 'player' && camera.connected) {
         camera.updateConnected(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));

@@ -127604,10 +127604,14 @@ function checkCollision(body, coo) {
         utils_2.getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
-        store_5.Store.setContent(collider);
+        if (body.name === 'player') {
+            store_5.Store.setContent(collider);
+        }
         return;
     }
-    store_5.Store.setContent(null);
+    if (body.name === 'player') {
+        store_5.Store.setContent(null);
+    }
     body.update(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
     if (body.name === 'player' && store_1.Store.connected) {
         store_1.Store.updateConnected(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
@@ -142006,53 +142010,73 @@ function Enemies() {
     return (React.createElement("group", null, utils_1.getNumArray(1).map(function (i) { return (React.createElement(Enemy, { key: i })); })));
 }
 exports.Enemies = Enemies;
-var Store = {
-    state: mobx_1.observable({
-        tick: false,
-        mover: null,
-        position: { x: 0, y: 0 }
-    }),
-    timer: 0
-};
-var setMover = mobx_1.action(function (el) {
-    Store.state.mover = el;
-    setPosition(el.position);
-});
-var setPosition = mobx_1.action(function (v) {
-    Store.state.position = { x: v.x, y: v.y };
-});
-var checkTickByTimer = mobx_1.action(function () {
-    Store.timer += 1;
-    if (Store.timer > 30) {
-        Store.state.tick = false;
-        Store.timer = 0;
-        return;
-    }
-    if (Store.timer > 20) {
-        if (Store.state.tick) {
-            if (Store.state.mover) {
-                Store.state.mover.velocity.y = 0;
+function getStore(speedVector) {
+    return {
+        speedVector: speedVector,
+        timer: 0,
+        state: mobx_1.observable({
+            tick: false,
+            mover: null,
+            position: { x: 0, y: 0 }
+        }),
+        setMover: function (el) {
+            var _this = this;
+            mobx_1.runInAction(function () {
+                _this.state.mover = el;
+            });
+            this.setPosition(el.position);
+        },
+        setPosition: function (v) {
+            var _this = this;
+            console.log('!');
+            mobx_1.runInAction(function () {
+                _this.state.position = { x: v.x, y: v.y };
+            });
+        },
+        checkTickByTimer: function () {
+            var _this = this;
+            this.timer += 1;
+            if (this.timer > 30) {
+                mobx_1.runInAction(function () {
+                    _this.state.tick = false;
+                    _this.timer = 0;
+                });
+                return;
+            }
+            if (this.timer > 20) {
+                mobx_1.runInAction(function () {
+                    if (_this.state.tick) {
+                        if (_this.state.mover) {
+                            _this.state.mover.velocity.x = 0;
+                            _this.state.mover.velocity.y = 0;
+                        }
+                    }
+                    else {
+                        _this.state.tick = true;
+                        if (_this.state.mover) {
+                            _this.state.mover.velocity = _this.speedVector;
+                        }
+                    }
+                });
             }
         }
-        else {
-            Store.state.tick = true;
-            if (Store.state.mover) {
-                Store.state.mover.velocity.y = -constants_1.MAX_SPEED;
-            }
-        }
-    }
-});
-function Enemy() {
-    return (React.createElement("group", null,
-        React.createElement(body_1.Body, { getInstance: setMover, name: 'mover', color: 'red', hasCollider: true, isMovable: true, onEveryTick: checkTickByTimer, afterUpdate: setPosition, position: new three_1.Vector2(20, 20) }),
-        React.createElement(Generator, null)));
+    };
 }
-var Generator = mobx_react_1.observer(function () {
-    var _a = Store.state, mover = _a.mover, tick = _a.tick, position = _a.position;
+function Enemy() {
+    var s1 = getStore(new three_1.Vector2(constants_1.MAX_SPEED, 0));
+    var s2 = getStore(new three_1.Vector2(0, -constants_1.MAX_SPEED));
+    return (React.createElement("group", null,
+        React.createElement(body_1.Body, { getInstance: function (el) { return s1.setMover(el); }, name: 'mover', color: 'red', hasCollider: true, isMovable: true, onEveryTick: function () { return s1.checkTickByTimer(); }, afterUpdate: function (v) { return s1.setPosition(v); }, position: new three_1.Vector2(15, 15) }),
+        React.createElement(Generator, { offset: new three_1.Vector2(1, 0), connected: s1 }),
+        React.createElement(body_1.Body, { getInstance: function (el) { return s2.setMover(el); }, name: 'mover', color: 'red', hasCollider: true, isMovable: true, onEveryTick: function () { return s2.checkTickByTimer(); }, afterUpdate: function (v) { return s2.setPosition(v); }, position: new three_1.Vector2(20, 20) }),
+        React.createElement(Generator, { offset: new three_1.Vector2(0, -1), connected: s2 })));
+}
+var Generator = mobx_react_1.observer(function (props) {
+    var _a = props.connected.state, mover = _a.mover, tick = _a.tick, position = _a.position;
     if (mover === null) {
         return null;
     }
-    return (React.createElement(body_1.Body, { name: 'generator', color: tick ? '#ffffff' : '#49b4d0', position: new three_1.Vector2(position.x, position.y - 1) }));
+    return (React.createElement(body_1.Body, { name: 'generator', color: tick ? '#ffffff' : '#49b4d0', position: (new three_1.Vector2(position.x, position.y)).add(props.offset) }));
 });
 
 
