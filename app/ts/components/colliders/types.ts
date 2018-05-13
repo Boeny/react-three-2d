@@ -1,17 +1,15 @@
 
 
 export interface IStore {
-    colliders: ReducedCollider[];
-    add: (el: ReducedCollider) => void;
+    colliders: Data[];
+    add: (el: Data) => void;
 }
 
-export interface Collider {
+export interface Collider extends Data {
     position: { x: number, y: number };
-    color: string;
-    name?: string;
 }
 
-export interface ReducedCollider {
-    name: string;
-    color: string;
+export interface Data {
+    state: { color: string };
+    name?: string;
 }

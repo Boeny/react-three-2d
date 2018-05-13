@@ -1,10 +1,10 @@
 import { observable, runInAction } from 'mobx';
-import { IStore, ReducedCollider } from './types';
+import { IStore, Data } from './types';
 
 
 export const Store: IStore = observable({
-    colliders: observable([] as ReducedCollider[]),
-    add(el: ReducedCollider) {
+    colliders: observable([] as Data[]),
+    add(el: Data) {
         runInAction(() => {
             this.colliders.push(el);
         });

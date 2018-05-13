@@ -10,8 +10,8 @@ export function getCollider(x: number, y: number): Collider | undefined {
 
 export function setCollider(store: Collider) {
     Store.add({
-        name: store.name || '',
-        color: store.color
+        name: store.name,
+        state: store.state
     });
     return Colliders[`${store.position.x}|${store.position.y}`] = store;
 }

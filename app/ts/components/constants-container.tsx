@@ -14,9 +14,8 @@ export function Constants(props: Props) {
             data={Object.keys(data).map(name => {
                 const c = (data as any)[name];
                 return {
-                    name: name.split('_').join(' ').toLowerCase() + ' = '
-                        + (typeof c === 'object' ? '[Object]' : c),
-                    color: '#999999'
+                    name: `${name.split('_').join(' ').toLowerCase()} = ${String(c)}`,
+                    state: { color: '#999999' }
                 };
             })}
             position={position}

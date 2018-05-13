@@ -1,20 +1,33 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, CommonParams } from './types';
+import { IStore, CommonParams, Position } from './types';
 
 
 export interface InitialParams extends CommonParams {
+    color: string;
     position: Vector2;
 }
 
-export function getStore({ position, ...common }: InitialParams): IStore {
+export function getStore({ position, color, ...common }: InitialParams): IStore {
     return {
         ...common,
+        state: observable({ color }),
         position: observable({
             x: position.x,
             y: position.y
         }),
         velocity: new Vector2(),
+        setColor(color: string) {
+            runInAction(() => {
+                this.state.color = color;
+            });
+        },
+        setPosition(v: Position) {
+            runInAction(() => {
+                this.position.x = v.x;
+                this.position.y = v.y;
+            });
+        },
         update(v: Vector2) {
             runInAction(() => {
                 this.position.x += v.x;

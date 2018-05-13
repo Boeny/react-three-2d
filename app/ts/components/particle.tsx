@@ -23,7 +23,7 @@ export class Particle extends React.Component<Props> {
         if (hasCollider) {
             setCollider({
                 name,
-                color,
+                state: { color },
                 position: { x, y }
             });
         }

@@ -5,6 +5,7 @@ import { Vector2 } from 'three';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { getNumArray } from '~/utils';
 import { Body } from './body';
+import { MAX_SPEED } from '~/constants';
 
 
 export function Enemies() {
@@ -19,18 +20,54 @@ export function Enemies() {
 
 
 interface IStore {
-    mover: IBodyStore | null;
+    state: {
+        tick: boolean;
+        mover: IBodyStore | null;
+        position: { x: number, y: number };
+    };
     timer: number;
 }
 
-const Store: IStore = observable({
-    mover: null,
+const Store: IStore = {
+    state: observable({
+        tick: false,
+        mover: null,
+        position: { x: 0, y: 0 }
+    }),
     timer: 0
-});
+};
+
 
 const setMover = action((el: IBodyStore) => {
-    Store.mover = el;
+    Store.state.mover = el;
+    setPosition(el.position);
 });
+
+const setPosition = action((v: { x: number, y: number }) => {
+    Store.state.position = { x: v.x, y: v.y };
+});
+
+const checkTickByTimer = action(() => {
+    Store.timer += 1;
+    if (Store.timer > 30) {
+        Store.state.tick = false;
+        Store.timer = 0;
+        return;
+    }
+    if (Store.timer > 20) {
+        if (Store.state.tick) {
+            if (Store.state.mover) {
+                Store.state.mover.velocity.y = 0;
+            }
+        } else {
+            Store.state.tick = true;
+            if (Store.state.mover) {
+                Store.state.mover.velocity.y = -MAX_SPEED;
+            }
+        }
+    }
+});
+
 
 function Enemy() {
     return (
@@ -40,6 +77,9 @@ function Enemy() {
                 name={'mover'}
                 color={'red'}
                 hasCollider={true}
+                isMovable={true}
+                onEveryTick={checkTickByTimer}
+                afterUpdate={setPosition}
                 position={new Vector2(20, 20)}
             />
             <Generator />
@@ -49,16 +89,15 @@ function Enemy() {
 
 
 const Generator = observer(() => {
-    const { mover } = Store;
+    const { mover, tick, position } = Store.state;
     if (mover === null) {
         return null;
     }
     return (
         <Body
             name={'generator'}
-            hasCollider={true}
-            color={Store.timer > 1 ? '#ffffff' : 'lightblue'}
-            position={new Vector2(mover.position.x, mover.position.y - 1)}
+            color={tick ? '#ffffff' : '#49b4d0'}
+            position={new Vector2(position.x, position.y - 1)}
         />
     );
 });

@@ -8,7 +8,7 @@ import { Particle } from './particle';
 const WIDTH = 20;
 
 interface Data {
-    color: string;
+    state: { color: string };
     name?: string;
 }
 
@@ -57,7 +57,7 @@ const Content = ((props: ContentProps) => {
                     x={position.x + (i % WIDTH)}
                     y={position.y + Math.floor(i / WIDTH)}
                     name={item.name}
-                    color={item.color}
+                    color={item.state.color}
                 />
             ))}
         </group>

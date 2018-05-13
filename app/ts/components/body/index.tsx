@@ -12,13 +12,13 @@ interface ConnectedProps {
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { position, color } = props.store;
+    const { position, state } = props.store;
     return (
         <Particle
             zIndex={1}
             x={position.x}
             y={position.y}
-            color={color}
+            color={state.color}
         />
     );
 });
@@ -41,6 +41,8 @@ export class Body extends React.Component<Props, State> {
         this.state = { store: null };
     }
 
+    delMovable: () => void;
+
     componentDidMount() {
         const { hasCollider, isMovable, getInstance, ...rest } = this.props;
         const store = getStore(rest);
@@ -49,6 +51,9 @@ export class Body extends React.Component<Props, State> {
         }
         if (isMovable) {
             movable.add(store);
+            this.delMovable = () => {
+                movable.del(store);
+            };
         }
         getInstance && getInstance(store);
         this.setState({ store });
@@ -63,7 +68,19 @@ export class Body extends React.Component<Props, State> {
             delCollider(store.position);
         }
         if (this.props.isMovable) {
-            movable.del(store);
+            this.delMovable();
+        }
+    }
+
+    componentDidUpdate({ color, position }: Props) {
+        if (this.state.store === null) {
+            return;
+        }
+        if (color !== this.props.color) {
+            this.state.store.setColor(this.props.color);
+        }
+        if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
+            this.state.store.setPosition(this.props.position);
         }
     }
 

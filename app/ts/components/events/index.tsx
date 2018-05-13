@@ -46,7 +46,7 @@ const Content = ((props: Props) => {
                 borderColor={'#49b4d0'}
                 data={[{
                     name: `zoom = ${camera.state.zoom}`,
-                    color: '#6bd6f1'
+                    state: { color: '#6bd6f1' }
                 }]}
                 position={(new Vector2(0, 3)).add(position)}
             />
@@ -65,7 +65,7 @@ export const CameraProps = ((props: Props) => {
             borderColor={'#6bd6f1'}
             data={[{
                 name: `zoom = ${camera.state.zoom}`,
-                color: '#6bd6f1'
+                state: { color: '#6bd6f1' }
             }]}
             position={props.position}
         />
