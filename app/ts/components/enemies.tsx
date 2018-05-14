@@ -53,7 +53,6 @@ function getStore(speedVector: Vector2): IStore {
             this.setPosition(el.position);
         },
         setPosition(v: Position) {
-            console.log('!');
             runInAction(() => {
                 this.state.position = { x: v.x, y: v.y };
             });
@@ -89,7 +88,7 @@ function getStore(speedVector: Vector2): IStore {
 
 function Enemy() {
     const s1 = getStore(new Vector2(MAX_SPEED, 0));
-    const s2 = getStore(new Vector2(0, -MAX_SPEED));
+    // const s2 = getStore(new Vector2(0, -MAX_SPEED));
     return (
         <group>
             <Body
@@ -103,17 +102,6 @@ function Enemy() {
                 position={new Vector2(15, 15)}
             />
             <Generator offset={new Vector2(1, 0)} connected={s1} />
-            <Body
-                getInstance={el => s2.setMover(el)}
-                name={'mover'}
-                color={'red'}
-                hasCollider={true}
-                isMovable={true}
-                onEveryTick={() => s2.checkTickByTimer()}
-                afterUpdate={v => s2.setPosition(v)}
-                position={new Vector2(20, 20)}
-            />
-            <Generator offset={new Vector2(0, -1)} connected={s2} />
         </group>
     );
 }

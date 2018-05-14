@@ -108,6 +108,7 @@ export function onAnimate() {
 
 function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     const velocity = body.velocity[coo];
+    console.log(velocity);
     if (velocity === 0) {
         return;
     }
