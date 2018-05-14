@@ -102,13 +102,12 @@ export function onAnimate() {
         const body = movable.bodies[i];
         checkCollision(body, 'x');
         checkCollision(body, 'y');
-        body.onEveryTick && body.onEveryTick();
+        body.onEveryTick && body.onEveryTick(body);
     }
 }
 
 function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     const velocity = body.velocity[coo];
-    console.log(velocity);
     if (velocity === 0) {
         return;
     }

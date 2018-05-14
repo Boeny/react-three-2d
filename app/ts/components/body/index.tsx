@@ -44,9 +44,9 @@ export class Body extends React.Component<Props, State> {
     delMovable: () => void;
 
     componentDidMount() {
-        const { hasCollider, isMovable, getInstance, ...rest } = this.props;
+        const { isMovable, getInstance, ...rest } = this.props;
         const store = getStore(rest);
-        if (hasCollider) {
+        if (rest.hasCollider) {
             setCollider(store);
         }
         if (isMovable) {

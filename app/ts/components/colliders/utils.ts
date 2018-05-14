@@ -1,4 +1,4 @@
-import { Store } from './store';
+// import { Store } from './store';
 import { Collider } from './types';
 
 
@@ -9,10 +9,10 @@ export function getCollider(x: number, y: number): Collider | undefined {
 }
 
 export function setCollider(store: Collider) {
-    Store.add({
+    /*Store.add({
         name: store.name,
         state: store.state
-    });
+    });*/
     return Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 

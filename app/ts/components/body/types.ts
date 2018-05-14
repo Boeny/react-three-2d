@@ -13,11 +13,11 @@ export interface IStore extends CommonParams {
     setColor: (color: string) => void;
     setPosition: (v: Position) => void;
     update: (v: Vector2) => void;
-    tail?: boolean;
 }
 
 export interface CommonParams {
     name?: string;
+    hasCollider?: boolean;
     afterUpdate?: (v: Vector2) => void;
-    onEveryTick?: () => void;
+    onEveryTick?: (body: IStore) => void;
 }

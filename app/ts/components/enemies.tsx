@@ -34,7 +34,7 @@ interface IStore {
     };
     setMover: (el: IBodyStore) => void;
     setPosition: (v: Position) => void;
-    checkTickByTimer: () => void;
+    checkTickByTimer: (mover: IBodyStore) => void;
 }
 
 function getStore(speedVector: Vector2): IStore {
@@ -57,38 +57,39 @@ function getStore(speedVector: Vector2): IStore {
                 this.state.position = { x: v.x, y: v.y };
             });
         },
-        checkTickByTimer() {
+        checkTickByTimer(mover: IBodyStore) {
             this.timer += 1;
-            if (this.timer > 30) {
+            if (this.timer < 21) {
+                return;
+            }
+            if (this.timer === 30) {
                 runInAction(() => {
                     this.state.tick = false;
                     this.timer = 0;
                 });
                 return;
             }
-            if (this.timer > 20) {
+            if (this.timer === 21) {
+                mover.velocity = this.speedVector;
                 runInAction(() => {
-                    if (this.state.tick) {
-                        if (this.state.mover) {
-                            this.state.mover.velocity.x = 0;
-                            this.state.mover.velocity.y = 0;
-                        }
-                    } else {
-                        this.state.tick = true;
-                        if (this.state.mover) {
-                            this.state.mover.velocity = this.speedVector;
-                        }
-                    }
+                    this.state.tick = true;
                 });
+                return;
+            }
+            if (this.timer === 22) {
+                mover.velocity = V2;
+                return;
             }
         }
     };
 }
 
+const V2 = new Vector2();
+
 
 function Enemy() {
     const s1 = getStore(new Vector2(MAX_SPEED, 0));
-    // const s2 = getStore(new Vector2(0, -MAX_SPEED));
+    const s2 = getStore(new Vector2(0, -MAX_SPEED));
     return (
         <group>
             <Body
@@ -97,11 +98,23 @@ function Enemy() {
                 color={'red'}
                 hasCollider={true}
                 isMovable={true}
-                onEveryTick={() => s1.checkTickByTimer()}
+                onEveryTick={el => s1.checkTickByTimer(el)}
                 afterUpdate={v => s1.setPosition(v)}
                 position={new Vector2(15, 15)}
             />
-            <Generator offset={new Vector2(1, 0)} connected={s1} />
+            <Generator offset={new Vector2(MAX_SPEED, 0)} connected={s1} />
+
+            <Body
+                getInstance={el => s2.setMover(el)}
+                name={'mover'}
+                color={'red'}
+                hasCollider={true}
+                isMovable={true}
+                onEveryTick={el => s2.checkTickByTimer(el)}
+                afterUpdate={v => s2.setPosition(v)}
+                position={new Vector2(20, 20)}
+            />
+            <Generator offset={new Vector2(0, -MAX_SPEED)} connected={s2} />
         </group>
     );
 }
