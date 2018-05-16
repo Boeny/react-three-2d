@@ -7,9 +7,10 @@ import { setCollider, delCollider } from '../colliders/utils';
 export interface InitialParams extends CommonParams {
     color: string;
     position: Vector2;
+    velocity?: Vector2;
 }
 
-export function getStore({ position, color, ...common }: InitialParams): IStore {
+export function getStore({ position, color, velocity, ...common }: InitialParams): IStore {
     return {
         ...common,
         state: observable({ color }),
@@ -17,7 +18,7 @@ export function getStore({ position, color, ...common }: InitialParams): IStore 
             x: position.x,
             y: position.y
         }),
-        velocity: new Vector2(),
+        velocity: velocity || new Vector2(),
         setColor(color: string) {
             runInAction(() => {
                 this.state.color = color;

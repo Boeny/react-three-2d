@@ -1,4 +1,4 @@
-import { IStore as IBodyStore } from '../body/types';
+import { Vector2 } from 'three';
 
 
 export interface IStore {
@@ -8,6 +8,9 @@ export interface IStore {
         up: boolean;
         down: boolean;
     };
+    position: { x: number, y: number };
+    velocity: { x: number, y: number };
+    init: (position: Vector2) => void;
     moveLeft: () => void;
     moveRight: () => void;
     moveUp: () => void;
@@ -18,5 +21,4 @@ export interface IStore {
     stopMovingRight: () => void;
     stopMovingUp: () => void;
     stopMovingDown: () => void;
-    instance?: IBodyStore;
 }

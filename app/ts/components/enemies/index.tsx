@@ -91,11 +91,7 @@ function Enemy(props: PositionProps) {
                             period={20}
                             tickLength={10}
                             position={position.clone().add(OFFSET[i])}
-                            onEveryTick={impulse => {
-                                if (impulse) {
-                                    console.log(1);
-                                }
-                            }}
+                            onEveryTick={impulse => { console.log(impulse);}}
                         />
                     </group>
                 );

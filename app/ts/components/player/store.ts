@@ -1,4 +1,5 @@
 import { observable, runInAction } from 'mobx';
+import { Vector2 } from 'three';
 import { IStore } from './types';
 import { MAX_SPEED } from '~/constants';
 
@@ -10,41 +11,48 @@ export const Store: IStore = {
         up: false,
         down: false
     }),
-    instance: undefined,
+    position: observable({ x: 0, y: 0 }),
+    velocity: observable({ x: 0, y: 0 }),
+    init(v: Vector2) {
+        runInAction(() => {
+            this.position.x = v.x;
+            this.position.y = v.y;
+        });
+    },
     moveRight() {
-        if (this.instance) {
-            runInAction(() => this.moving.right = true);
-            this.instance.velocity.x = MAX_SPEED;
-        }
+        runInAction(() => {
+            this.moving.right = true;
+            this.velocity.x = MAX_SPEED;
+        });
     },
     moveLeft() {
-        if (this.instance) {
-            runInAction(() => this.moving.left = true);
-            this.instance.velocity.x = -MAX_SPEED;
-        }
+        runInAction(() => {
+            this.moving.left = true;
+            this.velocity.x = -MAX_SPEED;
+        });
     },
     moveUp() {
-        if (this.instance) {
-            runInAction(() => this.moving.up = true);
-            this.instance.velocity.y = MAX_SPEED;
-        }
+        runInAction(() => {
+            this.moving.up = true;
+            this.velocity.y = MAX_SPEED;
+        });
     },
     moveDown() {
-        if (this.instance) {
-            runInAction(() => this.moving.down = true);
-            this.instance.velocity.y = -MAX_SPEED;
-        }
+        runInAction(() => {
+            this.moving.down = true;
+            this.velocity.y = -MAX_SPEED;
+        });
     },
 
     stopX() {
-        if (this.instance) {
-            this.instance.velocity.x = 0;
-        }
+        runInAction(() => {
+            this.velocity.x = 0;
+        });
     },
     stopY() {
-        if (this.instance) {
-            this.instance.velocity.y = 0;
-        }
+        runInAction(() => {
+            this.velocity.y = 0;
+        });
     },
 
     stopMovingLeft() {

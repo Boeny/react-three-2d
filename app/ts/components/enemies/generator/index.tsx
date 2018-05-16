@@ -18,9 +18,11 @@ const Connected = observer((props: ConnectedProps) => {
             hasCollider={true}
             onEveryTick={() => {
                 const tick = store.timerEqualsTickStart();
-                store.setTick(tick);
                 store.updateTimer();
-                onEveryTick(tick);
+                if (tick !== store.state.tick) {
+                    store.setTick(tick);
+                    onEveryTick(tick);
+                }
             }}
             color={store.state.tick ? '#ffffff' : '#49b4d0'}
             position={position}

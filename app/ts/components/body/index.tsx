@@ -46,6 +46,7 @@ export class Body extends React.Component<Props, State> {
     componentDidMount() {
         const { isMovable, getInstance, ...rest } = this.props;
         const store = getStore(rest);
+        getInstance && getInstance(store);
         if (rest.hasCollider) {
             setCollider(store);
         }
@@ -55,7 +56,7 @@ export class Body extends React.Component<Props, State> {
                 movable.del(store);
             };
         }
-        this.setState({ store }, () => getInstance && getInstance(store));
+        this.setState({ store });
     }
 
     componentWillUnmount() {
@@ -71,7 +72,7 @@ export class Body extends React.Component<Props, State> {
         }
     }
 
-    componentDidUpdate({ color, position }: Props) {
+    componentDidUpdate({ color, position, velocity }: Props) {// previous
         if (this.state.store === null) {
             return;
         }
@@ -80,6 +81,16 @@ export class Body extends React.Component<Props, State> {
         }
         if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
             this.state.store.setPosition(this.props.position);
+        }
+        if (this.props.velocity === undefined) {// new
+            return;
+        }
+        if (velocity === undefined) {
+            this.state.store.velocity = this.props.velocity;
+            return;
+        }
+        if (velocity.x !== this.props.velocity.x || velocity.y !== this.props.velocity.y) {
+            this.state.store.velocity = this.props.velocity;
         }
     }
 
