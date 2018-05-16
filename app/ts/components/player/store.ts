@@ -1,34 +1,37 @@
+import { observable, runInAction } from 'mobx';
 import { IStore } from './types';
 import { MAX_SPEED } from '~/constants';
 
 
 export const Store: IStore = {
-    isMovingLeft: false,
-    isMovingRight: false,
-    isMovingUp: false,
-    isMovingDown: false,
+    moving: observable({
+        left: false,
+        right: false,
+        up: false,
+        down: false
+    }),
     instance: undefined,
     moveRight() {
         if (this.instance) {
-            this.isMovingRight = true;
+            runInAction(() => this.moving.right = true);
             this.instance.velocity.x = MAX_SPEED;
         }
     },
     moveLeft() {
         if (this.instance) {
-            this.isMovingLeft = true;
+            runInAction(() => this.moving.left = true);
             this.instance.velocity.x = -MAX_SPEED;
         }
     },
     moveUp() {
         if (this.instance) {
-            this.isMovingUp = true;
+            runInAction(() => this.moving.up = true);
             this.instance.velocity.y = MAX_SPEED;
         }
     },
     moveDown() {
         if (this.instance) {
-            this.isMovingDown = true;
+            runInAction(() => this.moving.down = true);
             this.instance.velocity.y = -MAX_SPEED;
         }
     },
@@ -45,32 +48,32 @@ export const Store: IStore = {
     },
 
     stopMovingLeft() {
-        this.isMovingLeft = false;
-        if (this.isMovingRight) {
+        runInAction(() => this.moving.left = false);
+        if (this.moving.right) {
             this.moveRight();
         } else {
             this.stopX();
         }
     },
     stopMovingRight() {
-        this.isMovingRight = false;
-        if (this.isMovingLeft) {
+        runInAction(() => this.moving.right = false);
+        if (this.moving.left) {
             this.moveLeft();
         } else {
             this.stopX();
         }
     },
     stopMovingUp() {
-        this.isMovingUp = false;
-        if (this.isMovingDown) {
+        runInAction(() => this.moving.up = false);
+        if (this.moving.down) {
             this.moveDown();
         } else {
             this.stopY();
         }
     },
     stopMovingDown() {
-        this.isMovingDown = false;
-        if (this.isMovingUp) {
+        runInAction(() => this.moving.down = false);
+        if (this.moving.up) {
             this.moveUp();
         } else {
             this.stopY();

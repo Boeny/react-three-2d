@@ -2,10 +2,12 @@ import { IStore as IBodyStore } from '../body/types';
 
 
 export interface IStore {
-    isMovingLeft: boolean;
-    isMovingRight: boolean;
-    isMovingUp: boolean;
-    isMovingDown: boolean;
+    moving: {
+        left: boolean;
+        right: boolean;
+        up: boolean;
+        down: boolean;
+    };
     moveLeft: () => void;
     moveRight: () => void;
     moveUp: () => void;

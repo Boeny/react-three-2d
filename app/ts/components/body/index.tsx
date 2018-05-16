@@ -55,8 +55,7 @@ export class Body extends React.Component<Props, State> {
                 movable.del(store);
             };
         }
-        getInstance && getInstance(store);
-        this.setState({ store });
+        this.setState({ store }, () => getInstance && getInstance(store));
     }
 
     componentWillUnmount() {
