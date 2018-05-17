@@ -43,7 +43,7 @@ export class Body extends React.Component<Props, State> {
 
     delMovable: () => void;
 
-    componentDidMount() {
+    componentDidMount() {// TODO: place it to the constructor!!!
         const { isMovable, getInstance, ...rest } = this.props;
         const store = getStore(rest);
         getInstance && getInstance(store);
