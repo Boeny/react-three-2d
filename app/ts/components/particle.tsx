@@ -5,6 +5,8 @@ import { Parametric } from './parametric';
 import { WIDTH_SCALE, Z_INDEX_STEP } from '~/constants';
 
 
+const BOARD_WIDTH = 0.1;
+
 interface Props {
     x: number;
     y: number;
@@ -14,6 +16,7 @@ interface Props {
     hasCollider?: boolean;
     name?: string;
     zIndex?: number;
+    boardWidth?: number;
 }
 
 export class Particle extends React.Component<Props> {
@@ -45,22 +48,25 @@ export class Particle extends React.Component<Props> {
         const x = this.props.x * WIDTH_SCALE;
         const y = this.props.y * WIDTH_SCALE;
         const z = zIndex ? zIndex * Z_INDEX_STEP : 0;
+        const boardWidth = this.props.boardWidth === undefined ? BOARD_WIDTH : this.props.boardWidth;
         return (
             <group>
+                {boardWidth > 0 ?
+                    <Quad
+                        x={x}
+                        y={y}
+                        z={z}
+                        width={width}
+                        height={height}
+                        color={'#000000'}
+                    />
+                : null}
                 <Quad
-                    x={x}
-                    y={y}
-                    z={z}
-                    width={width}
-                    height={height}
-                    color={'#000000'}
-                />
-                <Quad
-                    x={x + 0.1}
-                    y={y + 0.1}
+                    x={x + boardWidth}
+                    y={y + boardWidth}
                     z={z + Z_INDEX_STEP}
-                    width={width - 0.2}
-                    height={height - 0.2}
+                    width={width - boardWidth * 2}
+                    height={height - boardWidth * 2}
                     color={color}
                 />
             </group>

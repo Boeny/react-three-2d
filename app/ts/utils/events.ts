@@ -116,6 +116,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         body.velocity[coo] = 0;
+        body.onVelocityChange && body.onVelocityChange(body.velocity);
         if (body.name === 'player') {
             html.setContent(collider);
         }
@@ -130,5 +131,6 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     }
     if (events.state.stepMode) {
         body.velocity[coo] = 0;
+        body.onVelocityChange && body.onVelocityChange(body.velocity);
     }
 }

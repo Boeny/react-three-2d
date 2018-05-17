@@ -1,6 +1,11 @@
 import { Vector2 } from 'three';
 
 
+export interface Position {
+    x: number;
+    y: number;
+}
+
 export interface IStore {
     moving: {
         left: boolean;
@@ -8,9 +13,11 @@ export interface IStore {
         up: boolean;
         down: boolean;
     };
-    position: { x: number, y: number };
-    velocity: { x: number, y: number };
+    position: Position;
+    velocity: Position;
     init: (position: Vector2) => void;
+    setPosition: (v: Position) => void;
+    setVelocity: (v: Vector2) => void;
     moveLeft: () => void;
     moveRight: () => void;
     moveUp: () => void;

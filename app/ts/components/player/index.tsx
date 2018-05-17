@@ -2,11 +2,20 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
+import { Position } from './types';
 import { Body } from '../body';
 import { Particle } from '../particle';
 import { MountAndInit } from '~/components/mount-and-init';
 // import { WIDTH_SCALE } from '~/constants';
 
+
+function setPosition(v: Position) {
+    Store.setPosition(v);
+}
+
+function setVelocity(v: Vector2) {
+    Store.setVelocity(v);
+}
 
 export const PlayerComponent = observer(() => {
     const { moving, velocity, position } = Store;
@@ -18,6 +27,8 @@ export const PlayerComponent = observer(() => {
                 isMovable={true}
                 velocity={new Vector2(velocity.x, velocity.y)}
                 position={new Vector2(position.x, position.y)}
+                onPositionChange={setPosition}
+                onVelocityChange={setVelocity}
             />
             {moving.up ?
                 <Particle
@@ -28,17 +39,19 @@ export const PlayerComponent = observer(() => {
                     zIndex={2}
                     width={0.5}
                     height={0.25}
+                    boardWidth={0}
                 />
             : null}
             {moving.down ?
                 <Particle
                     key={2}
                     x={position.x + 0.25}
-                    y={position.y + 0.25}
+                    y={position.y}
                     color={'#00ff00'}
                     zIndex={2}
                     width={0.5}
                     height={0.25}
+                    boardWidth={0}
                 />
             : null}
             {moving.left ?
@@ -50,6 +63,7 @@ export const PlayerComponent = observer(() => {
                     zIndex={2}
                     width={0.25}
                     height={0.5}
+                    boardWidth={0}
                 />
             : null}
             {moving.right ?
@@ -61,6 +75,7 @@ export const PlayerComponent = observer(() => {
                     zIndex={2}
                     width={0.25}
                     height={0.5}
+                    boardWidth={0}
                 />
             : null}
         </group>

@@ -37,6 +37,7 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
             runInAction(() => {
                 this.position.x += v.x;
                 this.position.y += v.y;
+                this.onPositionChange && this.onPositionChange(this.position);
                 this.afterUpdate && this.afterUpdate(
                     new Vector2(this.position.x, this.position.y)
                 );

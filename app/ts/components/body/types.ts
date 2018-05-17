@@ -20,4 +20,6 @@ export interface CommonParams {
     hasCollider?: boolean;
     afterUpdate?: (v: Vector2) => void;
     onEveryTick?: (body: IStore) => void;
+    onPositionChange?: (v: Position) => void;
+    onVelocityChange?: (v: Vector2) => void;
 }

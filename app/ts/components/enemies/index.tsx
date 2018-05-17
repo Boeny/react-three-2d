@@ -80,7 +80,7 @@ function Enemy(props: PositionProps) {
                 return (
                     <group key={i}>
                         <Body
-                            getInstance={el => store.setMover(el)}
+                            getInstance={body => store.setMover(body)}
                             name={'mover'}
                             color={'red'}
                             hasCollider={true}
@@ -91,7 +91,7 @@ function Enemy(props: PositionProps) {
                             period={20}
                             tickLength={10}
                             position={position.clone().add(OFFSET[i])}
-                            onEveryTick={impulse => { console.log(impulse);}}
+                            onEveryTick={() => {}}
                         />
                     </group>
                 );
