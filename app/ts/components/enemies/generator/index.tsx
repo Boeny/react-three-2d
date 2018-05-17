@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { getStore } from './store';
 import { IStore, CommonProps } from './types';
@@ -10,7 +11,7 @@ interface ConnectedProps extends CommonProps {
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { store, position, onEveryTick } = props;
+    const { store, onEveryTick } = props;
     return (
         <Body
             name={'generator'}
@@ -25,13 +26,14 @@ const Connected = observer((props: ConnectedProps) => {
                 }
             }}
             color={store.state.tick ? '#ffffff' : '#49b4d0'}
-            position={position}
+            position={new Vector2(store.position.x, store.position.y)}
         />
     );
 });
 
 
 interface Props extends CommonProps {
+    position: Vector2;
     period: number;
     tickLength: number;
 }
@@ -48,19 +50,28 @@ export class Generator extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        const { period, tickLength } = this.props;
-        const store = getStore(period, tickLength);
+        const { period, tickLength, position } = this.props;
+        const store = getStore(period, tickLength, position);
         this.setState({ store });
     }
 
+    componentDidUpdate({ position }: Props) {// previous
+        const { store } = this.state;
+        if (store === null) {
+            return;
+        }
+        if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
+            store.setPosition(this.props.position);
+        }
+    }
+
     render() {
-        const { position, onEveryTick } = this.props;
+        const { onEveryTick } = this.props;
         const { store } = this.state;
         return (
             store ?
                 <Connected
                     store={store}
-                    position={position}
                     onEveryTick={onEveryTick}
                 />
             : null

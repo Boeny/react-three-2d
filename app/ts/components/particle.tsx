@@ -27,7 +27,9 @@ export class Particle extends React.Component<Props> {
             setCollider({
                 name,
                 state: { color },
-                position: { x, y }
+                position: { x, y },
+                velocity: new Vector2(),
+                isMovable: false
             });
         }
     }

@@ -1,8 +1,9 @@
 import { observable, runInAction } from 'mobx';
-import { IStore } from './types';
+import { Vector2 } from 'three';
+import { IStore, Position } from './types';
 
 
-export function getStore(period: number, tickLength: number): IStore {
+export function getStore(period: number, tickLength: number, p: Vector2): IStore {
     const tickStart = period + 1;
     const tickEnd = period + tickLength;
     return {
@@ -10,6 +11,13 @@ export function getStore(period: number, tickLength: number): IStore {
         state: observable({
             tick: false
         }),
+        position: observable({ x: p.x, y: p.y }),
+        setPosition(v: Position) {
+            runInAction(() => {
+                this.position.x = v.x;
+                this.position.y = v.y;
+            });
+        },
         timerEqualsTickStart() {
             return this.timer === tickStart;
         },

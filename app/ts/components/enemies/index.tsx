@@ -49,7 +49,6 @@ interface IStore {
 }
 
 function getStore(p: Vector2): IStore {
-    console.log('s');
     return {
         timer: 0,
         position: observable({ x: p.x, y: p.y }),
@@ -82,6 +81,7 @@ const OFFSET = [
 const Mover = observer((props: { store: IStore, offset: Vector2 }) => {
     const { store, offset } = props;
     const position = new Vector2(store.position.x, store.position.y);
+    const velocity = new Vector2(store.velocity.x, store.velocity.y);
     return (
         <group>
             <Body
@@ -90,7 +90,7 @@ const Mover = observer((props: { store: IStore, offset: Vector2 }) => {
                 hasCollider={true}
                 isMovable={true}
                 position={position}
-                velocity={new Vector2(store.velocity.x, store.velocity.y)}
+                velocity={velocity}
                 onPositionChange={v => store.setPosition(v)}
                 onVelocityChange={v => store.setVelocity(v)}
             />

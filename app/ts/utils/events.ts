@@ -116,7 +116,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
         if (collider.isMovable) {
-            collider.velocity[coo] = body.velocity[coo];
+            // collider.velocity[coo] = body.velocity[coo];
         } else {
             body.velocity[coo] = 0;
         }
