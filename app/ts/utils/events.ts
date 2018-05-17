@@ -115,7 +115,11 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x + velocity, body.position.y) :
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
-        body.velocity[coo] = 0;
+        if (collider.isMovable) {
+            collider.velocity[coo] = body.velocity[coo];
+        } else {
+            body.velocity[coo] = 0;
+        }
         body.onVelocityChange && body.onVelocityChange(body.velocity);
         if (body.name === 'player') {
             html.setContent(collider);

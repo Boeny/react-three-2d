@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-// import { observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Box } from './box';
 import { Particle } from './particle';
 
@@ -17,7 +17,7 @@ interface Props extends PositionProps {
     borderColor?: string;
 }
 
-export const Container = ((props: Props) => {
+export const Container = observer((props: Props) => {
     const { data, borderColor } = props;
     const count = data.length;
     const width = WIDTH > count ? count : WIDTH;
@@ -47,6 +47,9 @@ interface ContentProps {
 const Content = ((props: ContentProps) => {
     const position = props.position || new Vector2();
     const { data } = props;
+    if (data.length === 0) {
+        return null;
+    }
     return (
         <group>
             {data.map((item, i) => (

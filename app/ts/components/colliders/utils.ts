@@ -9,13 +9,15 @@ export function getCollider(x: number, y: number): Collider | undefined {
 }
 
 export function setCollider(store: Collider) {
-    /*Store.add({
-        name: store.name,
-        state: store.state
-    });*/
+    // Store.add(store);
     return Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 
 export function delCollider(position: { x: number, y: number }) {
+    const store = Colliders[`${position.x}|${position.y}`];
+    if (store === undefined) {
+        return;
+    }
+    // Store.del(store);
     Colliders[`${position.x}|${position.y}`] = undefined;
 }

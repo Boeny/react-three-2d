@@ -19,38 +19,58 @@ export function Enemies() {
 }
 
 
+
+function Enemy(props: PositionProps) {
+    return (
+        <group>
+            {getNumArray(1).map(i => (
+                <Mover
+                    key={i}
+                    offset={OFFSET[i]}
+                    store={getStore(OFFSET[i].clone().multiplyScalar(-5).add(props.position))}
+                />
+            ))}
+        </group>
+    );
+}
+
+
 interface Position {
     x: number;
     y: number;
 }
 
 interface IStore {
-    speedVector: Vector2;
     timer: number;
-    state: {
-        tick: boolean;
-        position: Position;
-    };
+    position: Position;
+    velocity: Position;
     setPosition: (v: Position) => void;
+    setVelocity: (v: Vector2) => void;
 }
 
-function getStore(speedVector: Vector2): IStore {
+function getStore(p: Vector2): IStore {
+    console.log('s');
     return {
-        speedVector,
         timer: 0,
-        state: observable({
-            tick: false,
-            position: { x: 0, y: 0 }
-        }),
+        position: observable({ x: p.x, y: p.y }),
+        velocity: observable({ x: 0, y: 0 }),
         setPosition(v: Position) {
             runInAction(() => {
-                this.state.position = { x: v.x, y: v.y };
+                this.position.x = v.x;
+                this.position.y = v.y;
+            });
+        },
+        setVelocity(v: Vector2) {
+            runInAction(() => {
+                this.velocity.x = v.x;
+                this.velocity.y = v.y;
             });
         }
     };
 }
 
-// const V2 = new Vector2();
+const V2 = new Vector2();
+
 const OFFSET = [
     new Vector2(MAX_SPEED, 0),
     new Vector2(-MAX_SPEED, 0),
@@ -59,34 +79,33 @@ const OFFSET = [
 ];
 
 
-const Enemy = observer((props: PositionProps) => {
+const Mover = observer((props: { store: IStore, offset: Vector2 }) => {
+    const { store, offset } = props;
+    const position = new Vector2(store.position.x, store.position.y);
     return (
         <group>
-            {getNumArray(1).map(i => {
-                const store = getStore(OFFSET[i]);// TODO: getStore must be in componentDidMount or constructor!!!
-                const position = OFFSET[i].clone().multiplyScalar(-5).add(props.position);
-                return (
-                    <group key={i}>
-                        <Body
-                            name={'mover'}
-                            color={'red'}
-                            hasCollider={true}
-                            isMovable={true}
-                            position={position}
-                        />
-                        <Generator
-                            period={20}
-                            tickLength={10}
-                            position={position.clone().add(OFFSET[i])}
-                            onEveryTick={impulse => {
-                                if (impulse) {
-                                    store.setPosition(OFFSET[i]);
-                                }
-                            }}
-                        />
-                    </group>
-                );
-            })}
+            <Body
+                name={'mover'}
+                color={'red'}
+                hasCollider={true}
+                isMovable={true}
+                position={position}
+                velocity={new Vector2(store.velocity.x, store.velocity.y)}
+                onPositionChange={v => store.setPosition(v)}
+                onVelocityChange={v => store.setVelocity(v)}
+            />
+            <Generator
+                period={20}
+                tickLength={10}
+                position={position.clone().add(offset)}
+                onEveryTick={impulse => {
+                    if (impulse) {
+                        store.setVelocity(offset);
+                    } else {
+                        store.setVelocity(V2);
+                    }
+                }}
+            />
         </group>
     );
 });

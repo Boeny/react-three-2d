@@ -25,8 +25,8 @@ export const PlayerComponent = observer(() => {
                 name={'player'}
                 color={'#ffffff'}
                 isMovable={true}
-                velocity={new Vector2(velocity.x, velocity.y)}
                 position={new Vector2(position.x, position.y)}
+                velocity={new Vector2(velocity.x, velocity.y)}
                 onPositionChange={setPosition}
                 onVelocityChange={setVelocity}
             />

@@ -8,5 +8,11 @@ export const Store: IStore = observable({
         runInAction(() => {
             this.colliders.push(el);
         });
+    },
+    del(el: Data) {
+        const i = this.colliders.indexOf(el);
+        runInAction(() => {
+            this.colliders.splice(i, 1);
+        });
     }
 });

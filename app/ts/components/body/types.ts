@@ -18,6 +18,7 @@ export interface IStore extends CommonParams {
 export interface CommonParams {
     name?: string;
     hasCollider?: boolean;
+    isMovable?: boolean;
     afterUpdate?: (v: Vector2) => void;
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;

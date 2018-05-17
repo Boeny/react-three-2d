@@ -25,8 +25,6 @@ const Connected = observer((props: ConnectedProps) => {
 
 
 interface Props extends InitialParams {
-    hasCollider?: boolean;
-    isMovable?: boolean;
     getInstance?: (body: IStore) => void;
 }
 
@@ -41,16 +39,16 @@ export class Body extends React.Component<Props, State> {
         this.state = { store: null };
     }
 
-    delMovable: () => void;
+    delMovable: () => void = () => undefined;
 
-    componentDidMount() {// TODO: place it to the constructor!!!
-        const { isMovable, getInstance, ...rest } = this.props;
+    componentDidMount() {
+        const { getInstance, ...rest } = this.props;
         const store = getStore(rest);
         getInstance && getInstance(store);
         if (rest.hasCollider) {
             setCollider(store);
         }
-        if (isMovable) {
+        if (rest.isMovable) {
             movable.add(store);
             this.delMovable = () => {
                 movable.del(store);
@@ -64,39 +62,43 @@ export class Body extends React.Component<Props, State> {
         if (store === null) {
             return;
         }
-        if (this.props.hasCollider) {
+        if (store.hasCollider) {
             delCollider(store.position);
         }
-        if (this.props.isMovable) {
+        if (store.isMovable) {
             this.delMovable();
         }
     }
 
     componentDidUpdate({ color, position, velocity }: Props) {// previous
-        if (this.state.store === null) {
+        const { store } = this.state;
+        if (store === null) {
             return;
         }
         if (color !== this.props.color) {
-            this.state.store.setColor(this.props.color);
+            store.setColor(this.props.color);
         }
         if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
-            this.state.store.setPosition(this.props.position);
+            store.setPosition(this.props.position);
         }
         if (this.props.velocity === undefined) {// new
             return;
         }
         if (velocity === undefined) {
-            this.state.store.velocity = this.props.velocity;
+            store.velocity = this.props.velocity;
             return;
         }
         if (velocity.x !== this.props.velocity.x || velocity.y !== this.props.velocity.y) {
-            this.state.store.velocity = this.props.velocity;
+            store.velocity = this.props.velocity;
         }
     }
 
     render() {
+        const { store } = this.state;
         return (
-            this.state.store === null ? null : <Connected store={this.state.store} />
+            store ?
+                <Connected store={store} />
+            : null
         );
     }
 }
