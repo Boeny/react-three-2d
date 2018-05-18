@@ -97,6 +97,7 @@ export class Body extends React.Component<Props, State> {
             return;
         }
         if (velocity.x !== this.props.velocity.x || velocity.y !== this.props.velocity.y) {
+            debugger;
             store.velocity = this.props.velocity;
         }
     }
