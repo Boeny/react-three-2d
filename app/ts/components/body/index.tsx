@@ -15,7 +15,7 @@ const Connected = observer((props: ConnectedProps) => {
     return (
         <Particle
             zIndex={1}
-            position={position}
+            position={{ x: position.x, y: position.y }}
             color={state.color}
         />
     );
@@ -27,7 +27,7 @@ const ConnectedCollider = observer((props: ConnectedProps) => {
     return (
         <ParticleCollider
             zIndex={1}
-            position={position}
+            position={{ x: position.x, y: position.y }}
             color={state.color}
             getColliderUpdater={updater => {
                 props.store.updateCollider = updater(() => store.update());
@@ -97,7 +97,6 @@ export class Body extends React.Component<Props, State> {
             return;
         }
         if (velocity.x !== this.props.velocity.x || velocity.y !== this.props.velocity.y) {
-            debugger;
             store.velocity = this.props.velocity;
         }
     }

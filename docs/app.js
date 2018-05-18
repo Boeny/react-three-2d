@@ -102904,11 +102904,11 @@ var store_2 = __webpack_require__(279);
 var particle_1 = __webpack_require__(34);
 var Connected = mobx_react_1.observer(function (props) {
     var _a = props.store, position = _a.position, state = _a.state;
-    return (React.createElement(particle_1.Particle, { zIndex: 1, position: position, color: state.color }));
+    return (React.createElement(particle_1.Particle, { zIndex: 1, position: { x: position.x, y: position.y }, color: state.color }));
 });
 var ConnectedCollider = mobx_react_1.observer(function (props) {
     var _a = props.store, position = _a.position, state = _a.state;
-    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, position: position, color: state.color, getColliderUpdater: function (updater) {
+    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, position: { x: position.x, y: position.y }, color: state.color, getColliderUpdater: function (updater) {
             props.store.updateCollider = updater(function () { return store.update(); });
         } }));
 });
@@ -103497,7 +103497,6 @@ exports.Store = {
         mobx_1.runInAction(function () {
             _this.moving.up = true;
             _this.velocity.y = constants_1.MAX_SPEED;
-            debugger;
         });
     },
     moveDown: function () {
@@ -141819,7 +141818,6 @@ function setVelocity(v) {
 exports.PlayerComponent = mobx_react_1.observer(function () {
     var moving = store_1.Store.moving, velocity = store_1.Store.velocity;
     var position = new three_1.Vector2(store_1.Store.position.x, store_1.Store.position.y);
-    debugger;
     return (React.createElement("group", null,
         React.createElement(camera_1.Camera, { position: position }),
         React.createElement(body_1.Body, { name: 'player', color: '#ffffff', isMovable: true, position: position, velocity: new three_1.Vector2(velocity.x, velocity.y), onPositionChange: setPosition, onVelocityChange: setVelocity, onCollide: function (collider) { return store_2.Store.setContent(collider.name || null); }, onUnCollide: function () { return store_2.Store.setContent(null); } }),
