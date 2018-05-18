@@ -5,8 +5,8 @@ import { WIDTH_SCALE } from'~/constants';
 
 
 export const Html = observer(() => {
-    const { content } = Store;
-    if (content === null) {
+    const { content } = Store.state;
+    if (!content) {
         return null;
     }
     return (

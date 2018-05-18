@@ -80,20 +80,27 @@ export function onKeyDown(e: KeyboardEvent) {
 }
 
 export function onKeyUp(e: KeyboardEvent) {
-    events.setStepMode(false);
+    let playerIsMoving: boolean = false;
     switch (e.key) {
         case KEY.LEFT:
             player.stopMovingLeft();
+            playerIsMoving = player.moving.up || player.moving.down || player.moving.right;
             break;
         case KEY.RIGHT:
             player.stopMovingRight();
+            playerIsMoving = player.moving.up || player.moving.down || player.moving.left;
             break;
         case KEY.UP:
             player.stopMovingUp();
+            playerIsMoving = player.moving.left || player.moving.down || player.moving.right;
             break;
         case KEY.DOWN:
             player.stopMovingDown();
+            playerIsMoving = player.moving.up || player.moving.left || player.moving.right;
             break;
+    }
+    if (playerIsMoving === false) {
+        events.setStepMode(false);
     }
 }
 
@@ -115,11 +122,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x + velocity, body.position.y) :
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
-        if (collider.isMovable) {
-            // collider.velocity[coo] = body.velocity[coo];
-        } else {
-            body.velocity[coo] = 0;
-        }
+        body.velocity[coo] = 0;
         body.onVelocityChange && body.onVelocityChange(body.velocity);
         body.onCollide && body.onCollide(collider);
         return;

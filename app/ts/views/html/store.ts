@@ -1,21 +1,24 @@
-import { observable } from 'mobx';
-import { Vector2 } from 'three';
-import { setCanvas, setCursor, setContent } from './actions';
+import { observable, runInAction } from 'mobx';
 import { IStore } from './types';
 
 
-const Store: IStore = observable({
-    DOM: null,
+export const Store: IStore = {
     canvas: null,
-    content: null,
-    position: new Vector2(),
-    setCanvas() {},
-    setCursor() {},
-    setContent() {}
-});
-
-Store.setCanvas = setCanvas(Store);
-Store.setCursor = setCursor(Store);
-Store.setContent = setContent(Store);
-
-export  { Store };
+    state: observable({
+        content: null,
+        position: { x: 0, y: 0 }
+    }),
+    setCanvas(el: HTMLCanvasElement | null) {
+        this.canvas = el;
+    },
+    setCursor(cursor: string) {
+        if (this.canvas) {
+            this.canvas.style.cursor = cursor;
+        }
+    },
+    setContent(text: string | null) {
+        runInAction(() => {
+            this.state.content = text;
+        });
+    }
+};

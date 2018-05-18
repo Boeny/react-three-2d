@@ -38,18 +38,6 @@ declare namespace JSX {
 
 declare module 'react3';
 
-declare interface MeshStore {
-    style: {
-        background: string;
-    };
-    rotationSpeed: number;
-    angle: number;
-}
-
-declare interface ElementStore {
-    DOM: HTMLElement | null;
-}
-
 declare interface PositionProps {
     position: THREE.Vector2;
 }

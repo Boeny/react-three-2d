@@ -18,7 +18,7 @@ export function App() {
                 mainCamera={'camera'}
                 width={width}
                 height={height}
-                canvasRef={html.setCanvas}
+                canvasRef={(el: HTMLCanvasElement | null) => html.setCanvas(el)}
                 {...events}
             >
                 <scene>

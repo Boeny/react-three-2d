@@ -33,13 +33,13 @@ export const PlayerComponent = observer(() => {
                 velocity={new Vector2(velocity.x, velocity.y)}
                 onPositionChange={setPosition}
                 onVelocityChange={setVelocity}
-                onCollide={collider => html.setContent(collider.name || '')}
-                onUnCollide={() => html.setContent('')}
+                onCollide={collider => html.setContent(collider.name || null)}
+                onUnCollide={() => html.setContent(null)}
             />
             {moving.up ?
                 <Particle
                     key={1}
-                    position={{ x: position.x + 0.25, y: position.y + 0.75 }}
+                    position={new Vector2(0.25, 0.75).add(position)}
                     color={'#ff0000'}
                     zIndex={2}
                     width={0.5}
@@ -50,7 +50,7 @@ export const PlayerComponent = observer(() => {
             {moving.down ?
                 <Particle
                     key={2}
-                    position={{ x: position.x + 0.25, y: position.y }}
+                    position={new Vector2(0.25, 0).add(position)}
                     color={'#00ff00'}
                     zIndex={2}
                     width={0.5}
@@ -61,7 +61,7 @@ export const PlayerComponent = observer(() => {
             {moving.left ?
                 <Particle
                     key={3}
-                    position={{ x: position.x, y: position.y + 0.25 }}
+                    position={new Vector2(0, 0.25).add(position)}
                     color={'#0000ff'}
                     zIndex={2}
                     width={0.25}
@@ -72,7 +72,7 @@ export const PlayerComponent = observer(() => {
             {moving.right ?
                 <Particle
                     key={4}
-                    position={{ x: position.x + 0.75, y: position.y + 0.25 }}
+                    position={new Vector2(0.75, 0.25).add(position)}
                     color={'#00ffff'}
                     zIndex={2}
                     width={0.25}
