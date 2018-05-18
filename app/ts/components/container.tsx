@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Box } from './box';
-import { Particle } from './particle';
+import { ParticleCollider } from './particle';
 
 
 const WIDTH = 20;
@@ -53,13 +53,13 @@ const Content = ((props: ContentProps) => {
     return (
         <group>
             {data.map((item, i) => (
-                <Particle
+                <ParticleCollider
                     key={i}
                     zIndex={1}
-                    hasCollider={true}
-                    x={position.x + (i % WIDTH)}
-                    y={position.y + Math.floor(i / WIDTH)}
-                    name={item.name}
+                    position={{
+                        x: position.x + (i % WIDTH),
+                        y: position.y + Math.floor(i / WIDTH)
+                    }}
                     color={item.state.color}
                 />
             ))}

@@ -16,9 +16,9 @@ const Connected = observer((props: ConnectedProps) => {
         <Body
             name={'generator'}
             isMovable={true}
-            hasCollider={true}
+            hasCollider={false}
             onEveryTick={() => {
-                const tick = store.timerEqualsTickStart();
+                const tick = store.timerAfterTickStart();
                 store.updateTimer();
                 if (tick !== store.state.tick) {
                     store.setTick(tick);

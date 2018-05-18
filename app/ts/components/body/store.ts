@@ -1,7 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
 import { IStore, CommonParams, Position } from './types';
-import { setCollider, delCollider } from '../colliders/utils';
 
 
 export interface InitialParams extends CommonParams {
@@ -31,19 +30,10 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
             });
         },
         update(v: Vector2) {
-            if (this.hasCollider) {
-                delCollider(this.position);
-            }
             runInAction(() => {
                 this.position.x += v.x;
                 this.position.y += v.y;
                 this.onPositionChange && this.onPositionChange(this.position);
-                this.afterUpdate && this.afterUpdate(
-                    new Vector2(this.position.x, this.position.y)
-                );
-                if (this.hasCollider) {
-                    setCollider(this);
-                }
             });
         }
     };

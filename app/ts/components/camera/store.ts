@@ -1,31 +1,14 @@
 import { observable, runInAction } from 'mobx';
-import { Vector2 } from 'three';
-import { clamped, toWorldVector, clampByMin, clampByMax } from '~/utils';
+import { clampByMin, clampByMax } from '~/utils';
 import { IStore } from './types';
-import { MAX_SPEED } from '~/constants';
-import { MIN_CAMERA_SPEED, ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
+import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
 
 
 export const Store: IStore = {
     state: observable({
         zoom: CAMERA_INIT_ZOOM,
-        position: new Vector2()
+        position: { x: 0, y: 0 }
     }),
-    velocity: new Vector2(),
-    setSpeed(cameraSpeed: Vector2) {
-        if (!this.connected) {
-            return;
-        }
-        this.connected.velocity = new Vector2(
-            clamped(cameraSpeed.x, MIN_CAMERA_SPEED) ? 0 : (cameraSpeed.x > 0 ? MAX_SPEED : -MAX_SPEED),
-            clamped(cameraSpeed.y, MIN_CAMERA_SPEED) ? 0 : (cameraSpeed.y > 0 ? -MAX_SPEED : MAX_SPEED)
-        );
-    },
-    updateConnected(v: Vector2) {
-        if (this.connected) {
-            this.connected.update(toWorldVector(v.clone()));
-        }
-    },
     setZoom(delta: number) {
         if (delta === 0) {
             return;
@@ -45,9 +28,10 @@ export const Store: IStore = {
             }
         });
     },
-    setPosition(v: Vector2) {
+    setPosition(v: { x: number, y: number }) {
         runInAction(() => {
-            this.state.position = v;
+            this.state.position.x = v.x;
+            this.state.position.y = v.y;
         });
     }
 };

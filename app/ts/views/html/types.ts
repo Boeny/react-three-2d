@@ -7,9 +7,5 @@ export interface IStore {
     position: Vector2;
     setCanvas: (el: HTMLCanvasElement | null) => void;
     setCursor: (cursor: string) => void;
-    setContent: (store: ConnectedStore | null) => void;
-}
-
-export interface ConnectedStore {
-    name?: string;
+    setContent: (text: string) => void;
 }

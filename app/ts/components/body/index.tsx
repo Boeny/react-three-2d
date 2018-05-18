@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { getStore, InitialParams } from './store';
-import { setCollider, delCollider } from '../colliders/utils';
-import { IStore } from './types';
-import { Particle } from '../particle';
 import { Store as movable } from '../movable/store';
+import { getStore, InitialParams } from './store';
+import { IStore } from './types';
+import { Particle, ParticleCollider } from '../particle';
 
 
 interface ConnectedProps {
@@ -16,15 +15,30 @@ const Connected = observer((props: ConnectedProps) => {
     return (
         <Particle
             zIndex={1}
-            x={position.x}
-            y={position.y}
+            position={position}
             color={state.color}
         />
     );
 });
 
 
+const ConnectedCollider = observer((props: ConnectedProps) => {
+    const { position, state } = props.store;
+    return (
+        <ParticleCollider
+            zIndex={1}
+            position={position}
+            color={state.color}
+            getColliderUpdater={updater => {
+                props.store.updateCollider = updater(() => store.update());
+            }}
+        />
+    );
+});
+
+
 interface Props extends InitialParams {
+    hasCollider?: boolean;
     getInstance?: (body: IStore) => void;
 }
 
@@ -45,9 +59,6 @@ export class Body extends React.Component<Props, State> {
         const { getInstance, ...rest } = this.props;
         const store = getStore(rest);
         getInstance && getInstance(store);
-        if (rest.hasCollider) {
-            setCollider(store);
-        }
         if (rest.isMovable) {
             movable.add(store);
             this.delMovable = () => {
@@ -61,9 +72,6 @@ export class Body extends React.Component<Props, State> {
         const { store } = this.state;
         if (store === null) {
             return;
-        }
-        if (store.hasCollider) {
-            delCollider(store.position);
         }
         if (store.isMovable) {
             this.delMovable();
@@ -94,11 +102,16 @@ export class Body extends React.Component<Props, State> {
     }
 
     render() {
+        const { hasCollider } = this.props;
         const { store } = this.state;
+        if (store === null) {
+            return null;
+        }
         return (
-            store ?
+            hasCollider ?
+                <ConnectedCollider store={store} />
+            :
                 <Connected store={store} />
-            : null
         );
     }
 }

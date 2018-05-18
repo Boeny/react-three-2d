@@ -39,7 +39,7 @@ export function onMouseUp(e: MouseEvent) {
             }
             if (events.setMouseDragMode(false)) {
                 html.setCursor('default');
-                camera.setSpeed(new Vector2());
+                // camera.setSpeed(new Vector2());
                 dragStartPoint = null;
             }
             break;
@@ -55,7 +55,7 @@ export function onMouseMove(e: MouseEvent) {
         return;
     }
     const v = getMouseVector(e);
-    camera.setSpeed(dragStartPoint.sub(v));
+    // camera.setSpeed(dragStartPoint.sub(v));
     dragStartPoint = v;
 }
 
@@ -121,18 +121,11 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
             body.velocity[coo] = 0;
         }
         body.onVelocityChange && body.onVelocityChange(body.velocity);
-        if (body.name === 'player') {
-            html.setContent(collider);
-        }
+        body.onCollide && body.onCollide(collider);
         return;
     }
-    if (body.name === 'player') {
-        html.setContent(null);
-    }
+    body.onUnCollide && body.onUnCollide();
     body.update(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-    if (body.name === 'player' && camera.connected) {
-        camera.updateConnected(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-    }
     if (events.state.stepMode) {
         body.velocity[coo] = 0;
         body.onVelocityChange && body.onVelocityChange(body.velocity);

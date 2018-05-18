@@ -1,4 +1,3 @@
-import { Vector2 } from 'three';
 
 
 export interface Position {
@@ -12,9 +11,9 @@ export interface IStore {
     del: (el: Data) => void;
 }
 
-export interface Collider extends Data {
+export interface Collider {
     position: Position;
-    velocity: Vector2;
+    name?: string;
     isMovable?: boolean;
 }
 

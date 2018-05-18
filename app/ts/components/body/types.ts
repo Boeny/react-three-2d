@@ -1,4 +1,5 @@
 import { Vector2 } from 'three';
+import { Collider } from '../colliders/types';
 
 
 export interface Position {
@@ -13,14 +14,15 @@ export interface IStore extends CommonParams {
     setColor: (color: string) => void;
     setPosition: (v: Position) => void;
     update: (v: Vector2) => void;
+    updateCollider?: () => void;
 }
 
 export interface CommonParams {
     name?: string;
-    hasCollider?: boolean;
     isMovable?: boolean;
-    afterUpdate?: (v: Vector2) => void;
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;
     onVelocityChange?: (v: Vector2) => void;
+    onCollide?: (collider: Collider) => void;
+    onUnCollide?: () => void;
 }

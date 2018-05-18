@@ -87,7 +87,7 @@ const Mover = observer((props: { store: IStore, offset: Vector2 }) => {
             <Body
                 name={'mover'}
                 color={'red'}
-                hasCollider={true}
+                hasCollider={false}
                 isMovable={true}
                 position={position}
                 velocity={velocity}

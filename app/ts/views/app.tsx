@@ -4,7 +4,7 @@ import * as React3 from 'react3';
 import * as constants from '~/constants';
 import { Store as html } from './html/store';
 import { Vector2 } from 'three';
-import { Camera, Player, Events, Movable, Colliders, Enemies, Constants } from '~/components';
+import { Player, Events, Movable, Colliders, Enemies, Constants } from '~/components';
 import { Html } from './html';
 
 
@@ -22,7 +22,6 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Camera position={new Vector2()} />
                     <Player position={new Vector2()} />
                     <Enemies />
                     <Events position={new Vector2(-20, 10)} />

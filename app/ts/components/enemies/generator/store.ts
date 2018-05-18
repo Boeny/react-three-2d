@@ -18,8 +18,8 @@ export function getStore(period: number, tickLength: number, p: Vector2): IStore
                 this.position.y = v.y;
             });
         },
-        timerEqualsTickStart() {
-            return this.timer === tickStart;
+        timerAfterTickStart() {
+            return this.timer >= tickStart;
         },
         updateTimer() {
             this.timer += 1;

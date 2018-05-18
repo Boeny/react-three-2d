@@ -17,8 +17,7 @@ export function Box(props: Props) {
     return (
         <group>
             <Particle
-                x={position.x}
-                y={position.y}
+                position={position}
                 color={color}
                 width={width}
                 height={height}

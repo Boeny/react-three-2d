@@ -1,5 +1,5 @@
 import { action } from 'mobx';
-import { IStore, ConnectedStore } from './types';
+import { IStore } from './types';
 
 
 export const setCanvas = (store: IStore) => action((el: HTMLCanvasElement | null) => {
@@ -14,6 +14,6 @@ export const setCursor = (store: IStore) => action((cursor: string) => {
 });
 
 
-export const setContent = (store: IStore) => action((c: ConnectedStore | null) => {
-    store.content = c && c.name || null;
+export const setContent = (store: IStore) => action((text: string) => {
+    store.content = text;
 });

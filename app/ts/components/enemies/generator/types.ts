@@ -10,7 +10,7 @@ export interface IStore {
     state: { tick: boolean };
     position: Position;
     setPosition: (v: Position) => void;
-    timerEqualsTickStart: () => boolean;
+    timerAfterTickStart: () => boolean;
     updateTimer: () => void;
     setTick: (tick: boolean) => void;
 }
