@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
-import { hasCollider } from './colliders/hasCollider';
+import { hasCollider, Props as ColliderProps } from './colliders/hasCollider';
 import { Quad } from './parametric/quad';
 import { WIDTH_SCALE, Z_INDEX_STEP } from '~/constants';
 
@@ -49,4 +49,4 @@ export function Particle(props: Props) {
 }
 
 
-export const ParticleCollider = hasCollider(Particle);
+export const ParticleCollider = hasCollider<Props & ColliderProps>(Particle);

@@ -13,7 +13,7 @@ export interface IStore extends CommonParams {
     velocity: Vector2;
     setColor: (color: string) => void;
     setPosition: (v: Position) => void;
-    update: (v: Vector2) => void;
+    changePosition: (v: Vector2) => void;
     updateCollider?: () => void;
 }
 

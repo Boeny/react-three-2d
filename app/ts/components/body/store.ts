@@ -29,7 +29,7 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
                 this.position.y = v.y;
             });
         },
-        update(v: Vector2) {
+        changePosition(v: Vector2) {
             runInAction(() => {
                 this.position.x += v.x;
                 this.position.y += v.y;

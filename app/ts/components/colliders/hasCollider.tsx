@@ -2,9 +2,9 @@ import * as React from 'react';
 import { setCollider, delCollider } from './utils';
 
 
-interface Props {
+export interface Props {
     position: { x: number, y: number };
-    getColliderUpdater?: (colliderUpdater: (update: () => void) => void) => void;
+    getColliderUpdater?: (colliderUpdater: (update: () => void) => () => void) => void;
 }
 
 class Collider extends React.Component<Props> {

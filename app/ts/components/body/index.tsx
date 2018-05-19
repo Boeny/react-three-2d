@@ -23,14 +23,18 @@ const Connected = observer((props: ConnectedProps) => {
 
 
 const ConnectedCollider = observer((props: ConnectedProps) => {
-    const { position, state } = props.store;
+    const { store } = props;
+    const { position, state } = store;
+    // hack to observe this
+    position.x;
+    position.y;
     return (
         <ParticleCollider
             zIndex={1}
-            position={{ x: position.x, y: position.y }}
+            position={position}
             color={state.color}
             getColliderUpdater={updater => {
-                props.store.updateCollider = updater(() => store.update());
+                store.updateCollider = updater(() => store.changePosition(store.velocity));
             }}
         />
     );
@@ -39,7 +43,6 @@ const ConnectedCollider = observer((props: ConnectedProps) => {
 
 interface Props extends InitialParams {
     hasCollider?: boolean;
-    getInstance?: (body: IStore) => void;
 }
 
 interface State {
@@ -56,10 +59,8 @@ export class Body extends React.Component<Props, State> {
     delMovable: () => void = () => undefined;
 
     componentDidMount() {
-        const { getInstance, ...rest } = this.props;
-        const store = getStore(rest);
-        getInstance && getInstance(store);
-        if (rest.isMovable) {
+        const store = getStore(this.props);
+        if (this.props.isMovable) {
             movable.add(store);
             this.delMovable = () => {
                 movable.del(store);

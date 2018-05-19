@@ -102907,9 +102907,13 @@ var Connected = mobx_react_1.observer(function (props) {
     return (React.createElement(particle_1.Particle, { zIndex: 1, position: { x: position.x, y: position.y }, color: state.color }));
 });
 var ConnectedCollider = mobx_react_1.observer(function (props) {
-    var _a = props.store, position = _a.position, state = _a.state;
-    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, position: { x: position.x, y: position.y }, color: state.color, getColliderUpdater: function (updater) {
-            props.store.updateCollider = updater(function () { return store.update(); });
+    var store = props.store;
+    var position = store.position, state = store.state;
+    // hack to observe this
+    position.x;
+    position.y;
+    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, position: position, color: state.color, getColliderUpdater: function (updater) {
+            store.updateCollider = updater(function () { return store.changePosition(store.velocity); });
         } }));
 });
 var Body = /** @class */ (function (_super) {
@@ -102921,10 +102925,8 @@ var Body = /** @class */ (function (_super) {
         return _this;
     }
     Body.prototype.componentDidMount = function () {
-        var _a = this.props, getInstance = _a.getInstance, rest = tslib_1.__rest(_a, ["getInstance"]);
-        var store = store_2.getStore(rest);
-        getInstance && getInstance(store);
-        if (rest.isMovable) {
+        var store = store_2.getStore(this.props);
+        if (this.props.isMovable) {
             store_1.Store.add(store);
             this.delMovable = function () {
                 store_1.Store.del(store);
@@ -127636,7 +127638,7 @@ function checkCollision(body, coo) {
         return;
     }
     body.onUnCollide && body.onUnCollide();
-    body.update(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
+    body.changePosition(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
     if (store_3.Store.state.stepMode) {
         body.velocity[coo] = 0;
         body.onVelocityChange && body.onVelocityChange(body.velocity);
@@ -141868,7 +141870,7 @@ function getStore(_a) {
                 _this.position.y = v.y;
             });
         },
-        update: function (v) {
+        changePosition: function (v) {
             var _this = this;
             mobx_1.runInAction(function () {
                 _this.position.x += v.x;
