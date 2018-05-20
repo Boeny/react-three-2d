@@ -27,7 +27,7 @@ const Connected = observer((props: ConnectedProps) => {
 
 const ConnectedCollider = observer((props: ConnectedProps) => {
     const { store } = props;
-    const { position, state, velocity } = store;
+    const { position, state } = store;
     // hack to observe this
     position.x;
     position.y;
@@ -36,10 +36,9 @@ const ConnectedCollider = observer((props: ConnectedProps) => {
             zIndex={1}
             store={store}
             position={position}
-            velocity={velocity}
             color={state.color}
             getColliderUpdater={updater => {
-                store.changePosition = updater(store.changePosition.bind(store));
+                store.changeColliderPosition = updater(store.changePosition.bind(store));
             }}
         />
     );

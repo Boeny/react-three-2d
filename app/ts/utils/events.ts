@@ -127,7 +127,9 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
             if (collider.store.velocity) {
                 collider.store.velocity[coo] = velocity;
             }
-            body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+            if (body.changeColliderPosition) {
+                body.changeColliderPosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+            }
         }
     } else {
         body.onUnCollide && body.onUnCollide();

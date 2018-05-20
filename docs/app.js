@@ -99047,12 +99047,12 @@ var Connected = mobx_react_1.observer(function (props) {
 });
 var ConnectedCollider = mobx_react_1.observer(function (props) {
     var store = props.store;
-    var position = store.position, state = store.state, velocity = store.velocity;
+    var position = store.position, state = store.state;
     // hack to observe this
     position.x;
     position.y;
-    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: position, velocity: velocity, color: state.color, getColliderUpdater: function (updater) {
-            store.changePosition = updater(store.changePosition.bind(store));
+    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: position, color: state.color, getColliderUpdater: function (updater) {
+            store.updateCollider = updater(store.changePosition.bind(store));
         } }));
 });
 var Body = /** @class */ (function (_super) {
@@ -127625,7 +127625,9 @@ function checkCollision(body, coo) {
             if (collider.store.velocity) {
                 collider.store.velocity[coo] = velocity;
             }
-            body.changePosition(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
+            if (body.updateCollider) {
+                body.updateCollider(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
+            }
         }
     }
     else {
@@ -141927,9 +141929,9 @@ var Collider = /** @class */ (function (_super) {
         if (this.props.getColliderUpdater === undefined) {
             return;
         }
-        this.props.getColliderUpdater(function (update) { return function () {
+        this.props.getColliderUpdater(function (update) { return function (v) {
             utils_1.delCollider(_this.props.position);
-            update(_this.props.velocity);
+            update(v);
             utils_1.setCollider(_this.props);
         }; });
     };

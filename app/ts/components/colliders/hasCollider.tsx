@@ -6,9 +6,8 @@ import { IBodyStore } from './types';
 
 export interface Props {
     position: { x: number, y: number };
-    velocity: Vector2;
     store: IBodyStore;
-    getColliderUpdater?: (colliderUpdater: (update: (v: Vector2) => void) => () => void) => void;
+    getColliderUpdater?: (colliderUpdater: (update: (v: Vector2) => void) => (v: Vector2) => void) => void;
 }
 
 class Collider extends React.Component<Props> {
@@ -18,9 +17,9 @@ class Collider extends React.Component<Props> {
         if (this.props.getColliderUpdater === undefined) {
             return;
         }
-        this.props.getColliderUpdater(update => () => {
+        this.props.getColliderUpdater(update => (v: Vector2) => {
             delCollider(this.props.position);
-            update(this.props.velocity);
+            update(v);
             setCollider(this.props);
         });
     }
