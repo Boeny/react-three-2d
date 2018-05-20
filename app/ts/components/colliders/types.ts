@@ -1,23 +1,28 @@
+import { Vector2 } from 'three';
+import { IStore as IBodyStore } from '../body/types';
 
+
+export { IBodyStore };
 
 export interface Position {
     x: number;
     y: number;
 }
 
+export interface ReducedStore {
+    state: { color: string };
+    name?: string;
+    velocity?: Vector2;
+    isMovable?: boolean;
+}
+
 export interface IStore {
-    colliders: Data[];
-    add: (el: Data) => void;
-    del: (el: Data) => void;
+    colliders: Collider[];
+    add: (el: Collider) => void;
+    del: (el: Collider) => void;
 }
 
 export interface Collider {
     position: Position;
-    name?: string;
-    isMovable?: boolean;
-}
-
-export interface Data {
-    state: { color: string };
-    name?: string;
+    store: ReducedStore;
 }

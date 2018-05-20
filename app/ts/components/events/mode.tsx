@@ -3,7 +3,7 @@ import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { State } from './types';
 import { boolColor } from '~/utils';
-import { ParticleCollider } from '../particle';
+import { Body } from '../body';
 
 
 interface Props {
@@ -15,11 +15,10 @@ interface Props {
 export const Mode = observer((props: Props) => {
     const { position, state, field } = props;
     return (
-        <ParticleCollider
-            zIndex={1}
+        <Body
+            name={`${field} = ${state[field]}`}
             position={position}
             color={boolColor(state[field])}
         />
     );
 });
-// name={`${field} = ${state[field]}`}

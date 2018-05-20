@@ -1,19 +1,15 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
+import { ReducedStore } from './colliders/types';
 import { Box } from './box';
-import { ParticleCollider } from './particle';
+import { Body } from './body';
 
 
 const WIDTH = 20;
 
-interface Data {
-    state: { color: string };
-    name?: string;
-}
-
 interface Props extends PositionProps {
-    data: Data[];
+    data: ReducedStore[];
     borderColor?: string;
 }
 
@@ -40,7 +36,7 @@ export const Container = observer((props: Props) => {
 
 
 interface ContentProps {
-    data: Data[];
+    data: ReducedStore[];
     position: Vector2;
 }
 
@@ -53,13 +49,14 @@ const Content = ((props: ContentProps) => {
     return (
         <group>
             {data.map((item, i) => (
-                <ParticleCollider
+                <Body
                     key={i}
-                    zIndex={1}
-                    position={{
-                        x: position.x + (i % WIDTH),
-                        y: position.y + Math.floor(i / WIDTH)
-                    }}
+                    hasCollider={true}
+                    position={new Vector2(
+                        position.x + (i % WIDTH),
+                        position.y + Math.floor(i / WIDTH)
+                    )}
+                    name={item.name}
                     color={item.state.color}
                 />
             ))}

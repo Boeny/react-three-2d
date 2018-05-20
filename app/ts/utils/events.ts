@@ -122,15 +122,16 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         getCollider(body.position.x + velocity, body.position.y) :
         getCollider(body.position.x, body.position.y + velocity);
     if (collider) {
-        body.velocity[coo] = 0;
-        body.onVelocityChange && body.onVelocityChange(body.velocity);
         body.onCollide && body.onCollide(collider);
-        return;
-    }
-    body.onUnCollide && body.onUnCollide();
-    body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-    if (body.name === 'player' && events.state.stepMode === false) {
-        return;
+        if (collider.store.isMovable) {
+            if (collider.store.velocity) {
+                collider.store.velocity[coo] = velocity;
+            }
+            body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+        }
+    } else {
+        body.onUnCollide && body.onUnCollide();
+        body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     }
     body.velocity[coo] = 0;
     body.onVelocityChange && body.onVelocityChange(body.velocity);

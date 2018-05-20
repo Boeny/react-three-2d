@@ -1,27 +1,63 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { Store } from './store';
 import { Store as html } from '~/views/html/store';
-import { Position } from './types';
+import { Store as events } from '../events/store';
+import { Store } from './store';
+import { Collider } from '../colliders/types';
+import { Position, Moving } from './types';
 import { Body } from '../body';
 import { Particle } from '../particle';
 import { MountAndInit } from '../mount-and-init';
 import { Camera } from '../camera';
-// import { WIDTH_SCALE } from '~/constants';
+import { MAX_SPEED } from '~/constants';
 
 
 function setPosition(v: Position) {
     Store.setPosition(v);
 }
 
-function setVelocity(v: Vector2) {
-    Store.setVelocity(v);
+function setVelocity(v: number, coo: 'x' | 'y') {
+    Store.setVelocity(v, coo);
+}
+
+const update = (moving: Moving) => () => {
+    if (moving.left) {
+        setVelocity(-MAX_SPEED, 'x');
+    }
+    if (moving.right) {
+        setVelocity(MAX_SPEED, 'x');
+    }
+    if (moving.up) {
+        setVelocity(MAX_SPEED, 'y');
+    }
+    if (moving.down) {
+        setVelocity(-MAX_SPEED, 'y');
+    }
+    if (events.state.stepMode === false) {
+        return;
+    }
+    if (!moving.left && !moving.right) {
+        setVelocity(0, 'x');
+    }
+    if (!moving.up && !moving.down) {
+        setVelocity(0, 'y');
+    }
+};
+
+const onCollide = (velocity: Vector2) => (collider: Collider) => {
+    collider.store.velocity = velocity;
+    setContent(collider.store.name);
+};
+
+function setContent(v?: string) {
+    html.setContent(v || null);
 }
 
 export const PlayerComponent = observer(() => {
-    const { moving, velocity } = Store;
+    const { moving } = Store;
     const position = new Vector2(Store.position.x, Store.position.y);
+    const velocity = new Vector2(Store.velocity.x, Store.velocity.y);
     return (
         <group>
             <Camera position={position} />
@@ -30,11 +66,11 @@ export const PlayerComponent = observer(() => {
                 color={'#ffffff'}
                 isMovable={true}
                 position={position}
-                velocity={new Vector2(velocity.x, velocity.y)}
+                velocity={velocity}
                 onPositionChange={setPosition}
-                onVelocityChange={setVelocity}
-                onCollide={collider => html.setContent(collider.name || null)}
-                onUnCollide={() => html.setContent(null)}
+                onCollide={onCollide(velocity)}
+                onUnCollide={setContent}
+                onEveryTick={update(moving)}
             />
             {moving.up ?
                 <Particle

@@ -1,10 +1,14 @@
 import * as React from 'react';
+import { Vector2 } from 'three';
 import { setCollider, delCollider } from './utils';
+import { IBodyStore } from './types';
 
 
 export interface Props {
     position: { x: number, y: number };
-    getColliderUpdater?: (colliderUpdater: (update: () => void) => () => void) => void;
+    velocity: Vector2;
+    store: IBodyStore;
+    getColliderUpdater?: (colliderUpdater: (update: (v: Vector2) => void) => () => void) => void;
 }
 
 class Collider extends React.Component<Props> {
@@ -16,7 +20,7 @@ class Collider extends React.Component<Props> {
         }
         this.props.getColliderUpdater(update => () => {
             delCollider(this.props.position);
-            update();
+            update(this.props.velocity);
             setCollider(this.props);
         });
     }
@@ -33,10 +37,7 @@ class Collider extends React.Component<Props> {
 
 export function hasCollider<T extends Props>(Component: (props: T) => JSX.Element | null) {
     return (props: T) => (
-        <Collider
-            position={props.position}
-            getColliderUpdater={props.getColliderUpdater}
-        >
+        <Collider {...props}>
             <Component {...props} />
         </Collider>
     );

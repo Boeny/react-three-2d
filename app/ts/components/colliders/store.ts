@@ -1,15 +1,15 @@
 import { observable, runInAction } from 'mobx';
-import { IStore, Data } from './types';
+import { IStore, Collider } from './types';
 
 
 export const Store: IStore = observable({
-    colliders: observable([] as Data[]),
-    add(el: Data) {
+    colliders: observable([] as Collider[]),
+    add(el: Collider) {
         runInAction(() => {
             this.colliders.push(el);
         });
     },
-    del(el: Data) {
+    del(el: Collider) {
         const i = this.colliders.indexOf(el);
         runInAction(() => {
             this.colliders.splice(i, 1);

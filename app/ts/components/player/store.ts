@@ -1,7 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
 import { IStore, Position } from './types';
-import { MAX_SPEED } from '~/constants';
 
 
 export const Store: IStore = {
@@ -25,47 +24,38 @@ export const Store: IStore = {
             this.position.y = v.y;
         });
     },
-    setVelocity(v: Vector2) {
+    setVelocity(v: number, coo: 'x' | 'y') {
         runInAction(() => {
-            this.velocity.x = v.x;
-            this.velocity.y = v.y;
+            this.velocity[coo] = v;
         });
     },
 
     moveRight() {
         runInAction(() => {
             this.moving.right = true;
-            this.velocity.x = MAX_SPEED;
         });
     },
     moveLeft() {
         runInAction(() => {
             this.moving.left = true;
-            this.velocity.x = -MAX_SPEED;
         });
     },
     moveUp() {
         runInAction(() => {
             this.moving.up = true;
-            this.velocity.y = MAX_SPEED;
         });
     },
     moveDown() {
         runInAction(() => {
             this.moving.down = true;
-            this.velocity.y = -MAX_SPEED;
         });
     },
 
     stopX() {
-        runInAction(() => {
-            this.velocity.x = 0;
-        });
+        this.setVelocity(0, 'x');
     },
     stopY() {
-        runInAction(() => {
-            this.velocity.y = 0;
-        });
+        this.setVelocity(0, 'y');
     },
 
     stopMovingLeft() {

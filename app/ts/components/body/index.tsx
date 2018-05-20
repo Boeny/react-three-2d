@@ -12,10 +12,13 @@ interface ConnectedProps {
 
 const Connected = observer((props: ConnectedProps) => {
     const { position, state } = props.store;
+    // hack to observe this
+    position.x;
+    position.y;
     return (
         <Particle
             zIndex={1}
-            position={{ x: position.x, y: position.y }}
+            position={position}
             color={state.color}
         />
     );
@@ -24,17 +27,19 @@ const Connected = observer((props: ConnectedProps) => {
 
 const ConnectedCollider = observer((props: ConnectedProps) => {
     const { store } = props;
-    const { position, state } = store;
+    const { position, state, velocity } = store;
     // hack to observe this
     position.x;
     position.y;
     return (
         <ParticleCollider
             zIndex={1}
+            store={store}
             position={position}
+            velocity={velocity}
             color={state.color}
             getColliderUpdater={updater => {
-                store.updateCollider = updater(() => store.changePosition(store.velocity));
+                store.changePosition = updater(store.changePosition.bind(store));
             }}
         />
     );

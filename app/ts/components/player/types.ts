@@ -6,18 +6,20 @@ export interface Position {
     y: number;
 }
 
+export interface Moving {
+    left: boolean;
+    right: boolean;
+    up: boolean;
+    down: boolean;
+}
+
 export interface IStore {
-    moving: {
-        left: boolean;
-        right: boolean;
-        up: boolean;
-        down: boolean;
-    };
+    moving: Moving;
     position: Position;
     velocity: Position;
     init: (position: Vector2) => void;
     setPosition: (v: Position) => void;
-    setVelocity: (v: Vector2) => void;
+    setVelocity: (v: number, coo: 'x' | 'y') => void;
     moveLeft: () => void;
     moveRight: () => void;
     moveUp: () => void;
