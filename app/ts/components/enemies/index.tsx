@@ -23,7 +23,7 @@ export function Enemies() {
 function Enemy(props: PositionProps) {
     return (
         <group>
-            {getNumArray(1).map(i => (
+            {getNumArray(4).map(i => (
                 <Mover
                     key={i}
                     offset={OFFSET[i]}
@@ -68,7 +68,6 @@ function getStore(p: Vector2): IStore {
     };
 }
 
-const V2 = new Vector2();
 
 const OFFSET = [
     new Vector2(MAX_SPEED, 0),
@@ -101,8 +100,6 @@ const Mover = observer((props: { store: IStore, offset: Vector2 }) => {
                 onEveryTick={impulse => {
                     if (impulse) {
                         store.setVelocity(offset);
-                    } else {
-                        store.setVelocity(V2);
                     }
                 }}
             />

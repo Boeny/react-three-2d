@@ -127639,10 +127639,11 @@ function checkCollision(body, coo) {
     }
     body.onUnCollide && body.onUnCollide();
     body.changePosition(coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity));
-    if (store_3.Store.state.stepMode) {
-        body.velocity[coo] = 0;
-        body.onVelocityChange && body.onVelocityChange(body.velocity);
+    if (body.name === 'player' && store_3.Store.state.stepMode === false) {
+        return;
     }
+    body.velocity[coo] = 0;
+    body.onVelocityChange && body.onVelocityChange(body.velocity);
 }
 
 
@@ -142133,7 +142134,7 @@ function Enemies() {
 }
 exports.Enemies = Enemies;
 function Enemy(props) {
-    return (React.createElement("group", null, utils_1.getNumArray(1).map(function (i) { return (React.createElement(Mover, { key: i, offset: OFFSET[i], store: getStore(OFFSET[i].clone().multiplyScalar(-5).add(props.position)) })); })));
+    return (React.createElement("group", null, utils_1.getNumArray(4).map(function (i) { return (React.createElement(Mover, { key: i, offset: OFFSET[i], store: getStore(OFFSET[i].clone().multiplyScalar(-5).add(props.position)) })); })));
 }
 function getStore(p) {
     return {
@@ -142156,7 +142157,6 @@ function getStore(p) {
         }
     };
 }
-var V2 = new three_1.Vector2();
 var OFFSET = [
     new three_1.Vector2(constants_1.MAX_SPEED, 0),
     new three_1.Vector2(-constants_1.MAX_SPEED, 0),
@@ -142172,9 +142172,6 @@ var Mover = mobx_react_1.observer(function (props) {
         React.createElement(generator_1.Generator, { period: 20, tickLength: 10, position: position.clone().add(offset), onEveryTick: function (impulse) {
                 if (impulse) {
                     store.setVelocity(offset);
-                }
-                else {
-                    store.setVelocity(V2);
                 }
             } })));
 });
