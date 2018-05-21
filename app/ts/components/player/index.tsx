@@ -14,7 +14,7 @@ import { MAX_SPEED } from '~/constants';
 
 
 function setPosition(v: Position) {
-    Store.setPosition(v);
+    Store.setPosition(v.x, v.y);
 }
 
 function setVelocity(v: number, coo: 'x' | 'y') {
@@ -37,10 +37,10 @@ const update = (moving: Moving) => () => {
     if (events.state.stepMode === false) {
         return;
     }
-    if (!moving.left && !moving.right) {
+    if (moving.left || moving.right) {
         setVelocity(0, 'x');
     }
-    if (!moving.up && !moving.down) {
+    if (moving.up || moving.down) {
         setVelocity(0, 'y');
     }
 };

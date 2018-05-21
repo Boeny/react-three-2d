@@ -65,16 +65,16 @@ export function onKeyDown(e: KeyboardEvent) {
     }
     switch (e.key) {
         case KEY.LEFT:
-            player.moveLeft();
+            player.moveLeft(true);
             break;
         case KEY.RIGHT:
-            player.moveRight();
+            player.moveRight(true);
             break;
         case KEY.UP:
-            player.moveUp();
+            player.moveUp(true);
             break;
         case KEY.DOWN:
-            player.moveDown();
+            player.moveDown(true);
             break;
     }
 }

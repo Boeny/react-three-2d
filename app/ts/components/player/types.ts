@@ -18,12 +18,12 @@ export interface IStore {
     position: Position;
     velocity: Position;
     init: (position: Vector2) => void;
-    setPosition: (v: Position) => void;
+    setPosition: (x: number, y: number) => void;
     setVelocity: (v: number, coo: 'x' | 'y') => void;
-    moveLeft: () => void;
-    moveRight: () => void;
-    moveUp: () => void;
-    moveDown: () => void;
+    moveLeft: (v: boolean) => void;
+    moveRight: (v: boolean) => void;
+    moveUp: (v: boolean) => void;
+    moveDown: (v: boolean) => void;
     stopX: () => void;
     stopY: () => void;
     stopMovingLeft: () => void;

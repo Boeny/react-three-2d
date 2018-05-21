@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, Position } from './types';
+import { IStore } from './types';
 
 
 export const Store: IStore = {
@@ -13,41 +13,53 @@ export const Store: IStore = {
     position: observable({ x: 0, y: 0 }),
     velocity: observable({ x: 0, y: 0 }),
     init(v: Vector2) {
-        runInAction(() => {
-            this.position.x = v.x;
-            this.position.y = v.y;
-        });
+        this.setPosition(v.x, v.y);
     },
-    setPosition(v: Position) {
+    setPosition(x: number, y: number) {
         runInAction(() => {
-            this.position.x = v.x;
-            this.position.y = v.y;
+            this.position.x = x;
+            this.position.y = y;
         });
     },
     setVelocity(v: number, coo: 'x' | 'y') {
+        if (this.velocity[coo] === v) {
+            return;
+        }
         runInAction(() => {
             this.velocity[coo] = v;
         });
     },
 
-    moveRight() {
+    moveRight(v: boolean) {
+        if (this.moving.right === v) {
+            return;
+        }
         runInAction(() => {
-            this.moving.right = true;
+            this.moving.right = v;
         });
     },
-    moveLeft() {
+    moveLeft(v: boolean) {
+        if (this.moving.left === v) {
+            return;
+        }
         runInAction(() => {
-            this.moving.left = true;
+            this.moving.left = v;
         });
     },
-    moveUp() {
+    moveUp(v: boolean) {
+        if (this.moving.up === v) {
+            return;
+        }
         runInAction(() => {
-            this.moving.up = true;
+            this.moving.up = v;
         });
     },
-    moveDown() {
+    moveDown(v: boolean) {
+        if (this.moving.down === v) {
+            return;
+        }
         runInAction(() => {
-            this.moving.down = true;
+            this.moving.down = v;
         });
     },
 
@@ -59,33 +71,33 @@ export const Store: IStore = {
     },
 
     stopMovingLeft() {
-        runInAction(() => this.moving.left = false);
+        this.moveLeft(false);
         if (this.moving.right) {
-            this.moveRight();
+            this.moveRight(true);
         } else {
             this.stopX();
         }
     },
     stopMovingRight() {
-        runInAction(() => this.moving.right = false);
+        this.moveRight(false);
         if (this.moving.left) {
-            this.moveLeft();
+            this.moveLeft(true);
         } else {
             this.stopX();
         }
     },
     stopMovingUp() {
-        runInAction(() => this.moving.up = false);
+        this.moveUp(false);
         if (this.moving.down) {
-            this.moveDown();
+            this.moveDown(true);
         } else {
             this.stopY();
         }
     },
     stopMovingDown() {
-        runInAction(() => this.moving.down = false);
+        this.moveDown(false);
         if (this.moving.up) {
-            this.moveUp();
+            this.moveUp(true);
         } else {
             this.stopY();
         }
