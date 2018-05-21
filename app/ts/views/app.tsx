@@ -26,7 +26,7 @@ export function App() {
                     <Enemies />
                     <Events position={new Vector2(-20, 10)} />
                     <Movable position={new Vector2(-40, -20)} />
-                    <Colliders position={new Vector2(40, -20)} />
+                    <Colliders />
                     <Constants
                         position={new Vector2(0, -20)}
                         data={constants}

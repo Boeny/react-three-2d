@@ -11,6 +11,9 @@ export const Store: IStore = observable({
     },
     del(el: Collider) {
         const i = this.colliders.indexOf(el);
+        if (i === -1) {
+            return;
+        }
         runInAction(() => {
             this.colliders.splice(i, 1);
         });

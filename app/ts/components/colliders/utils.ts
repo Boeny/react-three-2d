@@ -1,4 +1,4 @@
-// import { Store } from './store';
+import { Store } from './store';
 import { Collider, Position } from './types';
 
 
@@ -9,9 +9,16 @@ export function getCollider(x: number, y: number): Collider | undefined {
 }
 
 export function setCollider(store: Collider) {
-    return Colliders[`${store.position.x}|${store.position.y}`] = store;
+    Store.add(store);
+    Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 
 export function delCollider(position: Position) {
-    Colliders[`${position.x}|${position.y}`] = undefined;
+    const key = `${position.x}|${position.y}`;
+    const store = Colliders[key];
+    if (store === undefined) {
+        return;
+    }
+    Store.del(store);
+    Colliders[key] = undefined;
 }

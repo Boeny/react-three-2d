@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Store as html } from '~/views/html/store';
-import { Store as events } from '../events/store';
+// import { Store as events } from '../events/store';
 import { Store } from './store';
 import { Collider } from '../colliders/types';
 import { Position, Moving } from './types';
@@ -33,15 +33,6 @@ const update = (moving: Moving) => () => {
     }
     if (moving.down) {
         setVelocity(-MAX_SPEED, 'y');
-    }
-    if (events.state.stepMode === false) {
-        return;
-    }
-    if (moving.left || moving.right) {
-        setVelocity(0, 'x');
-    }
-    if (moving.up || moving.down) {
-        setVelocity(0, 'y');
     }
 };
 

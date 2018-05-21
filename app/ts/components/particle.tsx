@@ -10,10 +10,12 @@ const BORDER_WIDTH = 0.1;
 interface Props {
     position: { x: number, y: number };
     color: string;
+    borderColor?: string;
     width?: number;
     height?: number;
     zIndex?: number;
     borderWidth?: number;
+    borderOnly?: boolean;
 }
 
 export function Particle(props: Props) {
@@ -23,7 +25,7 @@ export function Particle(props: Props) {
     if (resultWidth <= 0 || resultHeight <= 0) {
         return null;
     }
-    const { position, zIndex, borderWidth, color } = props;
+    const { position, zIndex, borderWidth, color, borderColor, borderOnly } = props;
     const x = position.x * WIDTH_SCALE;
     const y = position.y * WIDTH_SCALE;
     const z = zIndex ? zIndex * Z_INDEX_STEP : 0;
@@ -35,15 +37,17 @@ export function Particle(props: Props) {
                     position={new Vector3(x, y, z)}
                     width={resultWidth}
                     height={resultHeight}
-                    color={'#000000'}
+                    color={borderColor || '#000000'}
                 />
             : null}
-            <Quad
-                position={new Vector3(x + border, y + border, z + Z_INDEX_STEP / 2)}
-                width={resultWidth - border * 2}
-                height={resultHeight - border * 2}
-                color={color}
-            />
+            {!borderOnly ?
+                <Quad
+                    position={new Vector3(x + border, y + border, z + Z_INDEX_STEP / 2)}
+                    width={resultWidth - border * 2}
+                    height={resultHeight - border * 2}
+                    color={color}
+                />
+            : null}
         </group>
     );
 }

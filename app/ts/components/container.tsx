@@ -40,7 +40,7 @@ interface ContentProps {
     position: Vector2;
 }
 
-const Content = ((props: ContentProps) => {
+const Content = observer((props: ContentProps) => {
     const position = props.position || new Vector2();
     const { data } = props;
     if (data.length === 0) {

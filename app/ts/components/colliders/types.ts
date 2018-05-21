@@ -12,6 +12,7 @@ export interface Position {
 export interface ReducedStore {
     state: { color: string };
     name?: string;
+    position?: Position;
     velocity?: Vector2;
     isMovable?: boolean;
 }

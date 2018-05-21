@@ -125,11 +125,11 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         body.onCollide && body.onCollide(collider);
         if (collider.store.isMovable) {
             if (collider.store.velocity) {
-                collider.store.velocity[coo] = velocity;
+                // collider.store.velocity[coo] = velocity;
             }
             if (body.changeColliderPosition) {
-                body.changeColliderPosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-            }
+                body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
+            }// Collider
         }
     } else {
         body.onUnCollide && body.onUnCollide();
