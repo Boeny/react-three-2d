@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { Store as html } from '~/views/html/store';
 // import { Store as events } from '../events/store';
 import { Store } from './store';
-import { Collider } from '../colliders/types';
+import { IBodyStore } from '../colliders/types';
 import { Position, Moving } from './types';
 import { Body } from '../body';
 import { Particle } from '../particle';
@@ -36,9 +36,9 @@ const update = (moving: Moving) => () => {
     }
 };
 
-const onCollide = (velocity: Vector2) => (collider: Collider) => {
-    collider.store.velocity = velocity;
-    setContent(collider.store.name);
+const onCollide = (velocity: Vector2) => (collider: IBodyStore) => {
+    collider.velocity = velocity;
+    setContent(collider.name);
 };
 
 function setContent(v?: string) {

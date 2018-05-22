@@ -19,6 +19,7 @@ export const Mode = observer((props: Props) => {
             name={`${field} = ${state[field]}`}
             position={position}
             color={boolColor(state[field])}
+            hasCollider={true}
         />
     );
 });

@@ -121,20 +121,16 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     const collider = coo === 'x' ?
         getCollider(body.position.x + velocity, body.position.y) :
         getCollider(body.position.x, body.position.y + velocity);
+    const velocityVector = coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity);
     if (collider) {
         body.onCollide && body.onCollide(collider);
-        if (collider.store.isMovable) {
-            if (collider.store.velocity) {
-                // collider.store.velocity[coo] = velocity;
-            }
-            if (body.changeColliderPosition) {
-                body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
-            }// Collider
+        if (collider.isMovable) {
+            collider.changePosition(velocityVector);
         }
     } else {
         body.onUnCollide && body.onUnCollide();
-        body.changePosition(coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity));
     }
+    body.changePosition(velocityVector);
     body.velocity[coo] = 0;
     body.onVelocityChange && body.onVelocityChange(body.velocity);
 }

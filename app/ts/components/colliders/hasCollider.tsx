@@ -13,14 +13,14 @@ export interface Props {
 class Collider extends React.Component<Props> {
 
     componentDidMount() {
-        setCollider(this.props);
+        setCollider(this.props.store);
         if (this.props.getColliderUpdater === undefined) {
             return;
         }
         this.props.getColliderUpdater(update => (v: Vector2) => {
             delCollider(this.props.position);
             update(v);
-            setCollider(this.props);
+            setCollider(this.props.store);
         });
     }
 

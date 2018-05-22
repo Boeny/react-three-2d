@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { Collider } from './types';
+import { IBodyStore } from './types';
 import { Particle } from '../particle';
 import { SHOW_COLLIDERS } from '~/constants';
 
@@ -21,7 +21,7 @@ export const Colliders = observer(() => {
 
 
 interface Props {
-    item: Collider;
+    item: IBodyStore;
 }
 
 const Item = observer((props: Props) => {
@@ -33,7 +33,7 @@ const Item = observer((props: Props) => {
         <Particle
             position={item.position}
             color={'#000000'}
-            borderColor={item.store.isMovable ? 'yellow' : '#00ff00'}
+            borderColor={item.isMovable ? 'yellow' : '#00ff00'}
             borderOnly={true}
             zIndex={1.25}
         />

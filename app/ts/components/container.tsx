@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { ReducedStore } from './colliders/types';
 import { Box } from './box';
 import { Body } from './body';
 
 
 const WIDTH = 20;
 
+interface Data {
+    name?: string;
+    state: { color: string };
+}
+
 interface Props extends PositionProps {
-    data: ReducedStore[];
+    data: Data[];
     borderColor?: string;
 }
 
@@ -36,7 +40,7 @@ export const Container = observer((props: Props) => {
 
 
 interface ContentProps {
-    data: ReducedStore[];
+    data: Data[];
     position: Vector2;
 }
 

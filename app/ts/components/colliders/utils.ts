@@ -1,24 +1,30 @@
 import { Store } from './store';
-import { Collider, Position } from './types';
+import { IBodyStore, Position } from './types';
 
 
-const Colliders: { [coo: string]: Collider | undefined } = {};
+const Colliders: { [coo: string]: IBodyStore | undefined } = {};
 
-export function getCollider(x: number, y: number): Collider | undefined {
+export function getCollider(x: number, y: number): IBodyStore | undefined {
     return Colliders[`${x}|${y}`];
 }
 
-export function setCollider(store: Collider) {
+export function setCollider(store: IBodyStore) {
     Store.add(store);
     Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 
-export function delCollider(position: Position) {
-    const key = `${position.x}|${position.y}`;
-    const store = Colliders[key];
-    if (store === undefined) {
-        return;
+export function updateCollider(position: Position) {
+    const store = getCollider(position.x, position.y);
+    if (store) {
+        Colliders[`${store.position.x}|${store.position.y}`] = store;
     }
-    Store.del(store);
-    Colliders[key] = undefined;
+}
+
+export function delCollider(position: Position) {
+    const store = getCollider(position.x, position.y);
+    if (store) {
+        Store.del(store);
+        Colliders[`${store.position.x}|${store.position.y}`] = undefined;
+    }
+
 }

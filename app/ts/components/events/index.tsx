@@ -1,11 +1,11 @@
 import * as React from 'react';
 import * as constants from '../camera/constants';
 import { Vector2 } from 'three';
-// import { observer } from 'mobx-react';
+import { observer } from 'mobx-react';
 import { Store as camera } from '../camera/store';
 import { Store } from './store';
 import { Box } from '../box';
-import { Container } from '../container';
+import { Body } from '../body';
 import { Constants } from '../constants-container';
 import { Mode } from './mode';
 
@@ -24,11 +24,7 @@ export function Events(props: PositionProps) {
 }
 
 
-interface Props {
-    position: Vector2;
-}
-
-const Content = ((props: Props) => {
+const Content = ((props: PositionProps) => {
     const { position } = props;
     return (
         <group>
@@ -42,12 +38,7 @@ const Content = ((props: Props) => {
                 field={'stepMode'}
                 state={Store.state}
             />
-            <Container
-                borderColor={'#49b4d0'}
-                data={[{
-                    name: `zoom = ${camera.state.zoom}`,
-                    state: { color: '#6bd6f1' }
-                }]}
+            <CameraProps
                 position={(new Vector2(0, 3)).add(position)}
             />
             <Constants
@@ -59,14 +50,12 @@ const Content = ((props: Props) => {
 });
 
 
-export const CameraProps = ((props: Props) => {
+export const CameraProps = observer((props: PositionProps) => {
     return (
-        <Container
-            borderColor={'#6bd6f1'}
-            data={[{
-                name: `zoom = ${camera.state.zoom}`,
-                state: { color: '#6bd6f1' }
-            }]}
+        <Body
+            hasCollider={true}
+            name={`zoom = ${camera.state.zoom}`}
+            color={'#6bd6f1'}
             position={props.position}
         />
     );
