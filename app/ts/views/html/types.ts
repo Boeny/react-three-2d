@@ -13,5 +13,5 @@ export interface IStore {
     };
     setCanvas: (el: HTMLCanvasElement | null) => void;
     setCursor: (cursor: string) => void;
-    setContent: (text: string | null) => void;
+    setContent: (text: string | JSX.Element | null) => void;
 }

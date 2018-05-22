@@ -16,7 +16,7 @@ export const Store: IStore = {
             this.canvas.style.cursor = cursor;
         }
     },
-    setContent(text: string | null) {
+    setContent(text: string | JSX.Element | null) {
         runInAction(() => {
             this.state.content = text;
         });

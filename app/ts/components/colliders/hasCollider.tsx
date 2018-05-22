@@ -1,27 +1,22 @@
 import * as React from 'react';
-import { Vector2 } from 'three';
-import { setCollider, delCollider } from './utils';
-import { IBodyStore } from './types';
+import { setCollider, delCollider, updateCollider } from './utils';
+import { IBodyStore, Position } from './types';
 
 
 export interface Props {
-    position: { x: number, y: number };
+    position: Position;
     store: IBodyStore;
-    getColliderUpdater?: (colliderUpdater: (update: (v: Vector2) => void) => (v: Vector2) => void) => void;
 }
 
 class Collider extends React.Component<Props> {
 
     componentDidMount() {
         setCollider(this.props.store);
-        if (this.props.getColliderUpdater === undefined) {
-            return;
-        }
-        this.props.getColliderUpdater(update => (v: Vector2) => {
-            delCollider(this.props.position);
-            update(v);
-            setCollider(this.props.store);
-        });
+    }
+
+    componentDidUpdate({ position }: Props) {// previous
+
+        updateCollider(position);
     }
 
     componentWillUnmount() {

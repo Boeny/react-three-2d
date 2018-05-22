@@ -31,10 +31,6 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
             });
         },
         changePosition(v: Vector2) {
-            if (this.changeColliderPosition) {
-                this.changeColliderPosition(v);
-                return;
-            }
             runInAction(() => {
                 this.position.x += v.x;
                 this.position.y += v.y;

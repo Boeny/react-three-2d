@@ -41,7 +41,7 @@ const onCollide = (velocity: Vector2) => (collider: IBodyStore) => {
     setContent(collider.name);
 };
 
-function setContent(v?: string) {
+function setContent(v?: string | JSX.Element) {
     html.setContent(v || null);
 }
 

@@ -14,7 +14,6 @@ export interface IStore extends CommonParams {
     setColor: (color: string) => void;
     setPosition: (v: Position) => void;
     changePosition: (v: Vector2, withCollider?: boolean) => void;
-    changeColliderPosition?: (v: Vector2) => void;
 }
 
 export interface CommonParams {

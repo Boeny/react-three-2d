@@ -37,9 +37,6 @@ const ConnectedCollider = observer((props: ConnectedProps) => {
             store={store}
             position={position}
             color={state.color}
-            getColliderUpdater={updater => {
-                store.changeColliderPosition = updater(store.changePosition.bind(store));
-            }}
         />
     );
 });

@@ -13,9 +13,11 @@ export function setCollider(store: IBodyStore) {
     Colliders[`${store.position.x}|${store.position.y}`] = store;
 }
 
-export function updateCollider(position: Position) {
-    const store = getCollider(position.x, position.y);
+// only after store has update its position
+export function updateCollider(oldPosition: Position) {
+    const store = getCollider(oldPosition.x, oldPosition.y);
     if (store) {
+        Colliders[`${oldPosition.x}|${oldPosition.y}`] = undefined;
         Colliders[`${store.position.x}|${store.position.y}`] = store;
     }
 }

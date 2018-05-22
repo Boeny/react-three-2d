@@ -18,7 +18,7 @@ export const Html = observer(() => {
             top: '50%',
             left: '50%',
             padding: '3px 10px',
-            marginLeft: (WIDTH_SCALE - content.length * 7.6) / 2 - 10,
+            marginLeft: (WIDTH_SCALE - 30 * 7.6) / 2 - 10,
             marginTop: -46
         }} >
             {content}
