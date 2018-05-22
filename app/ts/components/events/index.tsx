@@ -54,7 +54,7 @@ export const CameraProps = observer((props: PositionProps) => {
     return (
         <Body
             hasCollider={true}
-            name={`zoom = ${camera.state.zoom}`}
+            name={<span>zoom = <b>{camera.state.zoom}</b></span>}
             color={'#6bd6f1'}
             position={props.position}
         />

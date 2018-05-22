@@ -8,7 +8,7 @@ import { Body } from './body';
 const WIDTH = 20;
 
 interface Data {
-    name?: string;
+    name?: string | JSX.Element;
     state: { color: string };
 }
 

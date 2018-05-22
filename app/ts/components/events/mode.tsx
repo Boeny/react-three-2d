@@ -16,7 +16,7 @@ export const Mode = observer((props: Props) => {
     const { position, state, field } = props;
     return (
         <Body
-            name={`${field} = ${state[field]}`}
+            name={<span>{field} = <b>{state[field]}</b></span>}
             position={position}
             color={boolColor(state[field])}
             hasCollider={true}

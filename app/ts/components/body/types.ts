@@ -18,7 +18,7 @@ export interface IStore extends CommonParams {
 }
 
 export interface CommonParams {
-    name?: string;
+    name?: string | JSX.Element;
     isMovable?: boolean;
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;

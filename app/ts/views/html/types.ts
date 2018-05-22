@@ -9,7 +9,7 @@ export interface IStore {
     canvas: HTMLCanvasElement | null;
     state: {
         position: Position;
-        content: string | null;
+        content: string | JSX.Element | null;
     };
     setCanvas: (el: HTMLCanvasElement | null) => void;
     setCursor: (cursor: string) => void;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { observer } from'mobx-react';
 import { Container } from './container';
 
 
@@ -12,9 +13,8 @@ export function Constants(props: Props) {
         <Container
             borderColor={'grey'}
             data={Object.keys(data).map(name => {
-                const c = (data as any)[name];
                 return {
-                    name: `${name.split('_').join(' ').toLowerCase()} = ${String(c)}`,
+                    name: <Item name={name} value={(data as any)[name]} />,
                     state: { color: '#999999' }
                 };
             })}
@@ -22,3 +22,18 @@ export function Constants(props: Props) {
         />
     );
 }
+
+
+interface ItemProps {
+    name: string;
+    value: any;
+}
+
+const Item = observer((props: ItemProps) => {
+    const { name, value } = props;
+    return (
+        <span>
+            {name.split('_').join(' ').toLowerCase()} = <b>{String(value)}</b>
+        </span>
+    );
+});
