@@ -76,6 +76,9 @@ export function onKeyDown(e: KeyboardEvent) {
         case KEY.DOWN:
             player.moveDown(true);
             break;
+        case KEY.SPACE:
+            events.setSwitchMode(true);
+            break;
     }
 }
 
@@ -97,6 +100,9 @@ export function onKeyUp(e: KeyboardEvent) {
         case KEY.DOWN:
             player.stopMovingDown();
             playerIsMoving = player.moving.up || player.moving.left || player.moving.right;
+            break;
+        case KEY.SPACE:
+            events.setSwitchMode(false);
             break;
     }
     if (playerIsMoving === false) {
