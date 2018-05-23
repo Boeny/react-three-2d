@@ -30,6 +30,10 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
                 this.onPositionChange && this.onPositionChange(this.position);
             });
         },
+        setVelocity(v: number, coo: 'x' | 'y') {
+            this.velocity[coo] = v;
+            this.onVelocityChange && this.onVelocityChange(this.velocity);
+        },
         changePosition(v: Vector2) {
             runInAction(() => {
                 this.position.x += v.x;

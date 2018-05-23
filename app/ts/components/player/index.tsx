@@ -36,8 +36,7 @@ const update = (moving: Moving) => () => {
     }
 };
 
-const onCollide = (velocity: Vector2) => (collider: IBodyStore) => {
-    collider.velocity = velocity;
+const onCollide = (collider: IBodyStore) => {
     setContent(collider.name);
 };
 
@@ -59,7 +58,7 @@ export const PlayerComponent = observer(() => {
                 position={position}
                 velocity={velocity}
                 onPositionChange={setPosition}
-                onCollide={onCollide(velocity)}
+                onCollide={onCollide}
                 onUnCollide={setContent}
                 onEveryTick={update(moving)}
             />

@@ -131,12 +131,13 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     if (collider) {
         body.onCollide && body.onCollide(collider);
         if (collider.isMovable) {
-            collider.changePosition(velocityVector);
+            collider.setVelocity(velocity, coo);
+        } else {
+            body.setVelocity(0, coo);
         }
-    } else {
+    } else {// free way
         body.onUnCollide && body.onUnCollide();
+        body.changePosition(velocityVector);
+        body.setVelocity(0, coo);
     }
-    body.changePosition(velocityVector);
-    body.velocity[coo] = 0;
-    body.onVelocityChange && body.onVelocityChange(body.velocity);
 }
