@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { IBodyStore } from './types';
+import { IBodyStore, Position } from './types';
 import { Particle } from '../particle';
 import { SHOW_COLLIDERS } from '~/constants';
 
@@ -10,28 +10,38 @@ export const Colliders = observer(() => {
     if (SHOW_COLLIDERS === false) {
         return null;
     }
+    const { colliders } = Store.state;
     return (
         <group>
-            {Store.colliders.map((item, i) => (
-                <Item key={i} item={item} />
-            ))}
+            {Object.keys(colliders).map((coo, i) => {
+                return (
+                    colliders[coo] ?
+                        <Item
+                            key={i}
+                            item={colliders[coo] as IBodyStore}
+                            position={{
+                                x: parseInt(coo.split('|')[0], 10),
+                                y: parseInt(coo.split('|')[1], 10)
+                            }}
+                        />
+                    : null
+                );
+            })}
         </group>
     );
 });
 
 
 interface Props {
+    position: Position;
     item: IBodyStore;
 }
 
-const Item = observer((props: Props) => {
-    const { item } = props;
-    // hack to observe this
-    item.position.x;
-    item.position.y;
+const Item = ((props: Props) => {
+    const { item, position } = props;
     return (
         <Particle
-            position={item.position}
+            position={position}
             color={'#000000'}
             borderColor={item.isMovable ? 'yellow' : '#00ff00'}
             borderOnly={true}

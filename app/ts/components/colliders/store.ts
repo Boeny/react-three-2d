@@ -1,21 +1,25 @@
 import { observable, runInAction } from 'mobx';
-import { IStore, IBodyStore } from './types';
+import { IStore, IBodyStore, Position, Colliders } from './types';
 
 
 export const Store: IStore = observable({
-    colliders: observable([] as IBodyStore[]),
-    add(el: IBodyStore) {
+    state: observable({
+        colliders: {} as Colliders
+    }),
+    add(store: IBodyStore) {
         runInAction(() => {
-            this.colliders.push(el);
+            this.state.colliders = {
+                ...this.state.colliders,
+                [`${store.position.x}|${store.position.y}`]: store
+            };
         });
     },
-    del(el: IBodyStore) {
-        const i = this.colliders.indexOf(el);
-        if (i === -1) {
-            return;
-        }
+    del(position: Position) {
         runInAction(() => {
-            this.colliders.splice(i, 1);
+            this.state.colliders = {
+                ...this.state.colliders,
+                [`${position.x}|${position.y}`]: undefined
+            };
         });
     }
 });

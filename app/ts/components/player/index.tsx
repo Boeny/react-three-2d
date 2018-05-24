@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Store as html } from '~/views/html/store';
-// import { Store as events } from '../events/store';
+import { Store as events } from '../events/store';
 import { Store } from './store';
 import { IBodyStore } from '../colliders/types';
 import { Position, Moving } from './types';
@@ -36,12 +36,18 @@ const update = (moving: Moving) => () => {
     }
 };
 
-const onCollide = (collider: IBodyStore) => {
-    setContent(collider.name);
-};
+function onCollide(collider: IBodyStore) {
+    html.setContent(collider.name || null);
+}
 
-function setContent(v?: string | JSX.Element) {
-    html.setContent(v || null);
+function onUncollide() {
+    if (events.state.stepMode) {
+        Store.stopMovingUp();
+        Store.stopMovingDown();
+        Store.stopMovingLeft();
+        Store.stopMovingRight();
+    }
+    html.setContent(null);
 }
 
 export const PlayerComponent = observer(() => {
@@ -59,7 +65,7 @@ export const PlayerComponent = observer(() => {
                 velocity={velocity}
                 onPositionChange={setPosition}
                 onCollide={onCollide}
-                onUnCollide={setContent}
+                onUnCollide={onUncollide}
                 onEveryTick={update(moving)}
             />
             {moving.up ?

@@ -8,8 +8,12 @@ export interface Position {
     y: number;
 }
 
+export interface Colliders {
+    [coo: string]: IBodyStore | undefined;
+}
+
 export interface IStore {
-    colliders: IBodyStore[];
+    state: { colliders: Colliders };
     add: (el: IBodyStore) => void;
-    del: (el: IBodyStore) => void;
+    del: (position: Position) => void;
 }
