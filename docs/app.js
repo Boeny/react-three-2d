@@ -98436,10 +98436,7 @@ var Connected = mobx_react_1.observer(function (props) {
 var ConnectedCollider = mobx_react_1.observer(function (props) {
     var store = props.store;
     var position = store.position, state = store.state;
-    // hack to observe this
-    position.x;
-    position.y;
-    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: position, color: state.color }));
+    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: { x: position.x, y: position.y }, color: state.color }));
 });
 var Body = /** @class */ (function (_super) {
     tslib_1.__extends(Body, _super);
@@ -98469,13 +98466,16 @@ var Body = /** @class */ (function (_super) {
         }
     };
     Body.prototype.componentDidUpdate = function (_a) {
-        var color = _a.color, position = _a.position, velocity = _a.velocity;
+        var color = _a.color, position = _a.position, velocity = _a.velocity, name = _a.name;
         var store = this.state.store;
         if (store === null) {
             return;
         }
         if (color !== this.props.color) {
             store.setColor(this.props.color);
+        }
+        if (name !== this.props.name) {
+            store.setName(this.props.name);
         }
         if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
             store.setPosition(this.props.position);
@@ -103594,7 +103594,7 @@ exports.delCollider = delCollider;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(22);
 var mobx_1 = __webpack_require__(19);
-exports.Store = mobx_1.observable({
+exports.Store = {
     state: mobx_1.observable({
         colliders: {}
     }),
@@ -103612,7 +103612,7 @@ exports.Store = mobx_1.observable({
             var _a;
         });
     }
-});
+};
 
 
 /***/ }),
@@ -141874,7 +141874,7 @@ var update = function (moving) { return function () {
     }
 }; };
 function onCollide(collider) {
-    store_1.Store.setContent(collider.name || null);
+    store_1.Store.setContent(collider.state.name);
 }
 function onUncollide() {
     if (store_2.Store.state.stepMode) {
@@ -141922,14 +141922,20 @@ var tslib_1 = __webpack_require__(22);
 var mobx_1 = __webpack_require__(19);
 var three_1 = __webpack_require__(12);
 function getStore(_a) {
-    var position = _a.position, color = _a.color, velocity = _a.velocity, common = tslib_1.__rest(_a, ["position", "color", "velocity"]);
-    return tslib_1.__assign({}, common, { state: mobx_1.observable({ color: color }), position: mobx_1.observable({
+    var name = _a.name, position = _a.position, color = _a.color, velocity = _a.velocity, common = tslib_1.__rest(_a, ["name", "position", "color", "velocity"]);
+    return tslib_1.__assign({}, common, { state: mobx_1.observable({ color: color, name: name || null }), position: mobx_1.observable({
             x: position.x,
             y: position.y
         }), velocity: velocity || new three_1.Vector2(), setColor: function (color) {
             var _this = this;
             mobx_1.runInAction(function () {
                 _this.state.color = color;
+            });
+        },
+        setName: function (name) {
+            var _this = this;
+            mobx_1.runInAction(function () {
+                _this.state.name = name || null;
             });
         },
         setPosition: function (v) {
@@ -141976,7 +141982,9 @@ var Collider = /** @class */ (function (_super) {
     };
     Collider.prototype.componentDidUpdate = function (_a) {
         var position = _a.position;
-        utils_1.updateCollider(position);
+        if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
+            utils_1.updateCollider(position);
+        }
     };
     Collider.prototype.componentWillUnmount = function () {
         utils_1.delCollider(this.props.position);

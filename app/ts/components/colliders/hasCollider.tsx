@@ -15,8 +15,9 @@ class Collider extends React.Component<Props> {
     }
 
     componentDidUpdate({ position }: Props) {// previous
-
-        updateCollider(position);
+        if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
+            updateCollider(position);// need old position
+        }
     }
 
     componentWillUnmount() {

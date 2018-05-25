@@ -37,7 +37,7 @@ const update = (moving: Moving) => () => {
 };
 
 function onCollide(collider: IBodyStore) {
-    html.setContent(collider.name || null);
+    html.setContent(collider.state.name);
 }
 
 function onUncollide() {
@@ -60,6 +60,7 @@ export const PlayerComponent = observer(() => {
             <Body
                 name={'player'}
                 color={'#ffffff'}
+                hasCollider={true}
                 isMovable={true}
                 position={position}
                 velocity={velocity}

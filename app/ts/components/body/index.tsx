@@ -28,14 +28,11 @@ const Connected = observer((props: ConnectedProps) => {
 const ConnectedCollider = observer((props: ConnectedProps) => {
     const { store } = props;
     const { position, state } = store;
-    // hack to observe this
-    position.x;
-    position.y;
     return (
         <ParticleCollider
             zIndex={1}
             store={store}
-            position={position}
+            position={{ x: position.x, y: position.y }}// to update collider coo
             color={state.color}
         />
     );
@@ -80,13 +77,16 @@ export class Body extends React.Component<Props, State> {
         }
     }
 
-    componentDidUpdate({ color, position, velocity }: Props) {// previous
+    componentDidUpdate({ color, position, velocity, name }: Props) {// previous
         const { store } = this.state;
         if (store === null) {
             return;
         }
         if (color !== this.props.color) {
             store.setColor(this.props.color);
+        }
+        if (name !== this.props.name) {
+            store.setName(this.props.name);
         }
         if (position.x !== this.props.position.x || position.y !== this.props.position.y) {
             store.setPosition(this.props.position);

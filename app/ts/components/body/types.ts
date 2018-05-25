@@ -8,17 +8,20 @@ export interface Position {
 }
 
 export interface IStore extends CommonParams {
-    state: { color: string };
+    state: {
+        color: string,
+        name: string | JSX.Element | null;
+    };
     position: Position;
     velocity: Vector2;
     setColor: (color: string) => void;
+    setName: (name?: string | JSX.Element) => void;
     setPosition: (v: Position) => void;
     setVelocity: (v: number, coo: 'x' | 'y') => void;
     changePosition: (v: Vector2, withCollider?: boolean) => void;
 }
 
 export interface CommonParams {
-    name?: string | JSX.Element;
     isMovable?: boolean;
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;

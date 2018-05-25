@@ -7,12 +7,13 @@ export interface InitialParams extends CommonParams {
     color: string;
     position: Vector2;
     velocity?: Vector2;
+    name?: string | JSX.Element;
 }
 
-export function getStore({ position, color, velocity, ...common }: InitialParams): IStore {
+export function getStore({ name, position, color, velocity, ...common }: InitialParams): IStore {
     return {
         ...common,
-        state: observable({ color }),
+        state: observable({ color, name: name || null }),
         position: observable({
             x: position.x,
             y: position.y
@@ -21,6 +22,11 @@ export function getStore({ position, color, velocity, ...common }: InitialParams
         setColor(color: string) {
             runInAction(() => {
                 this.state.color = color;
+            });
+        },
+        setName(name?: string | JSX.Element) {
+            runInAction(() => {
+                this.state.name = name || null;
             });
         },
         setPosition(v: Position) {

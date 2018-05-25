@@ -2,7 +2,7 @@ import { observable, runInAction } from 'mobx';
 import { IStore, IBodyStore, Position, Colliders } from './types';
 
 
-export const Store: IStore = observable({
+export const Store: IStore = {
     state: observable({
         colliders: {} as Colliders
     }),
@@ -22,4 +22,4 @@ export const Store: IStore = observable({
             };
         });
     }
-});
+};
