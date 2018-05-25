@@ -14,7 +14,3 @@ export interface IStore {
     updateTimer: () => void;
     setTick: (tick: boolean) => void;
 }
-
-export interface CommonProps {
-    onEveryTick: (impulse: boolean) => void;
-}

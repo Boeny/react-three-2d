@@ -1,5 +1,4 @@
 import { Vector2 } from 'three';
-import { IBodyStore } from '../colliders/types';
 
 
 export interface Position {
@@ -26,6 +25,6 @@ export interface CommonParams {
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;
     onVelocityChange?: (v: Vector2) => void;
-    onCollide?: (collider: IBodyStore) => void;
+    onCollide?: (collider: IStore) => void;
     onUnCollide?: () => void;
 }

@@ -13,7 +13,10 @@ export interface InitialParams extends CommonParams {
 export function getStore({ name, position, color, velocity, ...common }: InitialParams): IStore {
     return {
         ...common,
-        state: observable({ color, name: name || null }),
+        state: observable({
+            color,
+            name: name || null
+        }),
         position: observable({
             x: position.x,
             y: position.y

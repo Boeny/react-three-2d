@@ -83,29 +83,21 @@ export function onKeyDown(e: KeyboardEvent) {
 }
 
 export function onKeyUp(e: KeyboardEvent) {
-    let playerIsMoving: boolean = false;
     switch (e.key) {
         case KEY.LEFT:
-            player.stopMovingLeft();
-            playerIsMoving = player.moving.up || player.moving.down || player.moving.right;
+            player.moveLeft(false);
             break;
         case KEY.RIGHT:
-            player.stopMovingRight();
-            playerIsMoving = player.moving.up || player.moving.down || player.moving.left;
+            player.moveRight(false);
             break;
         case KEY.UP:
-            player.stopMovingUp();
-            playerIsMoving = player.moving.left || player.moving.down || player.moving.right;
+            player.moveUp(false);
             break;
         case KEY.DOWN:
-            player.stopMovingDown();
-            playerIsMoving = player.moving.up || player.moving.left || player.moving.right;
-            break;
-        case KEY.SPACE:
-            events.setSwitchMode(false);
+            player.moveDown(false);
             break;
     }
-    if (playerIsMoving === false) {
+    if (player.isMoving() === false) {
         events.setStepMode(false);
     }
 }

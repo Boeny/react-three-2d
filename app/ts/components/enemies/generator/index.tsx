@@ -2,27 +2,31 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { getStore } from './store';
-import { IStore, CommonProps } from './types';
+import { getCollider } from '~/components/colliders/utils';
+import { IStore } from './types';
 import { Body } from '~/components/body';
 
 
-interface ConnectedProps extends CommonProps {
+interface ConnectedProps {
     store: IStore;
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { store, onEveryTick } = props;
+    const { store } = props;
     return (
         <Body
             name={'generator'}
             isMovable={true}
             hasCollider={true}
-            onEveryTick={() => {
+            onEveryTick={self => {
                 const tick = store.timerAfterTickStart();
                 store.updateTimer();
                 if (tick !== store.state.tick) {
                     store.setTick(tick);
-                    onEveryTick(tick);
+                    impulseToColliderAtPosition(self.position.x - 1, self.position.y);
+                    impulseToColliderAtPosition(self.position.x + 1, self.position.y);
+                    impulseToColliderAtPosition(self.position.x, self.position.y - 1);
+                    impulseToColliderAtPosition(self.position.x, self.position.y + 1);
                 }
             }}
             color={store.state.tick ? '#ffffff' : '#49b4d0'}
@@ -31,8 +35,15 @@ const Connected = observer((props: ConnectedProps) => {
     );
 });
 
+function impulseToColliderAtPosition(x: number, y: number) {
+    const collider = getCollider(x, y);
+    if (collider) {
+        // collider.signal();
+    }
+}
 
-interface Props extends CommonProps {
+
+interface Props {
     position: Vector2;
     period: number;
     tickLength: number;
@@ -66,14 +77,10 @@ export class Generator extends React.Component<Props, State> {
     }
 
     render() {
-        const { onEveryTick } = this.props;
         const { store } = this.state;
         return (
             store ?
-                <Connected
-                    store={store}
-                    onEveryTick={onEveryTick}
-                />
+                <Connected store={store} />
             : null
         );
     }

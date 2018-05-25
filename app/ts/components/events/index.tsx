@@ -4,6 +4,7 @@ import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { Store as camera } from '../camera/store';
 import { Store } from './store';
+import { IStore } from './types';
 import { Box } from '../box';
 import { Body } from '../body';
 import { Constants } from '../constants-container';
@@ -28,18 +29,16 @@ const Content = ((props: PositionProps) => {
     const { position } = props;
     return (
         <group>
-            <Mode
-                position={(new Vector2(0, 7)).add(position)}
-                field={'mouseDragMode'}
-                state={Store.state}
-            />
-            <Mode
-                position={(new Vector2(1, 7)).add(position)}
-                field={'stepMode'}
-                state={Store.state}
-            />
+            {(Object.keys(Store.state) as (keyof IStore['state'])[]).map((name, i) => (
+                <Mode
+                    key={i}
+                    position={(new Vector2(i, 7)).add(position)}
+                    field={name}
+                    state={Store.state}
+                />
+            ))}
             <CameraProps
-                position={(new Vector2(0, 3)).add(position)}
+                position={(new Vector2(0, 5)).add(position)}
             />
             <Constants
                 position={position}
