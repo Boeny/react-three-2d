@@ -124,6 +124,8 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         body.onCollide && body.onCollide(collider);
         if (collider.isMovable) {
             collider.setVelocity(velocity, coo);
+            // body.changePosition(velocityVector);
+            // body.setVelocity(0, coo);
         } else {
             body.setVelocity(0, coo);
         }

@@ -23,6 +23,9 @@ const update = () => {
 
 function onCollide(collider: IBodyStore) {
     // currentCollider = collider;
+    if (collider.isMovable) {
+        return;
+    }
     html.setContent(collider.state.name);
 }
 

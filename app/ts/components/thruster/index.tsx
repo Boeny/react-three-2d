@@ -1,12 +1,9 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { observer } from 'mobx-react';
-import { Store } from './store';
 import { IStore as IBodyStore } from '../body/types';
-import { Moving, Position } from './types';
+import { Position, Moving } from './types';
 import { Body } from '../body';
 import { Directions } from './directions';
-import { MountAndInit } from '../mount-and-init';
 import { MAX_SPEED } from '~/constants';
 
 
@@ -24,7 +21,7 @@ const getUpdate = (moving: Moving) => (store: IBodyStore) => {
 };
 
 
-interface Props {
+interface Props extends PositionProps {
     name: string;
     moving?: Moving;
     onEveryTick?: (body: IBodyStore) => void;
@@ -34,9 +31,8 @@ interface Props {
     onUnCollide?: () => void;
 }
 
-const ThrusterComponent = observer((props: Props) => {
-    const { moving, onPositionChange, onEveryTick, ...rest } = props;
-    const position = new Vector2(Store.position.x, Store.position.y);
+export function Thruster(props: Props) {
+    const { moving, onEveryTick, position, ...rest } = props;
     const update = moving ? getUpdate(moving) : () => {};
     return (
         <group>
@@ -46,10 +42,6 @@ const ThrusterComponent = observer((props: Props) => {
                 hasCollider={true}
                 isMovable={true}
                 position={position}
-                onPositionChange={v => {
-                    Store.setPosition(v.x, v.y);
-                    onPositionChange && onPositionChange(v);
-                }}
                 onEveryTick={body => {
                     update(body);
                     onEveryTick && onEveryTick(body);
@@ -62,15 +54,5 @@ const ThrusterComponent = observer((props: Props) => {
                 />
             : null}
         </group>
-    );
-});
-
-
-export function Thruster(props: Props & PositionProps) {
-    return (
-        <MountAndInit
-            component={<ThrusterComponent {...props} />}
-            onMount={() => Store.init(props.position)}
-        />
     );
 }
