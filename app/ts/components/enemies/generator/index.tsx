@@ -3,7 +3,7 @@ import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
 import { getStore } from './store';
 import { getCollider } from '~/components/colliders/utils';
-import { IStore } from './types';
+import { IStore, Signal } from './types';
 import { Body } from '~/components/body';
 
 
@@ -21,13 +21,17 @@ const Connected = observer((props: ConnectedProps) => {
             onEveryTick={self => {
                 const tick = store.timerAfterTickStart();
                 store.updateTimer();
-                if (tick !== store.state.tick) {
-                    store.setTick(tick);
-                    impulseToColliderAtPosition(self.position.x - 1, self.position.y);
-                    impulseToColliderAtPosition(self.position.x + 1, self.position.y);
-                    impulseToColliderAtPosition(self.position.x, self.position.y - 1);
-                    impulseToColliderAtPosition(self.position.x, self.position.y + 1);
+                if (tick === store.state.tick) {
+                    return;
                 }
+                store.setTick(tick);
+                if (tick === false) {
+                    return;
+                }
+                impulseToColliderAtPosition(self.position.x - 1, self.position.y, { right: true });
+                impulseToColliderAtPosition(self.position.x + 1, self.position.y, { left: true });
+                impulseToColliderAtPosition(self.position.x, self.position.y - 1, { up: true });
+                impulseToColliderAtPosition(self.position.x, self.position.y + 1, { down: true });
             }}
             color={store.state.tick ? '#ffffff' : '#49b4d0'}
             position={new Vector2(store.position.x, store.position.y)}
@@ -35,10 +39,10 @@ const Connected = observer((props: ConnectedProps) => {
     );
 });
 
-function impulseToColliderAtPosition(x: number, y: number) {
+function impulseToColliderAtPosition(x: number, y: number, signal: Signal) {
     const collider = getCollider(x, y);
     if (collider) {
-        // collider.signal();
+        collider.signal(signal);
     }
 }
 

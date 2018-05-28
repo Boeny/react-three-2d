@@ -6,6 +6,13 @@ export interface Position {
     y: number;
 }
 
+interface Moving {
+    left: boolean;
+    right: boolean;
+    up: boolean;
+    down: boolean;
+}
+
 export interface IStore extends CommonParams {
     state: {
         color: string,
@@ -18,6 +25,7 @@ export interface IStore extends CommonParams {
     setPosition: (v: Position) => void;
     setVelocity: (v: number, coo: 'x' | 'y') => void;
     changePosition: (v: Vector2, withCollider?: boolean) => void;
+    signal: (s: Signal) => void;
 }
 
 export interface CommonParams {
@@ -27,4 +35,7 @@ export interface CommonParams {
     onVelocityChange?: (v: Vector2) => void;
     onCollide?: (collider: IStore) => void;
     onUnCollide?: () => void;
+    onSignal?: (body: IStore, signal: Signal) => void;
 }
+
+export type Signal = Partial<Moving>;

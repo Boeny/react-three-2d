@@ -7,7 +7,7 @@ import { Directions } from './directions';
 import { MAX_SPEED } from '~/constants';
 
 
-const getUpdate = (moving: Moving) => (store: IBodyStore) => {
+const getUpdate = (moving: Partial<Moving>) => (store: IBodyStore) => {
     if (moving.left || moving.right) {
         store.setVelocity((moving.right ? 1 : -1) * MAX_SPEED, 'x');
     } else {
@@ -19,6 +19,10 @@ const getUpdate = (moving: Moving) => (store: IBodyStore) => {
         store.setVelocity(0, 'y');
     }
 };
+
+function updateMoving(store: IBodyStore, moving: Partial<Moving>) {
+    getUpdate(moving)(store);
+}
 
 
 interface Props extends PositionProps {
@@ -46,6 +50,7 @@ export function Thruster(props: Props) {
                     update(body);
                     onEveryTick && onEveryTick(body);
                 }}
+                onSignal={updateMoving}
             />
             {moving ?
                 <Directions

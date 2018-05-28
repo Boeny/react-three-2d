@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, CommonParams, Position } from './types';
+import { IStore, CommonParams, Position, Signal } from './types';
 
 
 export interface InitialParams extends CommonParams {
@@ -49,6 +49,9 @@ export function getStore({ name, position, color, velocity, ...common }: Initial
                 this.position.y += v.y;
                 this.onPositionChange && this.onPositionChange(this.position);
             });
+        },
+        signal(s: Signal) {
+            this.onSignal && this.onSignal(this, s);
         }
     };
 }
