@@ -28,10 +28,10 @@ const Connected = observer((props: ConnectedProps) => {
                 if (tick === false) {
                     return;
                 }
-                impulseToColliderAtPosition(self.position.x - 1, self.position.y, { right: true });
-                impulseToColliderAtPosition(self.position.x + 1, self.position.y, { left: true });
-                impulseToColliderAtPosition(self.position.x, self.position.y - 1, { up: true });
-                impulseToColliderAtPosition(self.position.x, self.position.y + 1, { down: true });
+                sendSignalToPosition(self.position.x - 1, self.position.y, { right: true });
+                sendSignalToPosition(self.position.x + 1, self.position.y, { left: true });
+                sendSignalToPosition(self.position.x, self.position.y - 1, { up: true });
+                sendSignalToPosition(self.position.x, self.position.y + 1, { down: true });
             }}
             color={store.state.tick ? '#ffffff' : '#49b4d0'}
             position={new Vector2(store.position.x, store.position.y)}
@@ -39,7 +39,7 @@ const Connected = observer((props: ConnectedProps) => {
     );
 });
 
-function impulseToColliderAtPosition(x: number, y: number, signal: Signal) {
+function sendSignalToPosition(x: number, y: number, signal: Signal) {
     const collider = getCollider(x, y);
     if (collider) {
         collider.signal(signal);
