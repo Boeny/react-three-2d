@@ -18,6 +18,8 @@ const getUpdate = (moving: Partial<Moving>) => (store: IBodyStore) => {
     } else {
         store.setVelocity(0, 'y');
     }
+    // --- smell
+
 };
 
 function updateMoving(store: IBodyStore, moving: Partial<Moving>) {

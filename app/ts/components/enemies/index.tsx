@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Vector2 } from 'three';
 import { getNumArray } from '~/utils';
 import { Thruster } from '../thruster';
-import { Generator } from './generator';
+// import { Generator } from './generator';
 import { MAX_SPEED } from '~/constants';
 
 
@@ -46,18 +46,20 @@ interface MoveProps {
 }
 
 const Mover = observer((props: MoveProps) => {
-    const { offset, position } = props;
+    const { position } = props;
     return (
         <group>
             <Thruster
                 name={'thruster'}
                 position={position}
             />
+        </group>
+    );
+});
+/*
             <Generator
                 period={20}
                 tickLength={10}
                 position={position.clone().add(offset)}
             />
-        </group>
-    );
-});
+*/
