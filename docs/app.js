@@ -142188,14 +142188,23 @@ var Entities = /** @class */ (function (_super) {
         _this.DELIMITER = '|';
         _this.INITIAL_COLOR = 256;
         _this.getKey = function (position) {
-            return "" + position[0] + _this.DELIMITER + position[1];
+            return "" + position.x + _this.DELIMITER + position.y;
         };
         _this.getColor = function (color) {
             var c = utils_1.clampByMax(Math.round(color), 255);
             return "rgb(" + c + ", " + c + ", " + c + ")";
         };
         _this.getPosition = function (coo) {
-            return coo.split(_this.DELIMITER).map(parseInt);
+            var position = coo.split(_this.DELIMITER).map(function (v) { return parseInt(v, 10); })
+                .filter(function (v) { return !isNaN(v); });
+            if (position.length !== 2) {
+                console.warn('Entities.getPosition: input string = 2 coordinates splitted by |');
+                return { x: 0, y: 0 };
+            }
+            return {
+                x: position[0],
+                y: position[1]
+            };
         };
         _this.onUpdate = function (coo) {
             var data = _this.state.data;
@@ -142204,21 +142213,21 @@ var Entities = /** @class */ (function (_super) {
             }
             var color = (data[coo] || 0) / 4;
             var position = _this.getPosition(coo);
-            _this.setState(function (state) { return (tslib_1.__assign({}, state, _this.getNewData(color, [position[0], position[1] + 1]), _this.getNewData(color, [position[0], position[1] - 1]), _this.getNewData(color, [position[0] + 1, position[1]]), _this.getNewData(color, [position[0] - 1, position[1]]))); });
+            _this.setState(function (state) { return (tslib_1.__assign({}, state, _this.getNewData(color, { x: position.x, y: position.y + 1 }), _this.getNewData(color, { x: position.x, y: position.y - 1 }), _this.getNewData(color, { x: position.x + 1, y: position.y }), _this.getNewData(color, { x: position.x - 1, y: position.y }))); });
         };
         _this.getNewData = function (color, position) {
             var data = _this.state.data;
             var coo = _this.getKey(position);
-            var existColor = data[coo];
-            if (existColor) {
-                return _a = {}, _a[coo] = utils_1.clampByMax(color + existColor, 256), _a;
+            var existingColor = data[coo];
+            if (existingColor !== undefined) {
+                return _a = {}, _a[coo] = utils_1.clampByMax(color + existingColor, 256), _a;
             }
             console.log(coo);
             return _b = {}, _b[coo] = color, _b;
             var _a, _b;
         };
         var position = props.position;
-        var coo = _this.getKey([position.x, position.y]);
+        var coo = _this.getKey(position);
         _this.state = {
             data: (_a = {}, _a[coo] = _this.INITIAL_COLOR, _a)
         };
@@ -142230,7 +142239,7 @@ var Entities = /** @class */ (function (_super) {
         var data = this.state.data;
         return (React.createElement("group", null, Object.keys(data).map(function (coo, i) {
             var position = _this.getPosition(coo);
-            return (React.createElement(body_1.Body, { key: i, color: _this.getColor(data[coo] || 0), isMovable: true, position: new three_1.Vector2(position[0], position[1]), onEveryTick: function () { return _this.onUpdate(coo); } }));
+            return (React.createElement(body_1.Body, { key: i, color: _this.getColor(data[coo] || 0), isMovable: true, position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return _this.onUpdate(coo); } }));
         })));
     };
     return Entities;
