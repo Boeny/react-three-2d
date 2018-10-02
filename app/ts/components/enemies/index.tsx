@@ -4,6 +4,11 @@ import { clampByMax } from '~/utils';
 import { Body } from '../body';
 
 
+interface Coo {
+    x: number;
+    y: number;
+}
+
 type Props = PositionProps;
 
 interface State {
@@ -18,14 +23,14 @@ export class Entities extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         const { position } = props;
-        const coo = this.getKey([position.x, position.y]);
+        const coo = this.getKey(position);
         this.state = {
             data: { [coo]: this.INITIAL_COLOR }
         };
     }
 
-    getKey = (position: number[]): string => {
-        return `${position[0]}${this.DELIMITER}${position[1]}`;
+    getKey = (position: Coo): string => {
+        return `${position.x}${this.DELIMITER}${position.y}`;
     }
 
     getColor = (color: number): string => {
@@ -33,8 +38,17 @@ export class Entities extends React.Component<Props, State> {
         return `rgb(${c}, ${c}, ${c})`;
     }
 
-    getPosition = (coo: string): number[] => {
-        return coo.split(this.DELIMITER).map(parseInt);
+    getPosition = (coo: string): Coo => {
+        const position = coo.split(this.DELIMITER).map(v => parseInt(v, 10))
+            .filter(v => !isNaN(v));
+        if (position.length !== 2) {
+            console.warn('Entities.getPosition: input string = 2 coordinates splitted by |');
+            return { x: 0, y: 0 };
+        }
+        return {
+            x: position[0],
+            y: position[1]
+        };
     }
 
     onUpdate = (coo: string) => {
@@ -46,19 +60,19 @@ export class Entities extends React.Component<Props, State> {
         const position = this.getPosition(coo);
         this.setState(state => ({
             ...state,
-            ...this.getNewData(color, [position[0], position[1] + 1]),
-            ...this.getNewData(color, [position[0], position[1] - 1]),
-            ...this.getNewData(color, [position[0] + 1, position[1]]),
-            ...this.getNewData(color, [position[0] - 1, position[1]])
+            ...this.getNewData(color, { x: position.x, y: position.y + 1 }),
+            ...this.getNewData(color, { x: position.x, y: position.y - 1 }),
+            ...this.getNewData(color, { x: position.x + 1, y: position.y }),
+            ...this.getNewData(color, { x: position.x - 1, y: position.y })
         }));
     }
 
-    getNewData = (color: number, position: number[]): State['data'] => {
+    getNewData = (color: number, position: Coo): State['data'] => {
         const { data } = this.state;
         const coo = this.getKey(position);
-        const existColor = data[coo];
-        if (existColor) {
-            return { [coo]: clampByMax(color + existColor, 256) };
+        const existingColor = data[coo];
+        if (existingColor !== undefined) {
+            return { [coo]: clampByMax(color + existingColor, 256) };
         }
         console.log(coo);
         return { [coo]: color };
@@ -75,7 +89,7 @@ export class Entities extends React.Component<Props, State> {
                             key={i}
                             color={this.getColor(data[coo] || 0)}
                             isMovable={true}
-                            position={new Vector2(position[0], position[1])}
+                            position={new Vector2(position.x, position.y)}
                             onEveryTick={() => this.onUpdate(coo)}
                         />
                     );
