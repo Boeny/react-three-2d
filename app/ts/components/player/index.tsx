@@ -40,13 +40,14 @@ function onUncollide() {
     html.setContent(null);
 }
 
-const PlayerComponent = observer(() => {
+const PlayerComponent = observer((props: ColorProps) => {
     const position = new Vector2(Store.position.x, Store.position.y);
     return (
         <group>
             <Camera position={position} />
             <Thruster
                 name={'player'}
+                color={props.color}
                 moving={Store.moving}
                 position={position}
                 onPositionChange={v => Store.setPosition(v.x, v.y)}
@@ -59,10 +60,10 @@ const PlayerComponent = observer(() => {
 });
 
 
-export function Player(props: PositionProps) {
+export function Player(props: PositionProps & ColorProps) {
     return (
         <MountAndInit
-            component={<PlayerComponent />}
+            component={<PlayerComponent color={props.color} />}
             onMount={() => Store.init(props.position)}
         />
     );

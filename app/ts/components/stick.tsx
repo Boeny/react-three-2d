@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { getNumArray } from '~/utils';
+import { createArray } from '~/utils';
 import { Body } from './body';
 
 
@@ -16,7 +16,7 @@ export function Stick(props: Props) {
     const { length, getPosition, color, isMovable, hasCollider } = props;
     return (
         <group>
-            {getNumArray(length).map(i => (
+            {createArray(length).map(i => (
                 <Body
                     key={i}
                     isMovable={isMovable}

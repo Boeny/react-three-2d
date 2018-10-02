@@ -41,3 +41,11 @@ declare module 'react3';
 declare interface PositionProps {
     position: THREE.Vector2;
 }
+
+declare interface ColorProps {
+    color: string;
+}
+
+declare interface Coobject<T> {
+    [coo: string]: T | undefined;
+}

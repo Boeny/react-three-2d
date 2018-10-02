@@ -6,6 +6,8 @@ import { IStore } from './types';
 import { Particle, ParticleCollider } from '../particle';
 
 
+export { IStore };
+
 interface ConnectedProps {
     store: IStore;
 }

@@ -8,9 +8,7 @@ export interface Position {
     y: number;
 }
 
-export interface Colliders {
-    [coo: string]: IBodyStore | undefined;
-}
+export type Colliders = Coobject<IBodyStore>;
 
 export interface IStore {
     state: { colliders: Colliders };

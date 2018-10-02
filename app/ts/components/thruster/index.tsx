@@ -27,7 +27,7 @@ function updateMoving(store: IBodyStore, moving: Partial<Moving>) {
 }
 
 
-interface Props extends PositionProps {
+interface Props extends PositionProps, ColorProps {
     name: string;
     moving?: Moving;
     onEveryTick?: (body: IBodyStore) => void;
@@ -38,13 +38,13 @@ interface Props extends PositionProps {
 }
 
 export function Thruster(props: Props) {
-    const { moving, onEveryTick, position, ...rest } = props;
+    const { moving, onEveryTick, position, color, ...rest } = props;
     const update = moving ? getUpdate(moving) : () => {};
     return (
         <group>
             <Body
                 {...rest}
-                color={'#ff0000'}
+                color={color}
                 hasCollider={true}
                 isMovable={true}
                 position={position}

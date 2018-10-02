@@ -1,7 +1,9 @@
-import { Color, Vector3, Vector2 } from 'three';
-import { WIDTH_SCALE, COLORS } from '~/constants';
+// import { Color, Vector3, Vector2 } from 'three';
+// import { WIDTH_SCALE, COLORS } from '~/constants';
+import { Vector2 } from 'three';
+import { COLORS } from '~/constants';
 
-
+/*
 export function convertToColor(color: string): Color {
     return new Color(color);
 }
@@ -13,30 +15,14 @@ export function pointInTheEllipse(radiusX: number, radiusY: number, angle: numbe
         0
     );
 }
-
-export function pointInTheCircle(radius: number, angle: number): Vector3 {
-    return new Vector3(
-        radius * Math.cos(angle),
-        radius * Math.sin(angle),
-        0
-    );
-}
-
+*/
 export function getMouseVector(e: any): Vector2 {
     return new Vector2(e.clientX, e.clientY);
 }
 
-export function getArray(count: number): undefined[] {
-    /* tslint:disable */
-    return (Array as any).from(new Array(count));
-    /* tslint:enable */
-}
-
-export function getNumArray(count: number, start?: number): number[] {
-    return getArray(count).map((item, i) => {
-        item;
-        return i + (start || 0);
-    });
+export function createArray(count: number): number[] {
+    return (Array as any as { from: (a: { length: number }) => any[] })
+        .from({ length: count }).map((_, i) => i);
 }
 
 export function clamp(n: number, border: number): number {
@@ -56,8 +42,8 @@ export function clampByMin(n: number, min: number): number {
 export function clampByMax(n: number, max: number): number {
     return n > max ? max : n;
 }
-
-export function clamped(n: number, border: number): boolean {
+/*
+function clamped(n: number, border: number): boolean {
     return n >= -border && n <= border;
 }
 
@@ -72,7 +58,7 @@ export function toWorldVector(v: Vector2): Vector2 {
 export function toScreenVector(v: Vector2): Vector2 {
     return v.multiplyScalar(1 / WIDTH_SCALE);
 }
-
+*/
 export function boolColor(v: boolean): string {
     return v ? COLORS.TRUE : COLORS.FALSE;
 }
