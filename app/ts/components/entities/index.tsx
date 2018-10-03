@@ -20,8 +20,6 @@ const updateEntities = action((data: Data) => {
 });
 
 
-const DELIMITER = '|';
-
 interface Coo {
     x: number;
     y: number;
@@ -31,16 +29,16 @@ const ConnectedEntities = observer(() => {
     const { data } = Store;
     return (
         <group>
-            {Object.keys(data).filter(coo => data[coo] !== undefined).map((coo, i) => {
+            {getNonEmptyCoordinates(data).map((coo, i) => {
                 const position = getPosition(coo);
                 const color = data[coo] || 0;
                 return (
                     <Body
-                        key={i}
+                        key={`${coo}-${i}-${color}`}
                         isMovable={true}
                         color={getColor(color)}
                         position={new Vector2(position.x, position.y)}
-                        onEveryTick={() => update(coo, color, position, data)}
+                        onEveryTick={() => i === 0 && update(data)}
                     />
                 );
             })}
@@ -48,10 +46,16 @@ const ConnectedEntities = observer(() => {
     );
 });
 
+function getNonEmptyCoordinates(data: Data): string[] {
+    return Object.keys(data).filter(coo => data[coo] !== undefined);
+}
+
+const DELIMITER = '|';
+
 function getPosition(coo: string): Coo {
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
-        console.warn('Entities.getPosition: input string = 2 coordinates splitted by |');
+        console.warn(`Entities.getPosition: input string = 2 coordinates splitted by "${DELIMITER}"`);
         return { x: 0, y: 0 };
     }
     return {
@@ -65,9 +69,24 @@ function getColor(color: number): string {
     return `rgb(${c}, ${c}, ${c})`;
 }
 
-function update(_: string, color: number, position: Coo, data: Data) {
+let stack: string[] = [];
+
+function update(data: Data) {
+    if (stack.length === 0) {
+        stack = getNonEmptyCoordinates(data);
+        return;
+    }
+    const coo = stack.splice(0, 1)[0];
+    if (stack.length > 128) {
+        return;
+    }
+    const color = data[coo];
+    if (color === undefined) {
+        return;
+    }
+    const position = getPosition(coo);
     updateEntities({
-        // [coo]: undefined,
+        [coo]: undefined,
         ...getNewData(color, { x: position.x, y: position.y + 1 }, data),
         ...getNewData(color, { x: position.x, y: position.y - 1 }, data),
         ...getNewData(color, { x: position.x + 1, y: position.y }, data),

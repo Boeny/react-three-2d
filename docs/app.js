@@ -142188,19 +142188,22 @@ var Store = mobx_1.observable({ data: {} });
 var updateEntities = mobx_1.action(function (data) {
     Store.data = tslib_1.__assign({}, Store.data, data);
 });
-var DELIMITER = '|';
 var ConnectedEntities = mobx_react_1.observer(function () {
     var data = Store.data;
-    return (React.createElement("group", null, Object.keys(data).filter(function (coo) { return data[coo] !== undefined; }).map(function (coo, i) {
+    return (React.createElement("group", null, getNonEmptyCoordinates(data).map(function (coo, i) {
         var position = getPosition(coo);
         var color = data[coo] || 0;
-        return (React.createElement(body_1.Body, { key: i, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return update(coo, color, position, data); } }));
+        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i === 0 && update(data); } }));
     })));
 });
+function getNonEmptyCoordinates(data) {
+    return Object.keys(data).filter(function (coo) { return data[coo] !== undefined; });
+}
+var DELIMITER = '|';
 function getPosition(coo) {
     var position = coo.split(DELIMITER).map(function (v) { return parseInt(v, 10); }).filter(function (v) { return !isNaN(v); });
     if (position.length !== 2) {
-        console.warn('Entities.getPosition: input string = 2 coordinates splitted by |');
+        console.warn("Entities.getPosition: input string = 2 coordinates splitted by \"" + DELIMITER + "\"");
         return { x: 0, y: 0 };
     }
     return {
@@ -142212,8 +142215,23 @@ function getColor(color) {
     var c = utils_1.clampByMax(Math.round(color), 255);
     return "rgb(" + c + ", " + c + ", " + c + ")";
 }
-function update(_, color, position, data) {
-    updateEntities(tslib_1.__assign({}, getNewData(color, { x: position.x, y: position.y + 1 }, data), getNewData(color, { x: position.x, y: position.y - 1 }, data), getNewData(color, { x: position.x + 1, y: position.y }, data), getNewData(color, { x: position.x - 1, y: position.y }, data)));
+var stack = [];
+function update(data) {
+    if (stack.length === 0) {
+        stack = getNonEmptyCoordinates(data);
+        return;
+    }
+    var coo = stack.splice(0, 1)[0];
+    if (stack.length > 128) {
+        return;
+    }
+    var color = data[coo];
+    if (color === undefined) {
+        return;
+    }
+    var position = getPosition(coo);
+    updateEntities(tslib_1.__assign((_a = {}, _a[coo] = undefined, _a), getNewData(color, { x: position.x, y: position.y + 1 }, data), getNewData(color, { x: position.x, y: position.y - 1 }, data), getNewData(color, { x: position.x + 1, y: position.y }, data), getNewData(color, { x: position.x - 1, y: position.y }, data)));
+    var _a;
 }
 function getNewData(oldColor, position, data) {
     var coo = getKey(position);
