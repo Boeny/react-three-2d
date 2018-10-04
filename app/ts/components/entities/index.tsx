@@ -38,7 +38,7 @@ const ConnectedEntities = observer(() => {
                         isMovable={true}
                         color={getColor(color)}
                         position={new Vector2(position.x, position.y)}
-                        onEveryTick={() => i === 0 && update(data)}
+                        onEveryTick={() => i < 20 && update(data)}
                     />
                 );
             })}
@@ -86,24 +86,21 @@ function update(data: Data) {
         return;
     }
     const position = getPosition(cooToExplode);
+    const coo1 = getKey({ x: position.x, y: position.y + 1 });
+    const coo2 = getKey({ x: position.x, y: position.y - 1 });
+    const coo3 = getKey({ x: position.x + 1, y: position.y });
+    const coo4 = getKey({ x: position.x - 1, y: position.y });
+    const c1 = data[coo1];
+    const c2 = data[coo2];
+    const c3 = data[coo3];
+    const c4 = data[coo4];
     updateEntities({
         [cooToExplode]: undefined,
-        ...getNewData(colorToDecrease, { x: position.x, y: position.y + 1 }, data),
-        ...getNewData(colorToDecrease, { x: position.x, y: position.y - 1 }, data),
-        ...getNewData(colorToDecrease, { x: position.x + 1, y: position.y }, data),
-        ...getNewData(colorToDecrease, { x: position.x - 1, y: position.y }, data)
+        [coo1]: c1 === undefined ? colorToDecrease / 2 : clampByMax(c1 + colorToDecrease / 2, 256),
+        [coo2]: c2 === undefined ? colorToDecrease / 2 : clampByMax(c2 + colorToDecrease / 2, 256),
+        [coo3]: c3 === undefined ? colorToDecrease / 2 : clampByMax(c3 + colorToDecrease / 2, 256),
+        [coo4]: c4 === undefined ? colorToDecrease / 2 : clampByMax(c4 + colorToDecrease / 2, 256)
     });
-}
-
-const DECREASE_MULT = 0.4;
-
-function getNewData(oldColor: number, position: Coo, data: Data): Data {
-    const coo = getKey(position);
-    const newColor = oldColor * DECREASE_MULT;
-    const existingColor = data[coo];
-    return {
-        [coo]: existingColor === undefined ? newColor : clampByMax(existingColor + newColor, 256)
-    };
 }
 
 

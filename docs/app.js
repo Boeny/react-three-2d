@@ -142201,7 +142201,7 @@ var ConnectedEntities = mobx_react_1.observer(function () {
     return (React.createElement("group", null, getNonEmptyCoordinates(data).map(function (coo, i) {
         var position = getPosition(coo);
         var color = data[coo] || 0;
-        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i === 0 && update(data); } }));
+        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i < 50 && update(data); } }));
     })));
 });
 function getNonEmptyCoordinates(data) {
@@ -142239,17 +142239,21 @@ function update(data) {
         return;
     }
     var position = getPosition(cooToExplode);
-    updateEntities(tslib_1.__assign((_a = {}, _a[cooToExplode] = undefined, _a), getNewData(colorToDecrease, { x: position.x, y: position.y + 1 }, data), getNewData(colorToDecrease, { x: position.x, y: position.y - 1 }, data), getNewData(colorToDecrease, { x: position.x + 1, y: position.y }, data), getNewData(colorToDecrease, { x: position.x - 1, y: position.y }, data)));
-    var _a;
-}
-var DECREASE_MULT = 0.35;
-function getNewData(oldColor, position, data) {
-    var coo = getKey(position);
-    var newColor = oldColor * DECREASE_MULT;
-    var existingColor = data[coo];
-    return _a = {},
-        _a[coo] = existingColor === undefined ? newColor : utils_1.clampByMax(existingColor + newColor, 256),
-        _a;
+    var coo1 = getKey({ x: position.x, y: position.y + 1 });
+    var coo2 = getKey({ x: position.x, y: position.y - 1 });
+    var coo3 = getKey({ x: position.x + 1, y: position.y });
+    var coo4 = getKey({ x: position.x - 1, y: position.y });
+    var c1 = data[coo1];
+    var c2 = data[coo2];
+    var c3 = data[coo3];
+    var c4 = data[coo4];
+    updateEntities((_a = {},
+        _a[cooToExplode] = undefined,
+        _a[coo1] = c1 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c1 + colorToDecrease / 2, 256),
+        _a[coo2] = c2 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c2 + colorToDecrease / 2, 256),
+        _a[coo3] = c3 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c3 + colorToDecrease / 2, 256),
+        _a[coo4] = c4 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c4 + colorToDecrease / 2, 256),
+        _a));
     var _a;
 }
 var INITIAL_COLOR = 256;
