@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
-import { clampByMax } from '~/utils';
+import { clampByMax, getRandomArrayElement } from '~/utils';
 import { MountAndInit } from '../mount-and-init';
 import { Body } from '../body';
 
@@ -76,27 +76,30 @@ function update(data: Data) {
         stack = getNonEmptyCoordinates(data);
         return;
     }
-    const coo = stack.splice(0, 1)[0];
-    if (stack.length > 128) {
+    const chance = Math.random();
+    const indicesToDelete = stack.map((coo, index) => ({ coo, index }))
+        .filter(o => (data[o.coo] || 0) / INITIAL_COLOR > chance)
+        .map(o => o.index);
+    const cooToExplode = stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
+    const colorToDecrease = data[cooToExplode];
+    if (colorToDecrease === undefined) {
         return;
     }
-    const color = data[coo];
-    if (color === undefined) {
-        return;
-    }
-    const position = getPosition(coo);
+    const position = getPosition(cooToExplode);
     updateEntities({
-        [coo]: undefined,
-        ...getNewData(color, { x: position.x, y: position.y + 1 }, data),
-        ...getNewData(color, { x: position.x, y: position.y - 1 }, data),
-        ...getNewData(color, { x: position.x + 1, y: position.y }, data),
-        ...getNewData(color, { x: position.x - 1, y: position.y }, data)
+        [cooToExplode]: undefined,
+        ...getNewData(colorToDecrease, { x: position.x, y: position.y + 1 }, data),
+        ...getNewData(colorToDecrease, { x: position.x, y: position.y - 1 }, data),
+        ...getNewData(colorToDecrease, { x: position.x + 1, y: position.y }, data),
+        ...getNewData(colorToDecrease, { x: position.x - 1, y: position.y }, data)
     });
 }
 
+const DECREASE_MULT = 0.4;
+
 function getNewData(oldColor: number, position: Coo, data: Data): Data {
     const coo = getKey(position);
-    const newColor = oldColor / 2;
+    const newColor = oldColor * DECREASE_MULT;
     const existingColor = data[coo];
     return {
         [coo]: existingColor === undefined ? newColor : clampByMax(existingColor + newColor, 256)

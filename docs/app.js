@@ -99317,6 +99317,14 @@ function boolColor(v) {
     return v ? constants_1.COLORS.TRUE : constants_1.COLORS.FALSE;
 }
 exports.boolColor = boolColor;
+function getRandomArrayIndex(array) {
+    return Math.round(Math.random() * (array.length - 1));
+}
+exports.getRandomArrayIndex = getRandomArrayIndex;
+function getRandomArrayElement(array) {
+    return array[getRandomArrayIndex(array)];
+}
+exports.getRandomArrayElement = getRandomArrayElement;
 
 
 /***/ }),
@@ -142221,21 +142229,23 @@ function update(data) {
         stack = getNonEmptyCoordinates(data);
         return;
     }
-    var coo = stack.splice(0, 1)[0];
-    if (stack.length > 128) {
+    var chance = Math.random();
+    var indicesToDelete = stack.map(function (coo, index) { return ({ coo: coo, index: index }); })
+        .filter(function (o) { return (data[o.coo] || 0) / INITIAL_COLOR > chance; })
+        .map(function (o) { return o.index; });
+    var cooToExplode = stack.splice(utils_1.getRandomArrayElement(indicesToDelete), 1)[0];
+    var colorToDecrease = data[cooToExplode];
+    if (colorToDecrease === undefined) {
         return;
     }
-    var color = data[coo];
-    if (color === undefined) {
-        return;
-    }
-    var position = getPosition(coo);
-    updateEntities(tslib_1.__assign((_a = {}, _a[coo] = undefined, _a), getNewData(color, { x: position.x, y: position.y + 1 }, data), getNewData(color, { x: position.x, y: position.y - 1 }, data), getNewData(color, { x: position.x + 1, y: position.y }, data), getNewData(color, { x: position.x - 1, y: position.y }, data)));
+    var position = getPosition(cooToExplode);
+    updateEntities(tslib_1.__assign((_a = {}, _a[cooToExplode] = undefined, _a), getNewData(colorToDecrease, { x: position.x, y: position.y + 1 }, data), getNewData(colorToDecrease, { x: position.x, y: position.y - 1 }, data), getNewData(colorToDecrease, { x: position.x + 1, y: position.y }, data), getNewData(colorToDecrease, { x: position.x - 1, y: position.y }, data)));
     var _a;
 }
+var DECREASE_MULT = 0.35;
 function getNewData(oldColor, position, data) {
     var coo = getKey(position);
-    var newColor = oldColor / 2;
+    var newColor = oldColor * DECREASE_MULT;
     var existingColor = data[coo];
     return _a = {},
         _a[coo] = existingColor === undefined ? newColor : utils_1.clampByMax(existingColor + newColor, 256),

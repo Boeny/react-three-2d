@@ -62,3 +62,11 @@ export function toScreenVector(v: Vector2): Vector2 {
 export function boolColor(v: boolean): string {
     return v ? COLORS.TRUE : COLORS.FALSE;
 }
+
+export function getRandomArrayIndex<T>(array: T[]): number {
+    return Math.round(Math.random() * (array.length - 1));
+}
+
+export function getRandomArrayElement<T>(array: T[]): T {
+    return array[getRandomArrayIndex(array)];
+}
