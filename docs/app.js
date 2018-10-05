@@ -93908,6 +93908,110 @@ module.exports = ReactElement;
 
 /***/ }),
 /* 18 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ROOT_ELEMENT_ID = 'root';
+exports.MOUSE = {
+    left: 0,
+    wheel: 1,
+    right: 2
+};
+exports.KEY = {
+    SPACE: ' ',
+    UP: 'ArrowUp',
+    DOWN: 'ArrowDown',
+    LEFT: 'ArrowLeft',
+    RIGHT: 'ArrowRight'
+};
+exports.MAX_SPEED = 1;
+exports.MIN_SPEED = 0.1;
+exports.SHOW_AS_WIREFRAME = false;
+exports.WIDTH_SCALE = 1;
+exports.COLORS = {
+    TRUE: '#ffa500',
+    FALSE: '#0000ff'
+};
+exports.Z_INDEX_STEP = 0.01;
+exports.MOUSE_DRAG_MODE_ENABLED = false;
+exports.SHOW_COLLIDERS = true;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(process) {/**
+ * Copyright 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree. An additional grant
+ * of patent rights can be found in the PATENTS file in the same directory.
+ *
+ * 
+ */
+
+
+
+// Trust the developer to only use ReactInstrumentation with a __DEV__ check
+
+var debugTool = null;
+
+if (process.env.NODE_ENV !== 'production') {
+  var ReactDebugTool = __webpack_require__(153);
+  debugTool = ReactDebugTool;
+}
+
+module.exports = { debugTool: debugTool };
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _three = __webpack_require__(0);
+
+var THREE = _interopRequireWildcard(_three);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * @abstract
+ */
+var ShapeAction = function () {
+  function ShapeAction() {
+    _classCallCheck(this, ShapeAction);
+
+    this.uuid = THREE.Math.generateUUID();
+
+    this.userData = {};
+  }
+
+  _createClass(ShapeAction, [{
+    key: 'performAction',
+    value: function performAction(shape) {// eslint-disable-line no-unused-vars
+      // to be done by subclasses
+    }
+  }]);
+
+  return ShapeAction;
+}();
+
+module.exports = ShapeAction;
+
+/***/ }),
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -94110,110 +94214,6 @@ function __importDefault(mod) {
     return (mod && mod.__esModule) ? mod : { default: mod };
 }
 
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ROOT_ELEMENT_ID = 'root';
-exports.MOUSE = {
-    left: 0,
-    wheel: 1,
-    right: 2
-};
-exports.KEY = {
-    SPACE: ' ',
-    UP: 'ArrowUp',
-    DOWN: 'ArrowDown',
-    LEFT: 'ArrowLeft',
-    RIGHT: 'ArrowRight'
-};
-exports.MAX_SPEED = 1;
-exports.MIN_SPEED = 0.1;
-exports.SHOW_AS_WIREFRAME = false;
-exports.WIDTH_SCALE = 1;
-exports.COLORS = {
-    TRUE: '#ffa500',
-    FALSE: '#0000ff'
-};
-exports.Z_INDEX_STEP = 0.01;
-exports.MOUSE_DRAG_MODE_ENABLED = false;
-exports.SHOW_COLLIDERS = true;
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* WEBPACK VAR INJECTION */(function(process) {/**
- * Copyright 2016-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
- *
- * 
- */
-
-
-
-// Trust the developer to only use ReactInstrumentation with a __DEV__ check
-
-var debugTool = null;
-
-if (process.env.NODE_ENV !== 'production') {
-  var ReactDebugTool = __webpack_require__(153);
-  debugTool = ReactDebugTool;
-}
-
-module.exports = { debugTool: debugTool };
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
-
-/***/ }),
-/* 21 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _three = __webpack_require__(0);
-
-var THREE = _interopRequireWildcard(_three);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/**
- * @abstract
- */
-var ShapeAction = function () {
-  function ShapeAction() {
-    _classCallCheck(this, ShapeAction);
-
-    this.uuid = THREE.Math.generateUUID();
-
-    this.userData = {};
-  }
-
-  _createClass(ShapeAction, [{
-    key: 'performAction',
-    value: function performAction(shape) {// eslint-disable-line no-unused-vars
-      // to be done by subclasses
-    }
-  }]);
-
-  return ShapeAction;
-}();
-
-module.exports = ShapeAction;
 
 /***/ }),
 /* 22 */
@@ -98192,7 +98192,7 @@ module.exports = ReactInstanceMap;
 
 
 var ReactRef = __webpack_require__(90);
-var ReactInstrumentation = __webpack_require__(20);
+var ReactInstrumentation = __webpack_require__(19);
 
 var warning = __webpack_require__(4);
 
@@ -99029,7 +99029,7 @@ module.exports = LightDescriptorBase;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(16);
 var store_1 = __webpack_require__(51);
@@ -99255,7 +99255,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // import { Color, Vector3, Vector2 } from 'three';
 // import { WIDTH_SCALE, COLORS } from '~/constants';
 var three_1 = __webpack_require__(12);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 /*
 export function convertToColor(color: string): Color {
     return new Color(color);
@@ -99499,7 +99499,7 @@ var _shouldUpdateReactComponent = __webpack_require__(65);
 
 var _shouldUpdateReactComponent2 = _interopRequireDefault(_shouldUpdateReactComponent);
 
-var _ReactInstrumentation = __webpack_require__(20);
+var _ReactInstrumentation = __webpack_require__(19);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -101265,7 +101265,7 @@ var React = __webpack_require__(5);
 var three_1 = __webpack_require__(12);
 var hasCollider_1 = __webpack_require__(283);
 var quad_1 = __webpack_require__(284);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 var BORDER_WIDTH = 0.1;
 function Particle(props) {
     var width = props.width, height = props.height;
@@ -101344,7 +101344,7 @@ exports.Store = {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var mobx_1 = __webpack_require__(22);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 exports.Store = {
     state: mobx_1.observable({
         mouseDragMode: false,
@@ -103547,7 +103547,7 @@ exports.delCollider = delCollider;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var mobx_1 = __webpack_require__(22);
 exports.Store = {
     state: mobx_1.observable({
@@ -105111,7 +105111,7 @@ var _prodInvariant = __webpack_require__(7);
 
 var ReactCurrentOwner = __webpack_require__(14);
 var ReactInstanceMap = __webpack_require__(27);
-var ReactInstrumentation = __webpack_require__(20);
+var ReactInstrumentation = __webpack_require__(19);
 var ReactUpdates = __webpack_require__(32);
 
 var invariant = __webpack_require__(3);
@@ -106566,7 +106566,7 @@ var ReactComponentEnvironment = __webpack_require__(62);
 var ReactCurrentOwner = __webpack_require__(14);
 var ReactErrorUtils = __webpack_require__(61);
 var ReactInstanceMap = __webpack_require__(27);
-var ReactInstrumentation = __webpack_require__(20);
+var ReactInstrumentation = __webpack_require__(19);
 var ReactNodeTypes = __webpack_require__(99);
 var ReactReconciler = __webpack_require__(28);
 
@@ -107505,7 +107505,7 @@ var _ReactInstanceMap = __webpack_require__(27);
 
 var _ReactInstanceMap2 = _interopRequireDefault(_ReactInstanceMap);
 
-var _ReactInstrumentation = __webpack_require__(20);
+var _ReactInstrumentation = __webpack_require__(19);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -107873,7 +107873,7 @@ module.exports = React3CompositeComponentWrapper;
 "use strict";
 
 
-var _ReactInstrumentation = __webpack_require__(20);
+var _ReactInstrumentation = __webpack_require__(19);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -109819,7 +109819,7 @@ var _THREEElementDescriptor = __webpack_require__(11);
 
 var _THREEElementDescriptor2 = _interopRequireDefault(_THREEElementDescriptor);
 
-var _ShapeAction = __webpack_require__(21);
+var _ShapeAction = __webpack_require__(20);
 
 var _ShapeAction2 = _interopRequireDefault(_ShapeAction);
 
@@ -109942,7 +109942,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -110113,7 +110113,7 @@ exports.Camera = mobx_react_1.observer(function (props) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var React = __webpack_require__(5);
 var MountAndInit = /** @class */ (function (_super) {
     tslib_1.__extends(MountAndInit, _super);
@@ -110228,7 +110228,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var react_dom_1 = __webpack_require__(70);
 var app_1 = __webpack_require__(134);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 __webpack_require__(293);
 react_dom_1.render(React.createElement(app_1.App, null), document.getElementById(constants_1.ROOT_ELEMENT_ID));
 
@@ -127502,7 +127502,7 @@ module.exports = camelize;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var React = __webpack_require__(5);
 var events = __webpack_require__(135);
 var React3 = __webpack_require__(136);
@@ -127536,7 +127536,7 @@ var store_4 = __webpack_require__(51);
 var store_5 = __webpack_require__(38);
 var utils_1 = __webpack_require__(37);
 var utils_2 = __webpack_require__(80);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 var dragStartPoint = null;
 function onWheel(e) {
     store_1.Store.setZoom(e.deltaY);
@@ -130664,7 +130664,7 @@ var CallbackQueue = __webpack_require__(91);
 var PooledClass = __webpack_require__(58);
 var ReactBrowserEventEmitter = __webpack_require__(97);
 var ReactInputSelection = __webpack_require__(167);
-var ReactInstrumentation = __webpack_require__(20);
+var ReactInstrumentation = __webpack_require__(19);
 var Transaction = __webpack_require__(59);
 var ReactUpdateQueue = __webpack_require__(92);
 
@@ -131734,7 +131734,7 @@ var _ReactElement = __webpack_require__(17);
 
 var _ReactElement2 = _interopRequireDefault(_ReactElement);
 
-var _ReactInstrumentation = __webpack_require__(20);
+var _ReactInstrumentation = __webpack_require__(19);
 
 var _ReactInstrumentation2 = _interopRequireDefault(_ReactInstrumentation);
 
@@ -132664,7 +132664,7 @@ var _prodInvariant = __webpack_require__(7);
 
 var ReactComponentEnvironment = __webpack_require__(62);
 var ReactInstanceMap = __webpack_require__(27);
-var ReactInstrumentation = __webpack_require__(20);
+var ReactInstrumentation = __webpack_require__(19);
 
 var ReactCurrentOwner = __webpack_require__(14);
 var ReactReconciler = __webpack_require__(28);
@@ -138662,7 +138662,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138773,7 +138773,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -138892,7 +138892,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -139013,7 +139013,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -139140,7 +139140,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -139277,7 +139277,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -139472,7 +139472,7 @@ var _three = __webpack_require__(0);
 
 var THREE = _interopRequireWildcard(_three);
 
-var _ShapeAction2 = __webpack_require__(21);
+var _ShapeAction2 = __webpack_require__(20);
 
 var _ShapeAction3 = _interopRequireDefault(_ShapeAction2);
 
@@ -141793,7 +141793,7 @@ module.exports = GridHelperDescriptor;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var camera_1 = __webpack_require__(117);
 exports.Camera = camera_1.Camera;
 var player_1 = __webpack_require__(280);
@@ -141870,11 +141870,11 @@ exports.Player = Player;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var React = __webpack_require__(5);
 var body_1 = __webpack_require__(34);
 var directions_1 = __webpack_require__(286);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 var getUpdate = function (moving) { return function (store) {
     if (moving.left || moving.right) {
         store.setVelocity((moving.right ? 1 : -1) * constants_1.MAX_SPEED, 'x');
@@ -141915,7 +141915,7 @@ exports.Thruster = Thruster;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var mobx_1 = __webpack_require__(22);
 var three_1 = __webpack_require__(12);
 function getStore(_a) {
@@ -141972,7 +141972,7 @@ exports.getStore = getStore;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
+var tslib_1 = __webpack_require__(21);
 var React = __webpack_require__(5);
 var utils_1 = __webpack_require__(80);
 var Collider = /** @class */ (function (_super) {
@@ -142033,7 +142033,7 @@ var pointInTheQuad = function (width, height) { return function (u, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var three_1 = __webpack_require__(12);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 function Parametric(props) {
     var color = props.color, position = props.position, slices = props.slices, stacks = props.stacks, parametricFunction = props.parametricFunction;
     return (React.createElement("mesh", { position: position },
@@ -142156,7 +142156,7 @@ var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(16);
 var store_1 = __webpack_require__(81);
 var particle_1 = __webpack_require__(48);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 exports.Colliders = mobx_react_1.observer(function () {
     if (constants_1.SHOW_COLLIDERS === false) {
         return null;
@@ -142184,7 +142184,6 @@ var Item = (function (props) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(18);
 var React = __webpack_require__(5);
 var three_1 = __webpack_require__(12);
 var mobx_1 = __webpack_require__(22);
@@ -142193,19 +142192,20 @@ var utils_1 = __webpack_require__(37);
 var mount_and_init_1 = __webpack_require__(118);
 var body_1 = __webpack_require__(34);
 var Store = mobx_1.observable({ data: {} });
-var updateEntities = mobx_1.action(function (data) {
-    Store.data = tslib_1.__assign({}, Store.data, data);
+var setData = mobx_1.action(function (data) {
+    Store.data = data;
 });
+var MERGES_PER_FRAME = 5;
 var ConnectedEntities = mobx_react_1.observer(function () {
-    var data = Store.data;
+    var data = mobx_1.toJS(Store.data);
     return (React.createElement("group", null, getNonEmptyCoordinates(data).map(function (coo, i) {
         var position = getPosition(coo);
         var color = data[coo] || 0;
-        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i < 50 && update(data); } }));
+        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i === 0 && update(data, MERGES_PER_FRAME); } }));
     })));
 });
 function getNonEmptyCoordinates(data) {
-    return Object.keys(data).filter(function (coo) { return data[coo] !== undefined; });
+    return Object.keys(data).filter(function (coo) { return !!data[coo]; });
 }
 var DELIMITER = '|';
 function getPosition(coo) {
@@ -142223,45 +142223,72 @@ function getColor(color) {
     var c = utils_1.clampByMax(Math.round(color), 255);
     return "rgb(" + c + ", " + c + ", " + c + ")";
 }
+function update(data, count) {
+    setData(utils_1.createArray(count).reduce(updateAtPosition, data));
+}
 var stack = [];
-function update(data) {
+function updateAtPosition(data) {
     if (stack.length === 0) {
+        data['0|0'] = INITIAL_COLOR;
         stack = getNonEmptyCoordinates(data);
-        return;
     }
     var chance = Math.random();
     var indicesToDelete = stack.map(function (coo, index) { return ({ coo: coo, index: index }); })
         .filter(function (o) { return (data[o.coo] || 0) / INITIAL_COLOR > chance; })
         .map(function (o) { return o.index; });
     var cooToExplode = stack.splice(utils_1.getRandomArrayElement(indicesToDelete), 1)[0];
+    delete data[utils_1.getRandomArrayElement(stack)];
     var colorToDecrease = data[cooToExplode];
-    if (colorToDecrease === undefined) {
-        return;
+    if (!colorToDecrease) {
+        return {};
     }
     var position = getPosition(cooToExplode);
-    var coo1 = getKey({ x: position.x, y: position.y + 1 });
-    var coo2 = getKey({ x: position.x, y: position.y - 1 });
-    var coo3 = getKey({ x: position.x + 1, y: position.y });
-    var coo4 = getKey({ x: position.x - 1, y: position.y });
-    var c1 = data[coo1];
-    var c2 = data[coo2];
-    var c3 = data[coo3];
-    var c4 = data[coo4];
-    updateEntities((_a = {},
-        _a[cooToExplode] = undefined,
-        _a[coo1] = c1 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c1 + colorToDecrease / 2, 256),
-        _a[coo2] = c2 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c2 + colorToDecrease / 2, 256),
-        _a[coo3] = c3 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c3 + colorToDecrease / 2, 256),
-        _a[coo4] = c4 === undefined ? colorToDecrease / 2 : utils_1.clampByMax(c4 + colorToDecrease / 2, 256),
-        _a));
-    var _a;
+    var coos = [
+        { x: position.x, y: position.y + 1 },
+        { x: position.x, y: position.y - 1 },
+        { x: position.x + 1, y: position.y },
+        { x: position.x - 1, y: position.y }
+    ]
+        .map(getKey)
+        .map(function (coo) { return ({
+        coo: coo,
+        color: data[coo] || 0
+    }); })
+        .sort(function (a, b) { return b.color - a.color; });
+    var resultColors = decreaseColors(coos.map(function (o) { return o.color; }), colorToDecrease);
+    if (resultColors.length !== 4) {
+        console.warn('resultColors length must be 4!');
+        return data;
+    }
+    coos.forEach(function (o, i) {
+        if (resultColors[i] < 1) {
+            delete data[o.coo];
+        }
+        else {
+            data[o.coo] = resultColors[i];
+        }
+    });
+    var resultColor = resultColors[resultColors.length - 1];
+    if (resultColor < 1) {
+        delete data[cooToExplode];
+    }
+    else {
+        data[cooToExplode] = resultColor;
+    }
+    return data;
 }
-var INITIAL_COLOR = 256;
+function decreaseColors(sortedColors, colorToDecrease) {
+    var filtered = sortedColors.filter(function (c) { return colorToDecrease - c > 0; });
+    if (filtered.length === 0) {
+        return sortedColors;
+    }
+    var diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
+    return sortedColors.filter(function (c) { return colorToDecrease - c <= 0; }).concat(decreaseColors(filtered.map(function (c) { return c + diff; }), filtered[0] + diff));
+}
+var INITIAL_COLOR = 1024;
 function Entities(props) {
     return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(ConnectedEntities, null), onMount: function () {
-            return updateEntities((_a = {},
-                _a[getKey(props.position)] = INITIAL_COLOR,
-                _a));
+            return setData((_a = {}, _a[getKey(props.position)] = INITIAL_COLOR, _a));
             var _a;
         } }));
 }
@@ -142281,7 +142308,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(5);
 var mobx_react_1 = __webpack_require__(16);
 var store_1 = __webpack_require__(38);
-var constants_1 = __webpack_require__(19);
+var constants_1 = __webpack_require__(18);
 exports.Html = mobx_react_1.observer(function () {
     var content = store_1.Store.state.content;
     if (!content) {

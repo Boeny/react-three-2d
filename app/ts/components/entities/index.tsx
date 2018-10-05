@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { observable, action } from 'mobx';
+import { observable, action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { clampByMax, getRandomArrayElement } from '~/utils';
+import { clampByMax, getRandomArrayElement, createArray } from '~/utils';
 import { MountAndInit } from '../mount-and-init';
 import { Body } from '../body';
 
@@ -15,8 +15,8 @@ interface IStore {
 
 const Store: IStore = observable({ data: {} });
 
-const updateEntities = action((data: Data) => {
-    Store.data = { ...Store.data, ...data };
+const setData = action((data: Data) => {
+    Store.data = data;
 });
 
 
@@ -25,8 +25,10 @@ interface Coo {
     y: number;
 }
 
+const MERGES_PER_FRAME = 5;
+
 const ConnectedEntities = observer(() => {
-    const { data } = Store;
+    const data = toJS(Store.data);
     return (
         <group>
             {getNonEmptyCoordinates(data).map((coo, i) => {
@@ -38,7 +40,7 @@ const ConnectedEntities = observer(() => {
                         isMovable={true}
                         color={getColor(color)}
                         position={new Vector2(position.x, position.y)}
-                        onEveryTick={() => i < 20 && update(data)}
+                        onEveryTick={() => i === 0 && update(data, MERGES_PER_FRAME)}
                     />
                 );
             })}
@@ -47,7 +49,7 @@ const ConnectedEntities = observer(() => {
 });
 
 function getNonEmptyCoordinates(data: Data): string[] {
-    return Object.keys(data).filter(coo => data[coo] !== undefined);
+    return Object.keys(data).filter(coo => !!data[coo]);
 }
 
 const DELIMITER = '|';
@@ -69,52 +71,86 @@ function getColor(color: number): string {
     return `rgb(${c}, ${c}, ${c})`;
 }
 
+function update(data: Data, count: number) {
+    setData(createArray(count).reduce(updateAtPosition, data));
+}
+
 let stack: string[] = [];
 
-function update(data: Data) {
+function updateAtPosition(data: Data): Data {
     if (stack.length === 0) {
+        data['0|0'] = INITIAL_COLOR;
         stack = getNonEmptyCoordinates(data);
-        return;
     }
     const chance = Math.random();
     const indicesToDelete = stack.map((coo, index) => ({ coo, index }))
         .filter(o => (data[o.coo] || 0) / INITIAL_COLOR > chance)
         .map(o => o.index);
     const cooToExplode = stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
+
+    // delete data[getRandomArrayElement(stack)];
+
     const colorToDecrease = data[cooToExplode];
-    if (colorToDecrease === undefined) {
-        return;
+    if (!colorToDecrease) {
+        return {};
     }
     const position = getPosition(cooToExplode);
-    const coo1 = getKey({ x: position.x, y: position.y + 1 });
-    const coo2 = getKey({ x: position.x, y: position.y - 1 });
-    const coo3 = getKey({ x: position.x + 1, y: position.y });
-    const coo4 = getKey({ x: position.x - 1, y: position.y });
-    const c1 = data[coo1];
-    const c2 = data[coo2];
-    const c3 = data[coo3];
-    const c4 = data[coo4];
-    updateEntities({
-        [cooToExplode]: undefined,
-        [coo1]: c1 === undefined ? colorToDecrease / 2 : clampByMax(c1 + colorToDecrease / 2, 256),
-        [coo2]: c2 === undefined ? colorToDecrease / 2 : clampByMax(c2 + colorToDecrease / 2, 256),
-        [coo3]: c3 === undefined ? colorToDecrease / 2 : clampByMax(c3 + colorToDecrease / 2, 256),
-        [coo4]: c4 === undefined ? colorToDecrease / 2 : clampByMax(c4 + colorToDecrease / 2, 256)
+    const coos = [
+        { x: position.x, y: position.y + 1 },
+        { x: position.x, y: position.y - 1 },
+        { x: position.x + 1, y: position.y },
+        { x: position.x - 1, y: position.y }
+    ]
+        .map(getKey)
+        .map(coo => ({
+            coo,
+            color: data[coo] || 0
+        }))
+        .sort((a, b) => b.color - a.color);
+
+    const resultColors = decreaseColors(coos.map(o => o.color), colorToDecrease);
+    if (resultColors.length !== 4) {
+        console.warn('resultColors length must be 4!');
+        return data;
+    }
+    coos.forEach((o, i) => {
+        if (resultColors[i] < 1) {
+            delete data[o.coo];
+        } else {
+            data[o.coo] = resultColors[i];
+        }
     });
+    const resultColor = resultColors[resultColors.length - 1];
+    if (resultColor < 1) {
+        delete data[cooToExplode];
+    } else {
+        data[cooToExplode] = resultColor;
+    }
+    return data;
+}
+
+function decreaseColors(sortedColors: number[], colorToDecrease: number): number[] {
+    const filtered = sortedColors.filter(c => colorToDecrease - c > 0);
+    if (filtered.length === 0) {
+        return sortedColors;
+    }
+    const diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
+    return [
+        ...sortedColors.filter(c => colorToDecrease - c <= 0),
+        ...decreaseColors(filtered.map(c => c + diff), filtered[0] + diff)
+    ];
 }
 
 
 type Props = PositionProps;
 
-const INITIAL_COLOR = 256;
+const INITIAL_COLOR = 1024;
 
 export function Entities(props: Props) {
     return (
         <MountAndInit
             component={<ConnectedEntities />}
-            onMount={() => updateEntities({
-                [getKey(props.position)]: INITIAL_COLOR
-            })}
+            onMount={() => setData({ [getKey(props.position)]: INITIAL_COLOR })}
         />
     );
 }
