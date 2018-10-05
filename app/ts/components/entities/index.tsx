@@ -25,7 +25,7 @@ interface Coo {
     y: number;
 }
 
-const MERGES_PER_FRAME = 5;
+const MERGES_PER_FRAME = 50;
 
 const ConnectedEntities = observer(() => {
     const data = toJS(Store.data);
@@ -88,7 +88,8 @@ function updateAtPosition(data: Data): Data {
         .map(o => o.index);
     const cooToExplode = stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
 
-    // delete data[getRandomArrayElement(stack)];
+    stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
+    stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
 
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
@@ -144,7 +145,7 @@ function decreaseColors(sortedColors: number[], colorToDecrease: number): number
 
 type Props = PositionProps;
 
-const INITIAL_COLOR = 1024;
+const INITIAL_COLOR = 512;
 
 export function Entities(props: Props) {
     return (

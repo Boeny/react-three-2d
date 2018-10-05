@@ -142195,7 +142195,7 @@ var Store = mobx_1.observable({ data: {} });
 var setData = mobx_1.action(function (data) {
     Store.data = data;
 });
-var MERGES_PER_FRAME = 5;
+var MERGES_PER_FRAME = 50;
 var ConnectedEntities = mobx_react_1.observer(function () {
     var data = mobx_1.toJS(Store.data);
     return (React.createElement("group", null, getNonEmptyCoordinates(data).map(function (coo, i) {
@@ -142237,7 +142237,8 @@ function updateAtPosition(data) {
         .filter(function (o) { return (data[o.coo] || 0) / INITIAL_COLOR > chance; })
         .map(function (o) { return o.index; });
     var cooToExplode = stack.splice(utils_1.getRandomArrayElement(indicesToDelete), 1)[0];
-    delete data[utils_1.getRandomArrayElement(stack)];
+    stack.splice(utils_1.getRandomArrayElement(indicesToDelete), 1)[0];
+    stack.splice(utils_1.getRandomArrayElement(indicesToDelete), 1)[0];
     var colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
         return {};
@@ -142285,7 +142286,7 @@ function decreaseColors(sortedColors, colorToDecrease) {
     var diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
     return sortedColors.filter(function (c) { return colorToDecrease - c <= 0; }).concat(decreaseColors(filtered.map(function (c) { return c + diff; }), filtered[0] + diff));
 }
-var INITIAL_COLOR = 1024;
+var INITIAL_COLOR = 512;
 function Entities(props) {
     return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(ConnectedEntities, null), onMount: function () {
             return setData((_a = {}, _a[getKey(props.position)] = INITIAL_COLOR, _a));
