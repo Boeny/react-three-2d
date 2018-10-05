@@ -49,7 +49,7 @@ const ConnectedEntities = observer(() => {
 });
 
 function getNonEmptyCoordinates(data: Data): string[] {
-    return Object.keys(data).filter(coo => !!data[coo]);
+    return Object.keys(data);
 }
 
 const DELIMITER = '|';
@@ -77,19 +77,23 @@ function update(data: Data, count: number) {
 
 let stack: string[] = [];
 
+function getIndexToDelete(coos: string[], colorByCoo: Data): number {
+    const chance = Math.random();
+    const indicesToDelete = coos.map((coo, index) => ({ coo, index }))
+        .filter(o => (colorByCoo[o.coo] || 0) / INITIAL_COLOR > chance)
+        .map(o => o.index);
+    return indicesToDelete.length > 0 ? getRandomArrayElement(indicesToDelete) : 0;
+}
+
 function updateAtPosition(data: Data): Data {
     if (stack.length === 0) {
-        data['0|0'] = INITIAL_COLOR;
         stack = getNonEmptyCoordinates(data);
     }
-    const chance = Math.random();
-    const indicesToDelete = stack.map((coo, index) => ({ coo, index }))
-        .filter(o => (data[o.coo] || 0) / INITIAL_COLOR > chance)
-        .map(o => o.index);
-    const cooToExplode = stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
+    const cooToExplode = stack.splice(getIndexToDelete(stack, data), 1)[0];
 
-    stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
-    stack.splice(getRandomArrayElement(indicesToDelete), 1)[0];
+    if (stack.length > 0) {
+        stack.splice(getIndexToDelete(stack, data), 1);
+    }
 
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
@@ -109,37 +113,52 @@ function updateAtPosition(data: Data): Data {
         }))
         .sort((a, b) => b.color - a.color);
 
-    const resultColors = decreaseColors(coos.map(o => o.color), colorToDecrease);
-    if (resultColors.length !== 4) {
-        console.warn('resultColors length must be 4!');
+    const result = decreaseColors(coos.map(o => o.color), colorToDecrease);
+    if (result.data.length !== 4) {
+        console.warn('result colors length must be 4!');
         return data;
     }
     coos.forEach((o, i) => {
-        if (resultColors[i] < 1) {
+        if (result.data[i] < 1) {
             delete data[o.coo];
         } else {
-            data[o.coo] = resultColors[i];
+            data[o.coo] = result.data[i];
         }
     });
-    const resultColor = resultColors[resultColors.length - 1];
-    if (resultColor < 1) {
+    if (result.color < 1) {
         delete data[cooToExplode];
     } else {
-        data[cooToExplode] = resultColor;
+        data[cooToExplode] = result.color;
     }
     return data;
 }
 
-function decreaseColors(sortedColors: number[], colorToDecrease: number): number[] {
+const MAX_PRESSURE = 10;
+
+type Children = { data: number[], color: number };
+function decreaseColors(sortedColors: number[], colorToDecrease: number): Children {
     const filtered = sortedColors.filter(c => colorToDecrease - c > 0);
     if (filtered.length === 0) {
-        return sortedColors;
+        return { data: sortedColors, color: colorToDecrease };
     }
     const diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
-    return [
-        ...sortedColors.filter(c => colorToDecrease - c <= 0),
-        ...decreaseColors(filtered.map(c => c + diff), filtered[0] + diff)
-    ];
+    if (colorToDecrease - filtered[0] > MAX_PRESSURE) {
+        return {
+            data: [
+                ...sortedColors.filter(c => colorToDecrease - c <= 0),
+                ...filtered.map(c => c + MAX_PRESSURE)
+            ],
+            color: colorToDecrease - MAX_PRESSURE
+        };
+    }
+    const children = decreaseColors(filtered.map(c => c + diff), filtered[0] + diff);
+    return {
+        data: [
+            ...sortedColors.filter(c => colorToDecrease - c <= 0),
+            ...children.data
+        ],
+        color: children.data[children.data.length - 1]
+    };
 }
 
 

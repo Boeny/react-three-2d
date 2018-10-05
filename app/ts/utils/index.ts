@@ -64,7 +64,7 @@ export function boolColor(v: boolean): string {
 }
 
 export function getRandomArrayIndex<T>(array: T[]): number {
-    return Math.round(Math.random() * (array.length - 1));
+    return Math.floor(Math.random() * (array.length - 1));
 }
 
 export function getRandomArrayElement<T>(array: T[]): T {
