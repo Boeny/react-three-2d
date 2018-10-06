@@ -10,11 +10,11 @@ const BORDER_WIDTH = 0.1;
 interface Props {
     position: { x: number, y: number };
     color: string;
-    borderColor?: string;
+    borderColor?: string;// #000 by default
     width?: number;
     height?: number;
     zIndex?: number;
-    borderWidth?: number;
+    borderWidth?: number; // BORDER_WIDTH by default
     borderOnly?: boolean;
 }
 

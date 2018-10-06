@@ -28,14 +28,20 @@ export interface IStore extends CommonParams {
     signal: (s: Signal) => void;
 }
 
-export interface CommonParams {
-    isMovable?: boolean;
-    onEveryTick?: (body: IStore) => void;
+export interface CommonParams extends WithCollider, MovingParams {
     onPositionChange?: (v: Position) => void;
     onVelocityChange?: (v: Vector2) => void;
+    onSignal?: (body: IStore, signal: Signal) => void;
+}
+
+interface MovingParams {
+    isMovable?: boolean;
+    onEveryTick?: (body: IStore) => void;
+}
+
+interface WithCollider {
     onCollide?: (collider: IStore) => void;
     onUnCollide?: () => void;
-    onSignal?: (body: IStore, signal: Signal) => void;
 }
 
 export type Signal = Partial<Moving>;

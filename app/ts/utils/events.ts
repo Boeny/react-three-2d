@@ -122,6 +122,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
     const velocityVector = coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity);
     if (collider) {
         body.onCollide && body.onCollide(collider);
+        collider.onCollide && collider.onCollide(body);
         if (collider.isMovable) {
             collider.setVelocity(velocity, coo);
             // body.changePosition(velocityVector);

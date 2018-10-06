@@ -99036,16 +99036,17 @@ var store_1 = __webpack_require__(51);
 var store_2 = __webpack_require__(282);
 var particle_1 = __webpack_require__(48);
 var Connected = mobx_react_1.observer(function (props) {
+    var borderColor = props.borderColor, borderWidth = props.borderWidth;
     var _a = props.store, position = _a.position, state = _a.state;
     // hack to observe this
     position.x;
     position.y;
-    return (React.createElement(particle_1.Particle, { zIndex: 1, position: position, color: state.color }));
+    return (React.createElement(particle_1.Particle, { zIndex: 1, position: position, color: state.color, borderColor: borderColor, borderWidth: borderWidth }));
 });
 var ConnectedCollider = mobx_react_1.observer(function (props) {
-    var store = props.store;
+    var store = props.store, borderColor = props.borderColor, borderWidth = props.borderWidth;
     var position = store.position, state = store.state;
-    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: { x: position.x, y: position.y }, color: state.color }));
+    return (React.createElement(particle_1.ParticleCollider, { zIndex: 1, store: store, position: { x: position.x, y: position.y }, color: state.color, borderColor: borderColor, borderWidth: borderWidth }));
 });
 var Body = /** @class */ (function (_super) {
     tslib_1.__extends(Body, _super);
@@ -99101,7 +99102,7 @@ var Body = /** @class */ (function (_super) {
         }
     };
     Body.prototype.render = function () {
-        var hasCollider = this.props.hasCollider;
+        var _a = this.props, hasCollider = _a.hasCollider, borderColor = _a.borderColor, borderWidth = _a.borderWidth;
         var store = this.state.store;
         if (store === null) {
             return null;
@@ -99109,7 +99110,7 @@ var Body = /** @class */ (function (_super) {
         return (hasCollider ?
             React.createElement(ConnectedCollider, { store: store })
             :
-                React.createElement(Connected, { store: store }));
+                React.createElement(Connected, { store: store, borderColor: borderColor, borderWidth: borderWidth }));
     };
     return Body;
 }(React.Component));
@@ -110234,7 +110235,7 @@ var React = __webpack_require__(5);
 var react_dom_1 = __webpack_require__(70);
 var app_1 = __webpack_require__(134);
 var constants_1 = __webpack_require__(18);
-__webpack_require__(293);
+__webpack_require__(294);
 react_dom_1.render(React.createElement(app_1.App, null), document.getElementById(constants_1.ROOT_ELEMENT_ID));
 
 
@@ -127514,7 +127515,7 @@ var React3 = __webpack_require__(136);
 var store_1 = __webpack_require__(38);
 var three_1 = __webpack_require__(12);
 var components_1 = __webpack_require__(279);
-var html_1 = __webpack_require__(292);
+var html_1 = __webpack_require__(293);
 function App() {
     return (React.createElement(React.Fragment, null,
         React.createElement(html_1.Html, null),
@@ -127653,6 +127654,7 @@ function checkCollision(body, coo) {
     var velocityVector = coo === 'x' ? new three_1.Vector2(velocity, 0) : new three_1.Vector2(0, velocity);
     if (collider) {
         body.onCollide && body.onCollide(collider);
+        collider.onCollide && collider.onCollide(body);
         if (collider.isMovable) {
             collider.setVelocity(velocity, coo);
             // body.changePosition(velocityVector);
@@ -142163,26 +142165,54 @@ var React = __webpack_require__(5);
 var three_1 = __webpack_require__(12);
 var mobx_1 = __webpack_require__(22);
 var mobx_react_1 = __webpack_require__(16);
-var utils_1 = __webpack_require__(37);
+var utils_1 = __webpack_require__(292);
 var mount_and_init_1 = __webpack_require__(118);
 var body_1 = __webpack_require__(34);
 var Store = mobx_1.observable({ data: {} });
 var setData = mobx_1.action(function (data) {
     Store.data = data;
 });
-var MERGES_PER_FRAME = 50;
-var ConnectedEntities = mobx_react_1.observer(function () {
+var ConnectedEntities = mobx_react_1.observer(function (props) {
+    var onUpdate = props.onUpdate;
     var data = mobx_1.toJS(Store.data);
-    return (React.createElement("group", null, getNonEmptyCoordinates(data).map(function (coo, i) {
-        var position = getPosition(coo);
+    return (React.createElement("group", null, utils_1.getNonEmptyCoordinates(data).map(function (coo, i) {
+        var position = utils_1.getPosition(coo);
         var color = data[coo] || 0;
-        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, color: getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i === 0 && update(data, MERGES_PER_FRAME); } }));
+        return (React.createElement(body_1.Body, { key: coo + "-" + i + "-" + color, isMovable: true, borderWidth: 0, color: utils_1.getColor(color), position: new three_1.Vector2(position.x, position.y), onEveryTick: function () { return i === 0 && onUpdate(utils_1.getNewData(data)); } }));
     })));
 });
+function Entities(props) {
+    return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(ConnectedEntities, { onUpdate: setData }), onMount: function () { return setData(utils_1.getDefaultData(props.position)); } }));
+}
+exports.Entities = Entities;
+
+
+/***/ }),
+/* 292 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var utils_1 = __webpack_require__(37);
+var MERGES_PER_FRAME = 50;
+var INITIAL_COLOR = 256;
+var DELIMITER = '|';
+var MAX_PRESSURE_PER_FRAME = 10;
+var COUNTER_RATE = 50;
+var COLOR_STEP_BY_COUNTER = 10;
+function getDefaultData(position) {
+    return _a = {}, _a[getKey(position)] = INITIAL_COLOR, _a;
+    var _a;
+}
+exports.getDefaultData = getDefaultData;
+function getKey(position) {
+    return "" + position.x + DELIMITER + position.y;
+}
 function getNonEmptyCoordinates(data) {
     return Object.keys(data);
 }
-var DELIMITER = '|';
+exports.getNonEmptyCoordinates = getNonEmptyCoordinates;
 function getPosition(coo) {
     var position = coo.split(DELIMITER).map(function (v) { return parseInt(v, 10); }).filter(function (v) { return !isNaN(v); });
     if (position.length !== 2) {
@@ -142194,23 +142224,42 @@ function getPosition(coo) {
         y: position[1]
     };
 }
+exports.getPosition = getPosition;
 function getColor(color) {
     var c = utils_1.clampByMax(Math.round(color), 255);
     return "rgb(" + c + ", " + c + ", " + c + ")";
 }
-function update(data, count) {
-    setData(utils_1.createArray(count).reduce(updateAtPosition, data));
+exports.getColor = getColor;
+var counter = 1;
+function changeColorByCounter(color) {
+    if (counter > 0 && counter < COUNTER_RATE) {
+        counter += 1;
+        if (color < INITIAL_COLOR) {
+            return color + COLOR_STEP_BY_COUNTER;
+        }
+    }
+    else if (counter >= COUNTER_RATE) {
+        counter = -1;
+    }
+    else if (counter < 0 && counter > -COUNTER_RATE) {
+        counter -= 1;
+        if (color > 0) {
+            return color - COLOR_STEP_BY_COUNTER;
+        }
+    }
+    else if (counter <= -COUNTER_RATE) {
+        counter = 1;
+    }
+    return color;
 }
+function getNewData(data) {
+    return utils_1.createArray(MERGES_PER_FRAME).reduce(updateDataAtPosition, data);
+}
+exports.getNewData = getNewData;
 var stack = [];
-function getIndexToDelete(coos, colorByCoo) {
-    var chance = Math.random();
-    var indicesToDelete = coos.map(function (coo, index) { return ({ coo: coo, index: index }); })
-        .filter(function (o) { return (colorByCoo[o.coo] || 0) / INITIAL_COLOR > chance; })
-        .map(function (o) { return o.index; });
-    return indicesToDelete.length > 0 ? utils_1.getRandomArrayElement(indicesToDelete) : 0;
-}
-function updateAtPosition(data) {
+function updateDataAtPosition(data) {
     if (stack.length === 0) {
+        data['0|0'] = changeColorByCounter(data['0|0'] || 0);
         stack = getNonEmptyCoordinates(data);
     }
     var cooToExplode = stack.splice(getIndexToDelete(stack, data), 1)[0];
@@ -142255,17 +142304,23 @@ function updateAtPosition(data) {
     }
     return data;
 }
-var MAX_PRESSURE = 10;
+function getIndexToDelete(coos, colorByCoo) {
+    var chance = Math.random();
+    var indicesToDelete = coos.map(function (coo, index) { return ({ coo: coo, index: index }); })
+        .filter(function (o) { return (colorByCoo[o.coo] || 0) / INITIAL_COLOR > chance; })
+        .map(function (o) { return o.index; });
+    return indicesToDelete.length > 0 ? utils_1.getRandomArrayElement(indicesToDelete) : 0;
+}
 function decreaseColors(sortedColors, colorToDecrease) {
     var filtered = sortedColors.filter(function (c) { return colorToDecrease - c > 0; });
     if (filtered.length === 0) {
         return { data: sortedColors, color: colorToDecrease };
     }
     var diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
-    if (colorToDecrease - filtered[0] > MAX_PRESSURE) {
+    if (colorToDecrease - filtered[0] > MAX_PRESSURE_PER_FRAME) {
         return {
-            data: sortedColors.filter(function (c) { return colorToDecrease - c <= 0; }).concat(filtered.map(function (c) { return c + MAX_PRESSURE; })),
-            color: colorToDecrease - MAX_PRESSURE
+            data: sortedColors.filter(function (c) { return colorToDecrease - c <= 0; }).concat(filtered.map(function (c) { return c + MAX_PRESSURE_PER_FRAME; })),
+            color: colorToDecrease - MAX_PRESSURE_PER_FRAME
         };
     }
     var children = decreaseColors(filtered.map(function (c) { return c + diff; }), filtered[0] + diff);
@@ -142274,21 +142329,10 @@ function decreaseColors(sortedColors, colorToDecrease) {
         color: children.data[children.data.length - 1]
     };
 }
-var INITIAL_COLOR = 512;
-function Entities(props) {
-    return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(ConnectedEntities, null), onMount: function () {
-            return setData((_a = {}, _a[getKey(props.position)] = INITIAL_COLOR, _a));
-            var _a;
-        } }));
-}
-exports.Entities = Entities;
-function getKey(position) {
-    return "" + position.x + DELIMITER + position.y;
-}
 
 
 /***/ }),
-/* 292 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -142318,7 +142362,7 @@ exports.Html = mobx_react_1.observer(function () {
 
 
 /***/ }),
-/* 293 */
+/* 294 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

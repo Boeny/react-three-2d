@@ -8,11 +8,17 @@ import { Particle, ParticleCollider } from '../particle';
 
 export { IStore };
 
-interface ConnectedProps {
+interface BorderProps {
+    borderColor?: string;// #000 by default
+    borderWidth?: number; // BORDER_WIDTH by default
+}
+
+interface ConnectedProps extends BorderProps {
     store: IStore;
 }
 
 const Connected = observer((props: ConnectedProps) => {
+    const { borderColor, borderWidth } = props;
     const { position, state } = props.store;
     // hack to observe this
     position.x;
@@ -22,13 +28,15 @@ const Connected = observer((props: ConnectedProps) => {
             zIndex={1}
             position={position}
             color={state.color}
+            borderColor={borderColor}
+            borderWidth={borderWidth}
         />
     );
 });
 
 
 const ConnectedCollider = observer((props: ConnectedProps) => {
-    const { store } = props;
+    const { store, borderColor, borderWidth } = props;
     const { position, state } = store;
     return (
         <ParticleCollider
@@ -36,12 +44,14 @@ const ConnectedCollider = observer((props: ConnectedProps) => {
             store={store}
             position={{ x: position.x, y: position.y }}// to update collider coo
             color={state.color}
+            borderColor={borderColor}
+            borderWidth={borderWidth}
         />
     );
 });
 
 
-interface Props extends InitialParams {
+interface Props extends InitialParams, BorderProps {
     hasCollider?: boolean;
 }
 
@@ -106,7 +116,7 @@ export class Body extends React.Component<Props, State> {
     }
 
     render() {
-        const { hasCollider } = this.props;
+        const { hasCollider, borderColor, borderWidth } = this.props;
         const { store } = this.state;
         if (store === null) {
             return null;
@@ -115,7 +125,11 @@ export class Body extends React.Component<Props, State> {
             hasCollider ?
                 <ConnectedCollider store={store} />
             :
-                <Connected store={store} />
+                <Connected
+                    store={store}
+                    borderColor={borderColor}
+                    borderWidth={borderWidth}
+                />
         );
     }
 }
