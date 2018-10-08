@@ -5,12 +5,15 @@ import { Store as html } from './html/store';
 import { Vector2 } from 'three';
 import { Entities, Player } from '~/components';
 import { Html } from './html';
+import { Audio, AudioSource } from '~/components/audio';
 
 
 export function App() {
     return (
         <React.Fragment>
             <Html />
+            <Audio />
+            <AudioSource />
             <React3
                 mainCamera={'camera'}
                 width={window.innerWidth}

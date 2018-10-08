@@ -1,13 +1,13 @@
-import { getRandomArrayElement, getRandomArrayIndex, createArray } from '~/utils';
+import { getRandomArrayElement, createArray } from '~/utils';
 
 
-const MERGES_PER_FRAME = 50;
-const INITIAL_COLOR = 512;
+const MERGES_PER_FRAME = 20;
+const INITIAL_VALUE = 512;
 const DELIMITER = '|';
-const DEFAULT_COOS = ['10|0', '-10|0', '0|10', '0|-10'];
+const DEFAULT_COOS = ['0|0'];
 const MAX_PRESSURE_PER_FRAME = 10;
-const COUNTER_RATE = 50;
-const COLOR_STEP_BY_COUNTER = 10;
+const COUNTER_RATE = 20;
+const MAX_COLOR = 255;
 
 type Data = Coobject<number>; // coo -> color
 
@@ -20,7 +20,7 @@ export function getDefaultData(position: Coo): Data {
     return DEFAULT_COOS.reduce(
         (result, coo) => {
             const pos = getPosition(coo);
-            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_COLOR;
+            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_VALUE;
             return result;
         },
         {} as Data
@@ -50,28 +50,21 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = Math.round(color * 255 / INITIAL_COLOR);
+    const c = Math.round(color * MAX_COLOR / INITIAL_VALUE);
     return `rgb(${c}, ${c}, ${c})`;
 }
 
 
-let counter = 1;
+let counter = 0;
 
 function changeColorByCounter(color: number): number {
-    if (counter > 0 && counter < COUNTER_RATE) {
+    if (counter < COUNTER_RATE) {
         counter += 1;
-        if (color < INITIAL_COLOR) {
-            return color + COLOR_STEP_BY_COUNTER;
-        }
-    } else if (counter >= COUNTER_RATE) {
-        counter = -1;
-    } else if (counter < 0 && counter > -COUNTER_RATE) {
-        counter -= 1;
-        if (color > 0) {
-            return color - COLOR_STEP_BY_COUNTER;
-        }
-    } else if (counter <= -COUNTER_RATE) {
-        counter = 1;
+        return INITIAL_VALUE;
+    }
+    if (counter === COUNTER_RATE) {
+        counter = 0;
+        return 0;
     }
     return color;
 }
@@ -85,14 +78,11 @@ let stack: string[] = [];
 
 function updateDataAtPosition(data: Data): Data {
     if (stack.length === 0) {
-        delete data[getRandomArrayIndex(getNonEmptyCoordinates(data))]
+        console.log('!');
         DEFAULT_COOS.forEach(coo => data[coo] = changeColorByCounter(data[coo] || 0));
         stack = getNonEmptyCoordinates(data);
     }
     const cooToExplode = stack.splice(getIndexToDelete(stack, data), 1)[0];
-    if (stack.length > 0) {
-        // stack.splice(getIndexToDelete(stack, data), 1);
-    }
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
         return {};
@@ -124,7 +114,7 @@ function updateDataAtPosition(data: Data): Data {
 function getIndexToDelete(coos: string[], colorByCoo: Data): number {
     const chance = Math.random();
     const indicesToDelete = coos.map((coo, index) => ({ coo, index }))
-        .filter(o => (colorByCoo[o.coo] || 0) / INITIAL_COLOR > chance)
+        .filter(o => (colorByCoo[o.coo] || 0) / INITIAL_VALUE > chance)
         .map(o => o.index);
     return indicesToDelete.length > 0 ? getRandomArrayElement(indicesToDelete) : 0;
 }

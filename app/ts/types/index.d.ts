@@ -49,3 +49,8 @@ declare interface ColorProps {
 declare interface Coobject<T> {
     [coo: string]: T | undefined;
 }
+
+declare interface Window {
+    AudioContext: any;
+    webkitAudioContext: any;
+}
