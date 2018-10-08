@@ -1,9 +1,10 @@
-import { clampByMax, getRandomArrayElement, createArray } from '~/utils';
+import { getRandomArrayElement, getRandomArrayIndex, createArray } from '~/utils';
 
 
 const MERGES_PER_FRAME = 50;
-const INITIAL_COLOR = 256;
+const INITIAL_COLOR = 512;
 const DELIMITER = '|';
+const DEFAULT_COOS = ['10|0', '-10|0', '0|10', '0|-10'];
 const MAX_PRESSURE_PER_FRAME = 10;
 const COUNTER_RATE = 50;
 const COLOR_STEP_BY_COUNTER = 10;
@@ -16,7 +17,14 @@ interface Coo {
 }
 
 export function getDefaultData(position: Coo): Data {
-    return { [getKey(position)]: INITIAL_COLOR };
+    return DEFAULT_COOS.reduce(
+        (result, coo) => {
+            const pos = getPosition(coo);
+            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_COLOR;
+            return result;
+        },
+        {} as Data
+    );
 }
 
 function getKey(position: Coo): string {
@@ -30,7 +38,9 @@ export function getNonEmptyCoordinates(data: Data): string[] {
 export function getPosition(coo: string): Coo {
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
-        console.warn(`Entities.getPosition: input string = 2 coordinates splitted by "${DELIMITER}"`);
+        console.warn(
+            `Entities.getPosition: input string = 2 coordinates splitted by "${DELIMITER}"`
+        );
         return { x: 0, y: 0 };
     }
     return {
@@ -40,7 +50,7 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = clampByMax(Math.round(color), 255);
+    const c = Math.round(color * 255 / INITIAL_COLOR);
     return `rgb(${c}, ${c}, ${c})`;
 }
 
@@ -75,12 +85,13 @@ let stack: string[] = [];
 
 function updateDataAtPosition(data: Data): Data {
     if (stack.length === 0) {
-        data['0|0'] = changeColorByCounter(data['0|0'] || 0);
+        delete data[getRandomArrayIndex(getNonEmptyCoordinates(data))]
+        DEFAULT_COOS.forEach(coo => data[coo] = changeColorByCounter(data[coo] || 0));
         stack = getNonEmptyCoordinates(data);
     }
     const cooToExplode = stack.splice(getIndexToDelete(stack, data), 1)[0];
     if (stack.length > 0) {
-        stack.splice(getIndexToDelete(stack, data), 1);
+        // stack.splice(getIndexToDelete(stack, data), 1);
     }
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
@@ -105,18 +116,8 @@ function updateDataAtPosition(data: Data): Data {
         console.warn('result colors length must be 4!');
         return data;
     }
-    coos.forEach((o, i) => {
-        if (result.data[i] < 1) {
-            delete data[o.coo];
-        } else {
-            data[o.coo] = result.data[i];
-        }
-    });
-    if (result.color < 1) {
-        delete data[cooToExplode];
-    } else {
-        data[cooToExplode] = result.color;
-    }
+    coos.forEach((o, i) => setColor(data, o.coo, result.data[i]));
+    setColor(data, cooToExplode, result.color);
     return data;
 }
 
@@ -152,4 +153,12 @@ function decreaseColors(sortedColors: number[], colorToDecrease: number): Childr
         ],
         color: children.data[children.data.length - 1]
     };
+}
+
+function setColor(data: Data, coo: string, color: number) {
+    if (color < 1) {
+        delete data[coo];
+    } else {
+        data[coo] = color;
+    }
 }

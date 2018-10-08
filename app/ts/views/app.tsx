@@ -19,7 +19,7 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Player position={new Vector2(-10, 0)} color={'#330000'} />
+                    <Player position={new Vector2()} color={'#330000'} />
                     <Entities position={new Vector2()} />
                 </scene>
             </React3>
