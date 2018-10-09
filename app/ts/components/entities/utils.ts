@@ -1,12 +1,12 @@
-import { getRandomArrayElement, getRandomArrayIndex, createArray } from '~/utils';
+import { createArray } from '~/utils';
 
 
 const MERGES_PER_FRAME = 50;
 const INITIAL_COLOR = 512;
 const DELIMITER = '|';
-const DEFAULT_COOS = ['10|0', '-10|0', '0|10', '0|-10'];
-const MAX_PRESSURE_PER_FRAME = 10;
-const COUNTER_RATE = 50;
+const DEFAULT_COOS = ['0|0'];
+const MAX_PRESSURE_PER_FRAME = 20;
+const COUNTER_RATE = 10;
 const COLOR_STEP_BY_COUNTER = 10;
 
 type Data = Coobject<number>; // coo -> color
@@ -81,18 +81,26 @@ export function getNewData(data: Data): Data {
 }
 
 
-let stack: string[] = [];
+let stack: Data = {};
 
 function updateDataAtPosition(data: Data): Data {
-    if (stack.length === 0) {
-        delete data[getRandomArrayIndex(getNonEmptyCoordinates(data))]
-        DEFAULT_COOS.forEach(coo => data[coo] = changeColorByCounter(data[coo] || 0));
-        stack = getNonEmptyCoordinates(data);
+    const stackCoos = getNonEmptyCoordinates(stack);
+    const dataCoos = getNonEmptyCoordinates(data);
+    if (stackCoos.length === dataCoos.length) {
+        DEFAULT_COOS.forEach(coo => {
+            setColor(data, coo, changeColorByCounter(data[coo] || 0));
+        });
+        stack = {};
     }
-    const cooToExplode = stack.splice(getIndexToDelete(stack, data), 1)[0];
-    if (stack.length > 0) {
-        // stack.splice(getIndexToDelete(stack, data), 1);
-    }
+    let cooToExplode = DEFAULT_COOS[0];
+    const chance = Math.random();
+    dataCoos.forEach(coo => {
+        if ((data[coo] || 0) / INITIAL_COLOR > chance) {
+            stack[coo] = 0;
+            cooToExplode = coo;
+            return false;
+        }
+    });
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
         return {};
@@ -119,14 +127,6 @@ function updateDataAtPosition(data: Data): Data {
     coos.forEach((o, i) => setColor(data, o.coo, result.data[i]));
     setColor(data, cooToExplode, result.color);
     return data;
-}
-
-function getIndexToDelete(coos: string[], colorByCoo: Data): number {
-    const chance = Math.random();
-    const indicesToDelete = coos.map((coo, index) => ({ coo, index }))
-        .filter(o => (colorByCoo[o.coo] || 0) / INITIAL_COLOR > chance)
-        .map(o => o.index);
-    return indicesToDelete.length > 0 ? getRandomArrayElement(indicesToDelete) : 0;
 }
 
 type Children = { data: number[], color: number };
