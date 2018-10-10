@@ -22,6 +22,7 @@ declare namespace JSX {
         sphereGeometry: any;
         parametricGeometry: any;
         textGeometry: any;
+        planeGeometry: any;
 
         lineBasicMaterial: any;
         meshBasicMaterial: any;

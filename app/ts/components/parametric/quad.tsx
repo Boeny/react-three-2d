@@ -1,6 +1,6 @@
 import * as React from 'react';
-import { Vector3 } from 'three';
-import { Parametric } from './index';
+import { Vector3, Color, VertexColors, Texture } from 'three';
+import { SHOW_AS_WIREFRAME } from '~/constants';
 
 
 interface Props {
@@ -8,25 +8,25 @@ interface Props {
     width: number;
     height: number;
     color: string;
+    texture?: Texture;
 }
 
 export function Quad(props: Props) {
-    const { position, width, height, color } = props;
+    const { position, width, height, color, texture } = props;
     return (
-        <Parametric
-            position={position}
-            slices={1}
-            stacks={1}
-            parametricFunction={pointInTheQuad(width, height)}
-            color={color}
-        />
+        <mesh position={position}>
+            <planeGeometry
+                width={width}
+                height={height}
+                widthSegments={1}
+                heigthSegments={1}
+            />
+            <meshBasicMaterial
+                wireframe={SHOW_AS_WIREFRAME}
+                color={new Color(color)}
+                vertexColors={VertexColors}
+                map={texture}
+            />
+        </mesh>
     );
 }
-
-const pointInTheQuad = (width: number, height: number) => (u: number, v: number): Vector3 => {
-    return new Vector3(
-        u * width,
-        v * height,
-        0
-    );
-};
