@@ -6,8 +6,6 @@ const INITIAL_COLOR = 512;
 const DELIMITER = '|';
 const DEFAULT_COOS = ['0|0'];
 const MAX_PRESSURE_PER_FRAME = 20;
-const COUNTER_RATE = 10;
-const COLOR_STEP_BY_COUNTER = 10;
 
 type Data = Coobject<number>; // coo -> color
 
@@ -54,28 +52,6 @@ export function getColor(color: number): string {
     return `rgb(${c}, ${c}, ${c})`;
 }
 
-
-let counter = 1;
-
-function changeColorByCounter(color: number): number {
-    if (counter > 0 && counter < COUNTER_RATE) {
-        counter += 1;
-        if (color < INITIAL_COLOR) {
-            return color + COLOR_STEP_BY_COUNTER;
-        }
-    } else if (counter >= COUNTER_RATE) {
-        counter = -1;
-    } else if (counter < 0 && counter > -COUNTER_RATE) {
-        counter -= 1;
-        if (color > 0) {
-            return color - COLOR_STEP_BY_COUNTER;
-        }
-    } else if (counter <= -COUNTER_RATE) {
-        counter = 1;
-    }
-    return color;
-}
-
 export function getNewData(data: Data): Data {
     return createArray(MERGES_PER_FRAME).reduce(updateDataAtPosition, data);
 }
@@ -88,7 +64,7 @@ function updateDataAtPosition(data: Data): Data {
     const dataCoos = getNonEmptyCoordinates(data);
     if (stackCoos.length === dataCoos.length) {
         DEFAULT_COOS.forEach(coo => {
-            setColor(data, coo, changeColorByCounter(data[coo] || 0));
+            setColor(data, coo, INITIAL_COLOR);
         });
         stack = {};
     }
