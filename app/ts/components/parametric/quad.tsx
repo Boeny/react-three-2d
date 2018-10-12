@@ -26,6 +26,7 @@ export function Quad(props: Props) {
                 color={new Color(color)}
                 vertexColors={VertexColors}
                 map={texture}
+                transparent={true}
             />
         </mesh>
     );

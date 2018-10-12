@@ -1,11 +1,11 @@
-import { createArray } from '~/utils';
+import { createArray/*, getRandomArrayIndex*/ } from '~/utils';
 
 
 const MERGES_PER_FRAME = 50;
-const INITIAL_COLOR = 512;
+const INITIAL_COUNT = 255;
 const DELIMITER = '|';
-const DEFAULT_COOS = ['0|0'];
-const MAX_PRESSURE_PER_FRAME = 20;
+const DEFAULT_COOS = createArray(5).map(() => getKey({ x: getCoo(), y: getCoo() }));
+const MAX_PRESSURE_PER_FRAME = 40;
 
 type Data = Coobject<number>; // coo -> color
 
@@ -14,11 +14,15 @@ interface Coo {
     y: number;
 }
 
+function getCoo() {
+    return Math.floor(Math.random() * 10);
+}
+
 export function getDefaultData(position: Coo): Data {
     return DEFAULT_COOS.reduce(
         (result, coo) => {
             const pos = getPosition(coo);
-            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_COLOR;
+            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_COUNT;
             return result;
         },
         {} as Data
@@ -48,7 +52,7 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = Math.round(color * 255 / INITIAL_COLOR);
+    const c = Math.round(color * 255 / INITIAL_COUNT);
     return `rgb(${c}, ${c}, ${c})`;
 }
 
@@ -57,26 +61,25 @@ export function getNewData(data: Data): Data {
 }
 
 
-let stack: Data = {};
+let stack: string[] = [];
+let counter = 0;
 
 function updateDataAtPosition(data: Data): Data {
-    const stackCoos = getNonEmptyCoordinates(stack);
-    const dataCoos = getNonEmptyCoordinates(data);
-    if (stackCoos.length === dataCoos.length) {
-        DEFAULT_COOS.forEach(coo => {
-            setColor(data, coo, INITIAL_COLOR);
-        });
-        stack = {};
+    if (stack.length === 0) {
+        /*DEFAULT_COOS.forEach(coo => {
+            setColor(data, coo, INITIAL_COUNT);
+        });*/
+        counter += 1;
+        stack = getNonEmptyCoordinates(data);
+        console.log(counter, stack.length);
     }
-    let cooToExplode = DEFAULT_COOS[0];
     const chance = Math.random();
-    dataCoos.forEach(coo => {
-        if ((data[coo] || 0) / INITIAL_COLOR > chance) {
-            stack[coo] = 0;
-            cooToExplode = coo;
-            return false;
-        }
-    });
+    const cooToExplode = stack.filter(coo => (data[coo] || 0) / INITIAL_COUNT > chance)[0] || DEFAULT_COOS[0];
+    const index = stack.indexOf(cooToExplode);
+    if (index === -1) {
+        return data;
+    }
+    stack.splice(index, 1);
     const colorToDecrease = data[cooToExplode];
     if (!colorToDecrease) {
         return {};
