@@ -1,45 +1,66 @@
 import * as React from 'react';
-import { Vector2 } from 'three';
-import { observable, action, toJS } from 'mobx';
+import { Vector3 } from 'three';
+import { observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
 import { getDefaultData, getNonEmptyCoordinates, getPosition, getColor, getNewData } from './utils';
 import { MountAndInit } from '../mount-and-init';
-import { Body } from '../body';
+import { Quad } from '../quad';
+import { WIDTH_SCALE } from '~/constants';
 
 
 type Data = Coobject<number>; // coo -> color
+enum Mode {
+    default,
+    next
+}
 
 interface IStore {
-    data: Data;
+    isBlocked: boolean;
+    state: {
+        data: Data;
+        mode: Mode;
+    };
+    setData: (data: Data) => void;
+    nextStep: () => void;
+    setMode: (mode: Mode) => void;
+    nextMode: () => void;
 }
 
-const Store: IStore = observable({ data: {} });
+export const Store: IStore = {
+    isBlocked: false,
+    state: observable({
+        data: {},
+        mode: Mode.default
+    }),
+    setData(data: Data) {
+        runInAction(() => this.state.data = data);
+    },
+    nextStep() {
+        this.setData(getNewData(toJS(this.state.data)));
+    },
+    setMode(mode: Mode) {
+        runInAction(() => this.state.mode = mode);
+    },
+    nextMode() {
+        this.setMode(Mode.next);
+    }
+};
 
-const setData = action((data: Data) => {
-    Store.data = data;
-});
 
-
-interface ConnectedProps {
-    onUpdate: (data: Data) => void;
-}
-
-const ConnectedEntities = observer((props: ConnectedProps) => {
-    const { onUpdate } = props;
-    const data = toJS(Store.data);
+const ConnectedEntities = observer(() => {
+    const { data } = Store.state;
     return (
         <group>
             {getNonEmptyCoordinates(data).map((coo, i) => {
                 const position = getPosition(coo);
                 const color = data[coo] || 0;
                 return (
-                    <Body
+                    <Quad
                         key={`${coo}-${i}-${color}`}
-                        isMovable={true}
-                        borderWidth={0}
+                        position={new Vector3(position.x, position.y, 0)}
+                        width={WIDTH_SCALE}
+                        height={WIDTH_SCALE}
                         color={getColor(color)}
-                        position={new Vector2(position.x, position.y)}
-                        onEveryTick={() => i === 0 && onUpdate(getNewData(data))}
                     />
                 );
             })}
@@ -53,8 +74,10 @@ type Props = PositionProps;
 export function Entities(props: Props) {
     return (
         <MountAndInit
-            component={<ConnectedEntities onUpdate={setData} />}
-            onMount={() => setData(getDefaultData(props.position))}
+            component={<ConnectedEntities />}
+            onMount={() => {
+                Store.setData(getDefaultData(props.position));
+            }}
         />
     );
 }

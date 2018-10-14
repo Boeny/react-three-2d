@@ -1,11 +1,13 @@
-import { createArray/*, getRandomArrayIndex*/ } from '~/utils';
+import { createArray } from '~/utils';
 
 
-const MERGES_PER_FRAME = 50;
-const INITIAL_COUNT = 255;
+const INITIAL_VALUE = 200;
 const DELIMITER = '|';
-const DEFAULT_COOS = createArray(5).map(() => getKey({ x: getCoo(), y: getCoo() }));
+const AREA_WIDTH = 20;
+const DEFAULT_COOS = createArray(10).map(() => getKey({ x: getCoo(), y: getCoo() }));
 const MAX_PRESSURE_PER_FRAME = 40;
+const MAX_UPDATE_ITERATIONS = 10000;
+
 
 type Data = Coobject<number>; // coo -> color
 
@@ -15,14 +17,14 @@ interface Coo {
 }
 
 function getCoo() {
-    return Math.floor(Math.random() * 10);
+    return Math.floor(Math.random() * AREA_WIDTH);
 }
 
 export function getDefaultData(position: Coo): Data {
     return DEFAULT_COOS.reduce(
         (result, coo) => {
             const pos = getPosition(coo);
-            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_COUNT;
+            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_VALUE;
             return result;
         },
         {} as Data
@@ -52,36 +54,57 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = Math.round(color * 255 / INITIAL_COUNT);
+    const c = Math.round(color * 255 / INITIAL_VALUE);
     return `rgb(${c}, ${c}, ${c})`;
 }
 
-export function getNewData(data: Data): Data {
-    return createArray(MERGES_PER_FRAME).reduce(updateDataAtPosition, data);
+
+interface FrameBuffer {
+    before: Data;
+    after: Data;
 }
 
+const frameBuffer: FrameBuffer = {
+    before: {},
+    after: {}
+};
 
 let stack: string[] = [];
-let counter = 0;
 
-function updateDataAtPosition(data: Data): Data {
-    if (stack.length === 0) {
-        /*DEFAULT_COOS.forEach(coo => {
-            setColor(data, coo, INITIAL_COUNT);
-        });*/
-        counter += 1;
-        stack = getNonEmptyCoordinates(data);
-        console.log(counter, stack.length);
+export function getNewData(data: Data): Data {
+    DEFAULT_COOS.forEach(coo => {
+        setDataAtCoo(data, coo, INITIAL_VALUE);
+        // setDataAtCoo(data, coo.negative, -INITIAL_VALUE);
+    });
+    stack = getNonEmptyCoordinates(data);
+    frameBuffer.before = {};
+    getNonEmptyCoordinates(frameBuffer.after)
+        .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
+    frameBuffer.after = {};
+    stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+    let result = data;
+    let i = 0;
+    for (; stack.length > 0 && i < MAX_UPDATE_ITERATIONS; i += 1) {
+        const chance = Math.random() * INITIAL_VALUE;
+        const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
+        const index = stack.indexOf(cooToExplode);
+        if (index > -1) {
+            result = updateDataAtCoo(result, index);
+        } else {
+            break;
+        }
     }
-    const chance = Math.random();
-    const cooToExplode = stack.filter(coo => (data[coo] || 0) / INITIAL_COUNT > chance)[0] || DEFAULT_COOS[0];
-    const index = stack.indexOf(cooToExplode);
-    if (index === -1) {
-        return data;
+    if (i === MAX_UPDATE_ITERATIONS) {
+        console.warn('iterations limit has achieved!');
     }
+    return result;
+}
+
+function updateDataAtCoo(data: Data, index: number): Data {
+    const cooToExplode = stack[index];
     stack.splice(index, 1);
-    const colorToDecrease = data[cooToExplode];
-    if (!colorToDecrease) {
+    const valueToDecrease = data[cooToExplode];
+    if (!valueToDecrease) {
         return {};
     }
     const position = getPosition(cooToExplode);
@@ -92,52 +115,48 @@ function updateDataAtPosition(data: Data): Data {
         { x: position.x - 1, y: position.y }
     ]
         .map(getKey)
-        .map(coo => ({
-            coo,
-            color: data[coo] || 0
-        }))
-        .sort((a, b) => b.color - a.color);
-
-    const result = decreaseColors(coos.map(o => o.color), colorToDecrease);
+        .map(coo => ({ coo, value: data[coo] || 0 }))
+        .sort((a, b) => b.value - a.value);
+    const result = decreaseColors(coos.map(o => o.value), valueToDecrease);
     if (result.data.length !== 4) {
         console.warn('result colors length must be 4!');
         return data;
     }
-    coos.forEach((o, i) => setColor(data, o.coo, result.data[i]));
-    setColor(data, cooToExplode, result.color);
+    coos.forEach((o, i) => setDataAtCoo(data, o.coo, result.data[i]));
+    setDataAtCoo(data, cooToExplode, result.value);
     return data;
 }
 
-type Children = { data: number[], color: number };
-function decreaseColors(sortedColors: number[], colorToDecrease: number): Children {
-    const filtered = sortedColors.filter(c => colorToDecrease - c > 0);
+type Children = { data: number[], value: number };
+function decreaseColors(sortedValues: number[], valueToDecrease: number): Children {
+    const filtered = sortedValues.filter(c => valueToDecrease - c > 0);
     if (filtered.length === 0) {
-        return { data: sortedColors, color: colorToDecrease };
+        return { data: sortedValues, value: valueToDecrease };
     }
-    const diff = (colorToDecrease - filtered[0]) / (filtered.length + 1);
-    if (colorToDecrease - filtered[0] > MAX_PRESSURE_PER_FRAME) {
+    const diff = (valueToDecrease - filtered[0]) / (filtered.length + 1);
+    if (valueToDecrease - filtered[0] > MAX_PRESSURE_PER_FRAME) {
         return {
             data: [
-                ...sortedColors.filter(c => colorToDecrease - c <= 0),
+                ...sortedValues.filter(c => valueToDecrease - c <= 0),
                 ...filtered.map(c => c + MAX_PRESSURE_PER_FRAME)
             ],
-            color: colorToDecrease - MAX_PRESSURE_PER_FRAME
+            value: valueToDecrease - MAX_PRESSURE_PER_FRAME
         };
     }
     const children = decreaseColors(filtered.map(c => c + diff), filtered[0] + diff);
     return {
         data: [
-            ...sortedColors.filter(c => colorToDecrease - c <= 0),
+            ...sortedValues.filter(c => valueToDecrease - c <= 0),
             ...children.data
         ],
-        color: children.data[children.data.length - 1]
+        value: children.data[children.data.length - 1]
     };
 }
 
-function setColor(data: Data, coo: string, color: number) {
-    if (color < 1) {
+function setDataAtCoo(data: Data, coo: string, value: number) {
+    if (value < 1) {
         delete data[coo];
     } else {
-        data[coo] = color;
+        data[coo] = value;
     }
 }

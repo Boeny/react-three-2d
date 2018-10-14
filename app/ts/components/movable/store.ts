@@ -3,16 +3,12 @@ import { IStore, IBodyStore } from './types';
 
 
 export const Store: IStore = {
-    bodies: [],// observable([]),
+    bodies: [],
     add(el: IBodyStore) {
-        // runInAction(() => {
         this.bodies.push(el);
-        // });
     },
     del(el: IBodyStore) {
         const i = this.bodies.indexOf(el);
-        // runInAction(() => {
         this.bodies.splice(i, 1);
-        // });
     }
 };

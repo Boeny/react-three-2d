@@ -3,6 +3,7 @@ import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
+import { Store as entities } from '~/components/entities';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
@@ -61,7 +62,8 @@ export function onMouseMove(e: MouseEvent) {
 
 export function onKeyDown(e: KeyboardEvent) {
     if (e.shiftKey) {
-        events.setStepMode(true);
+        console.log(!events.state.stepMode);
+        events.setStepMode(!events.state.stepMode);
     }
     switch (e.key) {
         case KEY.LEFT:
@@ -77,7 +79,14 @@ export function onKeyDown(e: KeyboardEvent) {
             player.moveDown(true);
             break;
         case KEY.SPACE:
-            events.setSwitchMode(true);
+            console.log(events.state.stepMode);
+            entities.nextStep();
+            if (events.state.stepMode) {
+                entities.nextStep();
+            }
+            break;
+        case KEY.ENTER:
+            entities.nextMode();
             break;
     }
 }

@@ -3,7 +3,6 @@ import { Vector2 } from 'three';
 import { IStore as IBodyStore } from '../body/types';
 import { Position, Moving } from './types';
 import { Body } from '../body';
-import { Directions } from './directions';
 import { MAX_SPEED } from '~/constants';
 
 
@@ -18,8 +17,6 @@ const getUpdate = (moving: Partial<Moving>) => (store: IBodyStore) => {
     } else {
         store.setVelocity(0, 'y');
     }
-    // --- smell
-
 };
 
 function updateMoving(store: IBodyStore, moving: Partial<Moving>) {
@@ -41,25 +38,16 @@ export function Thruster(props: Props) {
     const { moving, onEveryTick, position, color, ...rest } = props;
     const update = moving ? getUpdate(moving) : () => {};
     return (
-        <group>
-            <Body
-                {...rest}
-                color={color}
-                hasCollider={true}
-                isMovable={true}
-                position={position}
-                onEveryTick={body => {
-                    update(body);
-                    onEveryTick && onEveryTick(body);
-                }}
-                onSignal={updateMoving}
-            />
-            {moving ?
-                <Directions
-                    moving={moving}
-                    position={position}
-                />
-            : null}
-        </group>
+        <Body
+            {...rest}
+            color={color}
+            isMovable={true}
+            position={position}
+            onEveryTick={body => {
+                update(body);
+                onEveryTick && onEveryTick(body);
+            }}
+            onSignal={updateMoving}
+        />
     );
 }

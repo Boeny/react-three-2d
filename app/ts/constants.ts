@@ -2,18 +2,28 @@
 
 export const ROOT_ELEMENT_ID = 'root';
 
-export const MOUSE = {
-    left: 0,
-    wheel: 1,
-    right: 2
-};
+export enum MOUSE {
+    left,
+    wheel,
+    right
+}
 
-export const KEY = {
+interface KEYS {
+    SPACE: ' ';
+    UP: 'ArrowUp';
+    DOWN: 'ArrowDown';
+    LEFT: 'ArrowLeft';
+    RIGHT: 'ArrowRight';
+    ENTER: 'Enter';
+}
+
+export const KEY: KEYS = {
     SPACE: ' ',
     UP: 'ArrowUp',
     DOWN: 'ArrowDown',
     LEFT: 'ArrowLeft',
-    RIGHT: 'ArrowRight'
+    RIGHT: 'ArrowRight',
+    ENTER: 'Enter'
 };
 
 export const MAX_SPEED = 1;
