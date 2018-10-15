@@ -1,14 +1,16 @@
-// import { observable, runInAction } from 'mobx';
-import { IStore, IBodyStore } from './types';
+import { IStore, MovableStore, IBodyStore } from './types';
 
 
 export const Store: IStore = {
     bodies: [],
-    add(el: IBodyStore) {
+    add(el: MovableStore) {
         this.bodies.push(el);
     },
-    del(el: IBodyStore) {
+    del(el: MovableStore) {
         const i = this.bodies.indexOf(el);
         this.bodies.splice(i, 1);
+    },
+    isBody(el: MovableStore): el is IBodyStore {
+        return el.hasOwnProperty('state');
     }
 };

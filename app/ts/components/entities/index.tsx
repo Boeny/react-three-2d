@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { getDefaultData, getNonEmptyCoordinates, getPosition, getColor, getNewData } from './utils';
+import { setDefaultData, getNonEmptyCoordinates, getPosition, getColor, getNewData } from './utils';
 import { MountAndInit } from '../mount-and-init';
 import { Quad } from '../quad';
+import { Store as movable } from '../movable/store';
+import { Store as events } from '../events/store';
 import { WIDTH_SCALE } from '~/constants';
 
 
@@ -69,15 +71,20 @@ const ConnectedEntities = observer(() => {
 });
 
 
-type Props = PositionProps;
-
-export function Entities(props: Props) {
+export function Entities(_: PositionProps) {
     return (
         <MountAndInit
             component={<ConnectedEntities />}
             onMount={() => {
-                Store.setData(getDefaultData(props.position));
+                movable.add({ onEveryTick });
+                Store.setData(setDefaultData({}));
             }}
         />
     );
+}
+
+function onEveryTick() {
+    if (events.state.stepMode === false) {
+        Store.nextStep();
+    }
 }

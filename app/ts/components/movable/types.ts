@@ -1,10 +1,11 @@
 import { IStore as IBodyStore } from '../body/types';
 
-
 export { IBodyStore };
+export type MovableStore = IBodyStore | { onEveryTick: () => void };
 
 export interface IStore {
-    bodies: IBodyStore[];
-    add: (el: IBodyStore) => void;
-    del: (el: IBodyStore) => void;
+    bodies: MovableStore[];
+    add: (el: MovableStore) => void;
+    del: (el: MovableStore) => void;
+    isBody: (el: MovableStore) => el is IBodyStore;
 }

@@ -5,7 +5,7 @@ import { MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 export const Store: IStore = {
     state: observable({
         mouseDragMode: false,
-        stepMode: false,
+        stepMode: true,
         switchMode: false
     }),
     setMouseDragMode(mode: boolean) {

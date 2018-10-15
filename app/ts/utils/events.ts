@@ -62,8 +62,7 @@ export function onMouseMove(e: MouseEvent) {
 
 export function onKeyDown(e: KeyboardEvent) {
     if (e.shiftKey) {
-        console.log(!events.state.stepMode);
-        events.setStepMode(!events.state.stepMode);
+        events.setStepMode(false);
     }
     switch (e.key) {
         case KEY.LEFT:
@@ -79,8 +78,6 @@ export function onKeyDown(e: KeyboardEvent) {
             player.moveDown(true);
             break;
         case KEY.SPACE:
-            console.log(events.state.stepMode);
-            entities.nextStep();
             if (events.state.stepMode) {
                 entities.nextStep();
             }
@@ -114,9 +111,13 @@ export function onKeyUp(e: KeyboardEvent) {
 export function onAnimate() {
     for (let i = 0; i < movable.bodies.length; i += 1) {
         const body = movable.bodies[i];
-        checkCollision(body, 'x');
-        checkCollision(body, 'y');
-        body.onEveryTick && body.onEveryTick(body);
+        if (movable.isBody(body)) {
+            checkCollision(body, 'x');
+            checkCollision(body, 'y');
+            body.onEveryTick && body.onEveryTick(body);
+        } else {
+            body.onEveryTick();
+        }
     }
 }
 

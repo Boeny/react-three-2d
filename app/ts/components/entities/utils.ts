@@ -4,9 +4,15 @@ import { createArray } from '~/utils';
 const INITIAL_VALUE = 200;
 const DELIMITER = '|';
 const AREA_WIDTH = 20;
-const DEFAULT_COOS = createArray(10).map(() => getKey({ x: getCoo(), y: getCoo() }));
+const DEFAULT_COOS = createArray(10).map(() => {
+    const position = { x: getCoo(), y: getCoo() };
+    return {
+        positive: getKey(position),
+        negative: getKey({ x: -position.x, y: -position.y })
+    };
+});
 const MAX_PRESSURE_PER_FRAME = 40;
-const MAX_UPDATE_ITERATIONS = 10000;
+const MAX_ITERATIONS_PER_FRAME = 1000;
 
 
 type Data = Coobject<number>; // coo -> color
@@ -20,15 +26,12 @@ function getCoo() {
     return Math.floor(Math.random() * AREA_WIDTH);
 }
 
-export function getDefaultData(position: Coo): Data {
-    return DEFAULT_COOS.reduce(
-        (result, coo) => {
-            const pos = getPosition(coo);
-            result[getKey({ x: position.x + pos.x, y: position.y + pos.y })] = INITIAL_VALUE;
-            return result;
-        },
-        {} as Data
-    );
+export function setDefaultData(data: Data) {
+    DEFAULT_COOS.forEach(coo => {
+        data[coo.positive] = INITIAL_VALUE;
+        // data[coo.negative] = -INITIAL_VALUE;
+    });
+    return data;
 }
 
 function getKey(position: Coo): string {
@@ -54,7 +57,7 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = Math.round(color * 255 / INITIAL_VALUE);
+    const c = color > 0 ? Math.round(color * 255 / INITIAL_VALUE) : 0;
     return `rgb(${c}, ${c}, ${c})`;
 }
 
@@ -72,40 +75,36 @@ const frameBuffer: FrameBuffer = {
 let stack: string[] = [];
 
 export function getNewData(data: Data): Data {
-    DEFAULT_COOS.forEach(coo => {
-        setDataAtCoo(data, coo, INITIAL_VALUE);
-        // setDataAtCoo(data, coo.negative, -INITIAL_VALUE);
-    });
-    stack = getNonEmptyCoordinates(data);
-    frameBuffer.before = {};
-    getNonEmptyCoordinates(frameBuffer.after)
-        .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
-    frameBuffer.after = {};
-    stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+    if (stack.length === 0) {
+        setDefaultData(data);
+        stack = getNonEmptyCoordinates(data);
+        frameBuffer.before = {};
+        getNonEmptyCoordinates(frameBuffer.after)
+            .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
+        frameBuffer.after = {};
+        stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+    }
     let result = data;
     let i = 0;
-    for (; stack.length > 0 && i < MAX_UPDATE_ITERATIONS; i += 1) {
+    while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
         const chance = Math.random() * INITIAL_VALUE;
         const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
         const index = stack.indexOf(cooToExplode);
         if (index > -1) {
-            result = updateDataAtCoo(result, index);
-        } else {
-            break;
+            result = updateDataAtCoo(result, stack.splice(index, 1)[0]);
         }
+        i += 1;
     }
-    if (i === MAX_UPDATE_ITERATIONS) {
-        console.warn('iterations limit has achieved!');
+    if (i === MAX_ITERATIONS_PER_FRAME) {
+        console.warn('max iterations per frame has achieved!');
     }
     return result;
 }
 
-function updateDataAtCoo(data: Data, index: number): Data {
-    const cooToExplode = stack[index];
-    stack.splice(index, 1);
-    const valueToDecrease = data[cooToExplode];
-    if (!valueToDecrease) {
-        return {};
+function updateDataAtCoo(data: Data, cooToExplode: string): Data {
+    const valueToDecrease = data[cooToExplode] || 0;
+    if (valueToDecrease <= 0) {
+        return data;
     }
     const position = getPosition(cooToExplode);
     const coos = [
