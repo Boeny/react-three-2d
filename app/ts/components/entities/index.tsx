@@ -11,40 +11,35 @@ import { WIDTH_SCALE } from '~/constants';
 
 
 type Data = Coobject<number>; // coo -> color
-enum Mode {
-    default,
-    next
-}
 
 interface IStore {
-    isBlocked: boolean;
     state: {
         data: Data;
-        mode: Mode;
+        mode: number;
     };
     setData: (data: Data) => void;
     nextStep: () => void;
-    setMode: (mode: Mode) => void;
+    setMode: (mode: number) => void;
     nextMode: () => void;
 }
 
 export const Store: IStore = {
-    isBlocked: false,
     state: observable({
         data: {},
-        mode: Mode.default
+        mode: 0
     }),
     setData(data: Data) {
         runInAction(() => this.state.data = data);
     },
     nextStep() {
-        this.setData(getNewData(toJS(this.state.data)));
+        this.setData(getNewData(toJS(this.state.data), this.state.mode));
     },
-    setMode(mode: Mode) {
+    setMode(mode: number) {
         runInAction(() => this.state.mode = mode);
     },
     nextMode() {
-        this.setMode(Mode.next);
+        console.log(this.state.mode + 1);
+        this.setMode(this.state.mode + 1);
     }
 };
 

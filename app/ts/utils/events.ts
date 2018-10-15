@@ -104,7 +104,7 @@ export function onKeyUp(e: KeyboardEvent) {
             break;
     }
     if (player.isMoving() === false) {
-        events.setStepMode(false);
+        // events.setStepMode(false);
     }
 }
 

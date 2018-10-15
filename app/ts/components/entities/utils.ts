@@ -2,8 +2,9 @@ import { createArray } from '~/utils';
 
 
 const INITIAL_VALUE = 200;
+const NEGATIVE_VALUE = -50;
 const DELIMITER = '|';
-const AREA_WIDTH = 20;
+const AREA_WIDTH = 50;
 const DEFAULT_COOS = createArray(10).map(() => {
     const position = { x: getCoo(), y: getCoo() };
     return {
@@ -11,8 +12,8 @@ const DEFAULT_COOS = createArray(10).map(() => {
         negative: getKey({ x: -position.x, y: -position.y })
     };
 });
-const MAX_PRESSURE_PER_FRAME = 40;
-const MAX_ITERATIONS_PER_FRAME = 1000;
+const MAX_PRESSURE_PER_FRAME = 50;
+const MAX_ITERATIONS_PER_FRAME = 5000;
 
 
 type Data = Coobject<number>; // coo -> color
@@ -23,13 +24,15 @@ interface Coo {
 }
 
 function getCoo() {
-    return Math.floor(Math.random() * AREA_WIDTH);
+    return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
 
 export function setDefaultData(data: Data) {
     DEFAULT_COOS.forEach(coo => {
-        data[coo.positive] = INITIAL_VALUE;
-        // data[coo.negative] = -INITIAL_VALUE;
+        if ((data[coo.positive] || 0) < INITIAL_VALUE / 2) {
+            data[coo.positive] = INITIAL_VALUE;
+        }
+        data[coo.negative] = NEGATIVE_VALUE;
     });
     return data;
 }
@@ -57,8 +60,8 @@ export function getPosition(coo: string): Coo {
 }
 
 export function getColor(color: number): string {
-    const c = color > 0 ? Math.round(color * 255 / INITIAL_VALUE) : 0;
-    return `rgb(${c}, ${c}, ${c})`;
+    const c = Math.round(color * 255 / INITIAL_VALUE);
+    return c >= 0 ? `rgb(${c}, ${c}, ${c})` : `rgb(${-c}, ${0}, ${0})`;
 }
 
 
@@ -74,13 +77,12 @@ const frameBuffer: FrameBuffer = {
 
 let stack: string[] = [];
 
-export function getNewData(data: Data): Data {
+export function getNewData(data: Data, mode: number): Data {
     if (stack.length === 0) {
         setDefaultData(data);
-        stack = getNonEmptyCoordinates(data);
+        stack = Object.keys(data);
         frameBuffer.before = {};
-        getNonEmptyCoordinates(frameBuffer.after)
-            .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
+        Object.keys(frameBuffer.after).forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
         frameBuffer.after = {};
         stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
     }
@@ -90,10 +92,11 @@ export function getNewData(data: Data): Data {
         const chance = Math.random() * INITIAL_VALUE;
         const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
         const index = stack.indexOf(cooToExplode);
-        if (index > -1) {
-            result = updateDataAtCoo(result, stack.splice(index, 1)[0]);
-        }
+        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 1)[0], mode);
         i += 1;
+        if (mode > 0) {
+            break;
+        }
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
         console.warn('max iterations per frame has achieved!');
@@ -101,11 +104,8 @@ export function getNewData(data: Data): Data {
     return result;
 }
 
-function updateDataAtCoo(data: Data, cooToExplode: string): Data {
+function updateDataAtCoo(data: Data, cooToExplode: string, mode: number): Data {
     const valueToDecrease = data[cooToExplode] || 0;
-    if (valueToDecrease <= 0) {
-        return data;
-    }
     const position = getPosition(cooToExplode);
     const coos = [
         { x: position.x, y: position.y + 1 },
@@ -116,7 +116,7 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
         .map(getKey)
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
-    const result = decreaseColors(coos.map(o => o.value), valueToDecrease);
+    const result = decreaseColors(coos.map(o => o.value), valueToDecrease, mode);
     if (result.data.length !== 4) {
         console.warn('result colors length must be 4!');
         return data;
@@ -127,7 +127,7 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
 }
 
 type Children = { data: number[], value: number };
-function decreaseColors(sortedValues: number[], valueToDecrease: number): Children {
+function decreaseColors(sortedValues: number[], valueToDecrease: number, mode: number): Children {
     const filtered = sortedValues.filter(c => valueToDecrease - c > 0);
     if (filtered.length === 0) {
         return { data: sortedValues, value: valueToDecrease };
@@ -142,7 +142,9 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
             value: valueToDecrease - MAX_PRESSURE_PER_FRAME
         };
     }
-    const children = decreaseColors(filtered.map(c => c + diff), filtered[0] + diff);
+    const children = mode > 1 ?
+        { data: filtered.map(c => c + diff), value: filtered[0] + diff } :
+        decreaseColors(filtered.map(c => c + diff), filtered[0] + diff, mode - 1);
     return {
         data: [
             ...sortedValues.filter(c => valueToDecrease - c <= 0),
@@ -153,9 +155,5 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 }
 
 function setDataAtCoo(data: Data, coo: string, value: number) {
-    if (value < 1) {
-        delete data[coo];
-    } else {
-        data[coo] = value;
-    }
+    data[coo] = value;
 }
