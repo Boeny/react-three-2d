@@ -58,6 +58,7 @@ export const Store: IStore = {
         this.setMode(this.state.mode + 1);
     },
     toggleNegative() {
+        console.log(!this.state.showNegative);
         runInAction(() => this.state.showNegative = !this.state.showNegative);
     }
 };

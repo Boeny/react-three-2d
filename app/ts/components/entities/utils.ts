@@ -2,17 +2,10 @@ import { createArray } from '~/utils';
 import { INITIAL_VALUE } from './constants';
 
 
-const NEGATIVE_VALUE = -INITIAL_VALUE / 2;
 const DELIMITER = '|';
+const DEFAULT_COOS_COUNT = 20;
 const AREA_WIDTH = 50;
-const DEFAULT_COOS = createArray(20).map(() => {
-    const position = { x: getCoo(), y: getCoo() };
-    return {
-        positive: getKey(position),
-        negative: getKey({ x: -position.x, y: -position.y })
-    };
-});
-const MAX_PRESSURE_PER_FRAME = 10;
+const MAX_PRESSURE_PER_FRAME = 20;
 const MAX_ITERATIONS_PER_FRAME = 50;
 
 
@@ -28,11 +21,16 @@ function getCoo() {
 }
 
 export function setDefaultData(data: Data) {
-    DEFAULT_COOS.forEach(coo => {
-        data[coo.positive] = INITIAL_VALUE;
-        data[coo.negative] = NEGATIVE_VALUE;
-    });
+    createArray(DEFAULT_COOS_COUNT).map(() => setDefaultDataAtPosition(data, {
+        x: getCoo(),
+        y: getCoo()
+    }));
     return data;
+}
+
+function setDefaultDataAtPosition(data: Data, position: Coo) {
+    data[getKey(position)] = INITIAL_VALUE;
+    data[getKey({ x: -position.x, y: -position.y })] = -INITIAL_VALUE;
 }
 
 function getKey(position: Coo): string {
@@ -70,14 +68,34 @@ const frameBuffer: FrameBuffer = {
 
 let stack: string[] = [];
 
+function setStackByData(data: Data) {
+    stack = Object.keys(data);
+    stack.forEach(coo => {
+        const v = data[coo];
+        if (v === undefined || v <= -1 || v >= 1) {
+            return;
+        }
+        const position = getPosition(coo);
+        const coos = getCoosAround(position);
+        if ((data[coos[0]] || 0) <= -1 && (data[coos[1]] || 0) >= 1 ||
+            (data[coos[1]] || 0) <= -1 && (data[coos[0]] || 0) >= 1 ||
+            (data[coos[2]] || 0) <= -1 && (data[coos[3]] || 0) >= 1 ||
+            (data[coos[3]] || 0) <= -1 && (data[coos[2]] || 0) >= 1
+        ) {
+            setDefaultDataAtPosition(data, position);
+        }
+    });
+    stack = Object.keys(data);
+    frameBuffer.before = {};
+    Object.keys(frameBuffer.after)
+        .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
+    frameBuffer.after = {};
+    stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+}
+
 export function getNewData(data: Data): Data {
     if (stack.length === 0) {
-        setDefaultData(data);
-        stack = Object.keys(data);
-        frameBuffer.before = {};
-        Object.keys(frameBuffer.after).forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
-        frameBuffer.after = {};
-        stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+        setStackByData(data);
     }
     let result = data;
     let i = 0;
@@ -85,7 +103,7 @@ export function getNewData(data: Data): Data {
         const chance = Math.random() * INITIAL_VALUE;
         const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
         const index = stack.indexOf(cooToExplode);
-        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 1)[0]);
+        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 2)[0]);
         i += 1;
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
@@ -96,12 +114,7 @@ export function getNewData(data: Data): Data {
 
 export function getNewValueAtCoo(data: Data): { data: Data, coo: string } {
     if (stack.length === 0) {
-        setDefaultData(data);
-        stack = Object.keys(data);
-        frameBuffer.before = {};
-        Object.keys(frameBuffer.after).forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
-        frameBuffer.after = {};
-        stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+        setStackByData(data);
     }
     const chance = Math.random() * INITIAL_VALUE;
     const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
@@ -112,16 +125,20 @@ export function getNewValueAtCoo(data: Data): { data: Data, coo: string } {
     };
 }
 
-function updateDataAtCoo(data: Data, cooToExplode: string): Data {
-    const valueToDecrease = data[cooToExplode] || 0;
-    const position = getPosition(cooToExplode);
-    const coos = [
+function getCoosAround(position: Coo): string[] {
+    return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
         { x: position.x + 1, y: position.y },
         { x: position.x - 1, y: position.y }
     ]
-        .map(getKey)
+        .map(getKey);
+}
+
+function updateDataAtCoo(data: Data, cooToExplode: string): Data {
+    const valueToDecrease = data[cooToExplode] || 0;
+    const position = getPosition(cooToExplode);
+    const coos = getCoosAround(position)
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
     const result = decreaseColors(coos.map(o => o.value), valueToDecrease);

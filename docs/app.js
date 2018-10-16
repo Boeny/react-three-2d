@@ -103563,6 +103563,7 @@ exports.Store = {
     },
     toggleNegative: function () {
         var _this = this;
+        console.log(!this.state.showNegative);
         mobx_1.runInAction(function () { return _this.state.showNegative = !_this.state.showNegative; });
     }
 };
@@ -127804,29 +127805,26 @@ function checkCollision(body, coo) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = __webpack_require__(36);
 var constants_1 = __webpack_require__(81);
-var NEGATIVE_VALUE = -constants_1.INITIAL_VALUE / 2;
 var DELIMITER = '|';
-var AREA_WIDTH = 50;
-var DEFAULT_COOS = utils_1.createArray(20).map(function () {
-    var position = { x: getCoo(), y: getCoo() };
-    return {
-        positive: getKey(position),
-        negative: getKey({ x: -position.x, y: -position.y })
-    };
-});
-var MAX_PRESSURE_PER_FRAME = 10;
+var DEFAULT_COOS_COUNT = 40;
+var AREA_WIDTH = 100;
+var MAX_PRESSURE_PER_FRAME = 20;
 var MAX_ITERATIONS_PER_FRAME = 50;
 function getCoo() {
     return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
 function setDefaultData(data) {
-    DEFAULT_COOS.forEach(function (coo) {
-        data[coo.positive] = constants_1.INITIAL_VALUE;
-        data[coo.negative] = NEGATIVE_VALUE;
-    });
+    utils_1.createArray(DEFAULT_COOS_COUNT).map(function () { return setDefaultDataAtPosition(data, {
+        x: getCoo(),
+        y: getCoo()
+    }); });
     return data;
 }
 exports.setDefaultData = setDefaultData;
+function setDefaultDataAtPosition(data, position) {
+    data[getKey(position)] = constants_1.INITIAL_VALUE;
+    data[getKey({ x: -position.x, y: -position.y })] = -constants_1.INITIAL_VALUE;
+}
 function getKey(position) {
     return "" + position.x + DELIMITER + position.y;
 }
@@ -127851,14 +127849,32 @@ var frameBuffer = {
     after: {}
 };
 var stack = [];
+function setStackByData(data) {
+    stack = Object.keys(data);
+    stack.forEach(function (coo) {
+        var v = data[coo];
+        if (v === undefined || v <= -1 || v >= 1) {
+            return;
+        }
+        var position = getPosition(coo);
+        var coos = getCoosAround(position);
+        if ((data[coos[0]] || 0) <= -1 && (data[coos[1]] || 0) >= 1 ||
+            (data[coos[1]] || 0) <= -1 && (data[coos[0]] || 0) >= 1 ||
+            (data[coos[2]] || 0) <= -1 && (data[coos[3]] || 0) >= 1 ||
+            (data[coos[3]] || 0) <= -1 && (data[coos[2]] || 0) >= 1) {
+            setDefaultDataAtPosition(data, position);
+        }
+    });
+    stack = Object.keys(data);
+    frameBuffer.before = {};
+    Object.keys(frameBuffer.after)
+        .forEach(function (coo) { return frameBuffer.before[coo] = frameBuffer.after[coo]; });
+    frameBuffer.after = {};
+    stack.forEach(function (coo) { return frameBuffer.after[coo] = data[coo]; });
+}
 function getNewData(data) {
     if (stack.length === 0) {
-        setDefaultData(data);
-        stack = Object.keys(data);
-        frameBuffer.before = {};
-        Object.keys(frameBuffer.after).forEach(function (coo) { return frameBuffer.before[coo] = frameBuffer.after[coo]; });
-        frameBuffer.after = {};
-        stack.forEach(function (coo) { return frameBuffer.after[coo] = data[coo]; });
+        setStackByData(data);
     }
     var result = data;
     var i = 0;
@@ -127866,7 +127882,7 @@ function getNewData(data) {
         var chance = Math.random() * constants_1.INITIAL_VALUE;
         var cooToExplode = stack.filter(function (coo) { return (data[coo] || 0) > chance; })[0];
         var index = stack.indexOf(cooToExplode);
-        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 1)[0]);
+        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 2)[0]);
         i += 1;
     };
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
@@ -127880,12 +127896,7 @@ function getNewData(data) {
 exports.getNewData = getNewData;
 function getNewValueAtCoo(data) {
     if (stack.length === 0) {
-        setDefaultData(data);
-        stack = Object.keys(data);
-        frameBuffer.before = {};
-        Object.keys(frameBuffer.after).forEach(function (coo) { return frameBuffer.before[coo] = frameBuffer.after[coo]; });
-        frameBuffer.after = {};
-        stack.forEach(function (coo) { return frameBuffer.after[coo] = data[coo]; });
+        setStackByData(data);
     }
     var chance = Math.random() * constants_1.INITIAL_VALUE;
     var cooToExplode = stack.filter(function (coo) { return (data[coo] || 0) > chance; })[0];
@@ -127896,16 +127907,19 @@ function getNewValueAtCoo(data) {
     };
 }
 exports.getNewValueAtCoo = getNewValueAtCoo;
-function updateDataAtCoo(data, cooToExplode) {
-    var valueToDecrease = data[cooToExplode] || 0;
-    var position = getPosition(cooToExplode);
-    var coos = [
+function getCoosAround(position) {
+    return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
         { x: position.x + 1, y: position.y },
         { x: position.x - 1, y: position.y }
     ]
-        .map(getKey)
+        .map(getKey);
+}
+function updateDataAtCoo(data, cooToExplode) {
+    var valueToDecrease = data[cooToExplode] || 0;
+    var position = getPosition(cooToExplode);
+    var coos = getCoosAround(position)
         .map(function (coo) { return ({ coo: coo, value: data[coo] || 0 }); })
         .sort(function (a, b) { return b.value - a.value; });
     var result = decreaseColors(coos.map(function (o) { return o.value; }), valueToDecrease);
