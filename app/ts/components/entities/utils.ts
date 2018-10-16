@@ -3,10 +3,10 @@ import { INITIAL_VALUE } from './constants';
 
 
 const DELIMITER = '|';
-const DEFAULT_COOS_COUNT = 20;
+const DEFAULT_COOS_COUNT = 10;
 const AREA_WIDTH = 50;
 const MAX_PRESSURE_PER_FRAME = 20;
-const MAX_ITERATIONS_PER_FRAME = 50;
+const MAX_ITERATIONS_PER_FRAME = 500;
 
 
 type Data = Coobject<number>; // coo -> color
@@ -16,7 +16,7 @@ interface Coo {
     y: number;
 }
 
-function getCoo() {
+function getCoo(): number {
     return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
 
@@ -25,7 +25,24 @@ export function setDefaultData(data: Data) {
         x: getCoo(),
         y: getCoo()
     }));
-    return data;
+}
+
+export function getSizeFromData(data: Data): { width: number, height: number } {
+    let width = 0;
+    let height = 0;
+    Object.keys(data).map(coo => {
+        const position = getPosition(coo);
+        if (position.x > width) {
+            width = position.x;
+        }
+        if (position.y > height) {
+            height = position.y;
+        }
+    });
+    return {
+        width: width * 2,
+        height: height * 2
+    };
 }
 
 function setDefaultDataAtPosition(data: Data, position: Coo) {
@@ -33,15 +50,11 @@ function setDefaultDataAtPosition(data: Data, position: Coo) {
     data[getKey({ x: -position.x, y: -position.y })] = -INITIAL_VALUE;
 }
 
-function getKey(position: Coo): string {
+export function getKey(position: Coo): string {
     return `${position.x}${DELIMITER}${position.y}`;
 }
 
-export function getNonEmptyCoordinates(data: Data): string[] {
-    return Object.keys(data);
-}
-
-export function getPosition(coo: string): Coo {
+function getPosition(coo: string): Coo {
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
         console.warn(
@@ -112,7 +125,12 @@ export function getNewData(data: Data): Data {
     return result;
 }
 
-export function getNewValueAtCoo(data: Data): { data: Data, coo: string } {
+export function getNewValueAtCoo(data: Data, mode: number): { data: Data, coo: string } {
+    if (mode > 0) {
+        console.log('data', JSON.stringify(data, null, 4));
+        console.log('stack', JSON.stringify(stack, null, 4));
+        return { data: {}, coo: '' };
+    }
     if (stack.length === 0) {
         setStackByData(data);
     }

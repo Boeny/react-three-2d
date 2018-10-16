@@ -92546,6 +92546,7 @@ var MaterialDescriptorBase = (0, _resource2.default)(_class = function (_THREEEl
 }(_THREEElementDescriptor2.default)) || _class;
 
 module.exports = MaterialDescriptorBase;
+
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
@@ -103529,27 +103530,40 @@ var store_1 = __webpack_require__(38);
 var store_2 = __webpack_require__(37);
 var constants_1 = __webpack_require__(16);
 var constants_2 = __webpack_require__(81);
+var YELLOW_COLOR = { r: 255, g: 223, b: 0 };
 exports.Store = {
     state: mobx_1.observable({
         data: {},
         mode: 0,
         currentCoo: null,
-        showNegative: false
+        showNegative: false,
+        size: {
+            width: 0,
+            height: 0
+        }
     }),
-    setData: function (data) {
+    init: function () {
+        var data = {};
+        utils_1.setDefaultData(data);
+        this.setDataAndSize(data);
+    },
+    setDataAndSize: function (data) {
         var _this = this;
-        mobx_1.runInAction(function () { return _this.state.data = data; });
+        mobx_1.runInAction(function () {
+            _this.state.data = data;
+            _this.state.size = utils_1.getSizeFromData(data);
+        });
     },
     nextStep: function () {
         var _this = this;
         mobx_1.runInAction(function () {
             if (_this.state.mode > 0) {
-                var result = utils_1.getNewValueAtCoo(mobx_1.toJS(_this.state.data));
+                var result = utils_1.getNewValueAtCoo(mobx_1.toJS(_this.state.data), _this.state.mode);
                 _this.state.currentCoo = result.coo;
-                _this.setData(result.data);
+                _this.setDataAndSize(result.data);
             }
             else {
-                _this.setData(utils_1.getNewData(mobx_1.toJS(_this.state.data)));
+                _this.setDataAndSize(utils_1.getNewData(mobx_1.toJS(_this.state.data)));
             }
         });
     },
@@ -103563,26 +103577,41 @@ exports.Store = {
     },
     toggleNegative: function () {
         var _this = this;
-        console.log(!this.state.showNegative);
         mobx_1.runInAction(function () { return _this.state.showNegative = !_this.state.showNegative; });
     }
 };
+var position = new three_1.Vector3();
 var ConnectedEntities = mobx_react_1.observer(function () {
-    var _a = exports.Store.state, data = _a.data, currentCoo = _a.currentCoo, showNegative = _a.showNegative;
-    return (React.createElement("group", null, utils_1.getNonEmptyCoordinates(data).map(function (coo, i) {
-        var position = utils_1.getPosition(coo);
-        var color = data[coo] || 0;
-        return (React.createElement(quad_1.Quad, { key: coo + "-" + i + "-" + color, position: new three_1.Vector3(position.x, position.y, 0), width: constants_1.WIDTH_SCALE, height: constants_1.WIDTH_SCALE, color: currentCoo === coo ? 'yellow' : getColor(color, showNegative) }));
-    })));
+    var _a = exports.Store.state.size, width = _a.width, height = _a.height;
+    return (React.createElement(quad_1.Quad, { position: position, width: constants_1.WIDTH_SCALE * width, height: constants_1.WIDTH_SCALE * height, texture: getTextureData(width, height, exports.Store.state) }));
 });
+function getTextureData(width, height, _a) {
+    var data = _a.data, currentCoo = _a.currentCoo, showNegative = _a.showNegative;
+    var size = width * height;
+    var texData = new Uint8Array(3 * size);
+    var width2 = Math.floor(width / 2);
+    var height2 = height / 2;
+    for (var i = 0; i < size; i += 1) {
+        var coo = utils_1.getKey({ x: i % width - width2, y: Math.floor(i / width - height2) });
+        var color = currentCoo === coo ? YELLOW_COLOR : getColor(data[coo] || 0, showNegative);
+        var stride = i * 3;
+        texData[stride] = color.r;
+        texData[stride + 1] = color.g;
+        texData[stride + 2] = color.b;
+    }
+    var texture = new three_1.DataTexture(texData, width, height, three_1.RGBFormat);
+    texture.needsUpdate = true;
+    texture.magFilter = three_1.NearestFilter;
+    return texture;
+}
 function getColor(color, showNegative) {
     var c = Math.round(color * 255 / constants_2.INITIAL_VALUE);
-    return c >= 0 ? "rgb(" + c + ", " + c + ", " + c + ")" : "rgb(" + (showNegative ? -c : 0) + ", " + 0 + ", " + 0 + ")";
+    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
 }
 function Entities(_) {
     return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(ConnectedEntities, null), onMount: function () {
             store_1.Store.add({ onEveryTick: onEveryTick });
-            exports.Store.setData(utils_1.setDefaultData({}));
+            exports.Store.init();
         } }));
 }
 exports.Entities = Entities;
@@ -103646,10 +103675,10 @@ var React = __webpack_require__(5);
 var three_1 = __webpack_require__(13);
 var constants_1 = __webpack_require__(16);
 function Quad(props) {
-    var position = props.position, width = props.width, height = props.height, color = props.color, texture = props.texture;
+    var position = props.position, width = props.width, height = props.height, color = props.color, texture = props.texture, transparent = props.transparent;
     return (React.createElement("mesh", { position: position },
         React.createElement("planeGeometry", { width: width, height: height, widthSegments: 1, heigthSegments: 1 }),
-        React.createElement("meshBasicMaterial", { wireframe: constants_1.SHOW_AS_WIREFRAME, color: new three_1.Color(color), vertexColors: three_1.VertexColors, map: texture, transparent: true })));
+        React.createElement("meshBasicMaterial", { wireframe: constants_1.SHOW_AS_WIREFRAME, color: new three_1.Color(color) || '#000000', vertexColors: three_1.VertexColors, map: texture, transparent: transparent })));
 }
 exports.Quad = Quad;
 
@@ -127806,10 +127835,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var utils_1 = __webpack_require__(36);
 var constants_1 = __webpack_require__(81);
 var DELIMITER = '|';
-var DEFAULT_COOS_COUNT = 40;
-var AREA_WIDTH = 100;
+var DEFAULT_COOS_COUNT = 10;
+var AREA_WIDTH = 50;
 var MAX_PRESSURE_PER_FRAME = 20;
-var MAX_ITERATIONS_PER_FRAME = 50;
+var MAX_ITERATIONS_PER_FRAME = 500;
 function getCoo() {
     return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
@@ -127818,9 +127847,26 @@ function setDefaultData(data) {
         x: getCoo(),
         y: getCoo()
     }); });
-    return data;
 }
 exports.setDefaultData = setDefaultData;
+function getSizeFromData(data) {
+    var width = 0;
+    var height = 0;
+    Object.keys(data).map(function (coo) {
+        var position = getPosition(coo);
+        if (position.x > width) {
+            width = position.x;
+        }
+        if (position.y > height) {
+            height = position.y;
+        }
+    });
+    return {
+        width: width * 2,
+        height: height * 2
+    };
+}
+exports.getSizeFromData = getSizeFromData;
 function setDefaultDataAtPosition(data, position) {
     data[getKey(position)] = constants_1.INITIAL_VALUE;
     data[getKey({ x: -position.x, y: -position.y })] = -constants_1.INITIAL_VALUE;
@@ -127828,10 +127874,7 @@ function setDefaultDataAtPosition(data, position) {
 function getKey(position) {
     return "" + position.x + DELIMITER + position.y;
 }
-function getNonEmptyCoordinates(data) {
-    return Object.keys(data);
-}
-exports.getNonEmptyCoordinates = getNonEmptyCoordinates;
+exports.getKey = getKey;
 function getPosition(coo) {
     var position = coo.split(DELIMITER).map(function (v) { return parseInt(v, 10); }).filter(function (v) { return !isNaN(v); });
     if (position.length !== 2) {
@@ -127843,7 +127886,6 @@ function getPosition(coo) {
         y: position[1]
     };
 }
-exports.getPosition = getPosition;
 var frameBuffer = {
     before: {},
     after: {}
@@ -127894,7 +127936,12 @@ function getNewData(data) {
     return result;
 }
 exports.getNewData = getNewData;
-function getNewValueAtCoo(data) {
+function getNewValueAtCoo(data, mode) {
+    if (mode > 0) {
+        console.log('data', JSON.stringify(data, null, 4));
+        console.log('stack', JSON.stringify(stack, null, 4));
+        return { data: {}, coo: '' };
+    }
     if (stack.length === 0) {
         setStackByData(data);
     }
@@ -139924,7 +139971,6 @@ var MeshBasicMaterialDescriptor = function (_MaterialDescriptorBa) {
     _classCallCheck(this, MeshBasicMaterialDescriptor);
 
     var _this = _possibleConstructorReturn(this, (MeshBasicMaterialDescriptor.__proto__ || Object.getPrototypeOf(MeshBasicMaterialDescriptor)).call(this, react3RendererInstance));
-
     _this.hasColor();
     _this.hasWireframe();
     _this.hasMap();
@@ -139948,6 +139994,7 @@ var MeshBasicMaterialDescriptor = function (_MaterialDescriptorBa) {
 }(_MaterialDescriptorBase2.default);
 
 module.exports = MeshBasicMaterialDescriptor;
+
 
 /***/ }),
 /* 266 */
