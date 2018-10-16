@@ -7,6 +7,8 @@ export interface State {
 
 export interface IStore {
     state: State;
-    setZoom: (newZoom: number) => void;
+    init: (state: State) => void;
+    setZoom: (zoom: number) => void;
+    updateZoomBy: (newZoom: number) => void;
     setPosition: (v: Position) => void;
 }

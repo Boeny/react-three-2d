@@ -2,9 +2,11 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
+import { State } from './types';
+import { MountAndInit } from '~/components/mount-and-init';
 
 
-export const Camera = observer((props: PositionProps) => {
+const CameraComponent = observer(() => {
     const { zoom, position } = Store.state;
     return (
         <perspectiveCamera
@@ -13,11 +15,17 @@ export const Camera = observer((props: PositionProps) => {
             aspect={window.innerWidth / window.innerHeight}
             near={0.1}
             far={1000}
-            position={new Vector3(
-                position.x + props.position.x,
-                position.y + props.position.y,
-                zoom
-            )}
+            position={new Vector3(position.x, position.y, zoom)}
         />
     );
 });
+
+
+export function Camera(props: State) {
+    return (
+        <MountAndInit
+            component={<CameraComponent />}
+            onMount={() => Store.init(props)}
+        />
+    );
+}

@@ -1,7 +1,6 @@
 import { Store as camera } from '~/components/camera/store';
-import { Store as player } from '~/components/player/store';
 import { createArray } from '~/utils';
-import { Data, State } from './types';
+import { Data, State, Color } from './types';
 import { INITIAL_VALUE } from './constants';
 import { savedData } from '~/saves';
 
@@ -23,6 +22,8 @@ const frameBuffer: FrameBuffer = {
     before: {},
     after: {}
 };
+
+// ---
 
 export function getDefaultData(): Data {
     const data = {};
@@ -64,7 +65,7 @@ export function getKey(position: Position): string {
     return `${position.x}${DELIMITER}${position.y}`;
 }
 
-function getPosition(coo: string): Position {
+export function getPosition(coo: string): Position {
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
         console.warn(
@@ -78,6 +79,7 @@ function getPosition(coo: string): Position {
     };
 }
 
+// ---
 
 function setStackByData(data: Data) {
     stack = Object.keys(data);
@@ -157,8 +159,8 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
         console.warn('result colors length must be 4!');
         return data;
     }
-    coos.forEach((o, i) => setDataAtCoo(data, o.coo, result.data[i]));
-    setDataAtCoo(data, cooToExplode, result.value);
+    coos.forEach((o, i) => data[o.coo] = result.data[i]);
+    data[cooToExplode] = result.value;
     return data;
 }
 
@@ -188,15 +190,18 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
     };
 }
 
-function setDataAtCoo(data: Data, coo: string, value: number) {
-    data[coo] = value;
-}
+// ---
 
 export function showDataAndStack(state: State) {
     console.log(`export const savedData: SavedData = ${JSON.stringify({
         state,
         stack,
         zoom: camera.state.zoom,
-        position: player.position
+        position: camera.state.position
     })};`);
+}
+
+export function getColor(color: number, showNegative: boolean): Color {
+    const c = Math.round(color * 255 / INITIAL_VALUE);
+    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
 }

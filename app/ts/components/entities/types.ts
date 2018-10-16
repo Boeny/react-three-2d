@@ -1,11 +1,17 @@
 
 
+export interface Color {
+    r: number;
+    g: number;
+    b: number;
+}
+
 export type Data = Coobject<number>; // coo -> color
 
 export interface State {
     data: Data;
     mode: number;
-    currentCoo: string | null;
+    currentCoo: string;
     showNegative: boolean;
     size: { width: number, height: number };
 }
@@ -19,6 +25,7 @@ export interface IStore {
     nextMode: () => void;
     toggleNegative: () => void;
     save: () => void;
+    getCurrentValue: () => number;
 }
 
 export interface SavedData {

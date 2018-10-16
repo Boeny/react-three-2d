@@ -3,13 +3,13 @@ import * as events from '~/utils/events';
 import * as React3 from 'react3';
 import { Store as html } from './html/store';
 import { Vector2 } from 'three';
-import { Entities, Player } from '~/components';
+import { Entities, Camera } from '~/components';
 import { Html } from './html';
 import { savedData } from '~/saves';
 
 
 export function App() {
-    const { x, y } = savedData.position;
+    const { position, zoom } = savedData;
     return (
         <React.Fragment>
             <Html />
@@ -21,7 +21,7 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Player position={new Vector2(x, y)} color={'#330000'} />
+                    <Camera position={position} zoom={zoom} />
                     <Entities position={new Vector2()} />
                 </scene>
             </React3>

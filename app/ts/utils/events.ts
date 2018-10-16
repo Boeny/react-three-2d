@@ -14,7 +14,7 @@ import { MOUSE, KEY } from '~/constants';
 let dragStartPoint: Vector2 | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
-    camera.setZoom(e.deltaY);
+    camera.updateZoomBy(e.deltaY);
 }
 
 export function onMouseDown(e: MouseEvent) {
