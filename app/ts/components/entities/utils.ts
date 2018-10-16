@@ -1,5 +1,6 @@
 import { createArray } from '~/utils';
 import { INITIAL_VALUE } from './constants';
+import { savedData, savedStack } from '~/saves';
 
 
 const DELIMITER = '|';
@@ -8,6 +9,7 @@ const AREA_WIDTH = 50;
 const MAX_PRESSURE_PER_FRAME = 20;
 const MAX_ITERATIONS_PER_FRAME = 500;
 
+let stack: string[] = savedStack;
 
 type Data = Coobject<number>; // coo -> color
 
@@ -16,15 +18,30 @@ interface Coo {
     y: number;
 }
 
-function getCoo(): number {
-    return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
+interface FrameBuffer {
+    before: Data;
+    after: Data;
 }
 
-export function setDefaultData(data: Data) {
+const frameBuffer: FrameBuffer = {
+    before: {},
+    after: {}
+};
+
+export function getDefaultData(): Data {
+    if (Object.keys(savedData).length > 0) {
+        return savedData;
+    }
+    const data = {};
     createArray(DEFAULT_COOS_COUNT).map(() => setDefaultDataAtPosition(data, {
         x: getCoo(),
         y: getCoo()
     }));
+    return data;
+}
+
+function getCoo(): number {
+    return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
 
 export function getSizeFromData(data: Data): { width: number, height: number } {
@@ -68,18 +85,6 @@ function getPosition(coo: string): Coo {
     };
 }
 
-
-interface FrameBuffer {
-    before: Data;
-    after: Data;
-}
-
-const frameBuffer: FrameBuffer = {
-    before: {},
-    after: {}
-};
-
-let stack: string[] = [];
 
 function setStackByData(data: Data) {
     stack = Object.keys(data);

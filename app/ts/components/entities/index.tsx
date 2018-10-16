@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { setDefaultData, getNewData, getNewValueAtCoo, getKey, getSizeFromData } from './utils';
+import { getDefaultData, getNewData, getNewValueAtCoo, getKey, getSizeFromData } from './utils';
 import { MountAndInit } from '../mount-and-init';
 import { Quad } from '../quad';
 import { Store as movable } from '../movable/store';
@@ -44,9 +44,7 @@ export const Store: IStore = {
         }
     }),
     init() {
-        const data = {};
-        setDefaultData(data);
-        this.setDataAndSize(data);
+        this.setDataAndSize(getDefaultData());
     },
     setDataAndSize(data: Data) {
         runInAction(() => {
