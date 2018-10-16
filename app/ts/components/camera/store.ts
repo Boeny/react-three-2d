@@ -1,12 +1,13 @@
 import { observable, runInAction } from 'mobx';
 import { clampByMin, clampByMax } from '~/utils';
 import { IStore } from './types';
+import { savedData } from '~/saves';
 import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
 
 
 export const Store: IStore = {
     state: observable({
-        zoom: CAMERA_INIT_ZOOM,
+        zoom: savedData.zoom || CAMERA_INIT_ZOOM,
         position: { x: 0, y: 0 }
     }),
     setZoom(delta: number) {

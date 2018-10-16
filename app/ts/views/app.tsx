@@ -5,9 +5,11 @@ import { Store as html } from './html/store';
 import { Vector2 } from 'three';
 import { Entities, Player } from '~/components';
 import { Html } from './html';
+import { savedData } from '~/saves';
 
 
 export function App() {
+    const { x, y } = savedData.position;
     return (
         <React.Fragment>
             <Html />
@@ -19,7 +21,7 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Player position={new Vector2()} color={'#330000'} />
+                    <Player position={new Vector2(x, y)} color={'#330000'} />
                     <Entities position={new Vector2()} />
                 </scene>
             </React3>

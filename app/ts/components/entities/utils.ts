@@ -1,6 +1,9 @@
+import { Store as camera } from '~/components/camera/store';
+import { Store as player } from '~/components/player/store';
 import { createArray } from '~/utils';
+import { Data, State } from './types';
 import { INITIAL_VALUE } from './constants';
-import { savedData, savedStack } from '~/saves';
+import { savedData } from '~/saves';
 
 
 const DELIMITER = '|';
@@ -9,14 +12,7 @@ const AREA_WIDTH = 50;
 const MAX_PRESSURE_PER_FRAME = 20;
 const MAX_ITERATIONS_PER_FRAME = 500;
 
-let stack: string[] = savedStack;
-
-type Data = Coobject<number>; // coo -> color
-
-interface Coo {
-    x: number;
-    y: number;
-}
+let stack: string[] = savedData.stack;
 
 interface FrameBuffer {
     before: Data;
@@ -29,9 +25,6 @@ const frameBuffer: FrameBuffer = {
 };
 
 export function getDefaultData(): Data {
-    if (Object.keys(savedData).length > 0) {
-        return savedData;
-    }
     const data = {};
     createArray(DEFAULT_COOS_COUNT).map(() => setDefaultDataAtPosition(data, {
         x: getCoo(),
@@ -44,7 +37,7 @@ function getCoo(): number {
     return Math.floor(AREA_WIDTH * (Math.random() - 0.5));
 }
 
-export function getSizeFromData(data: Data): { width: number, height: number } {
+export function getSizeFromData(data: Data): State['size'] {
     let width = 0;
     let height = 0;
     Object.keys(data).map(coo => {
@@ -62,16 +55,16 @@ export function getSizeFromData(data: Data): { width: number, height: number } {
     };
 }
 
-function setDefaultDataAtPosition(data: Data, position: Coo) {
+function setDefaultDataAtPosition(data: Data, position: Position) {
     data[getKey(position)] = INITIAL_VALUE;
     data[getKey({ x: -position.x, y: -position.y })] = -INITIAL_VALUE;
 }
 
-export function getKey(position: Coo): string {
+export function getKey(position: Position): string {
     return `${position.x}${DELIMITER}${position.y}`;
 }
 
-function getPosition(coo: string): Coo {
+function getPosition(coo: string): Position {
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
         console.warn(
@@ -130,12 +123,7 @@ export function getNewData(data: Data): Data {
     return result;
 }
 
-export function getNewValueAtCoo(data: Data, mode: number): { data: Data, coo: string } {
-    if (mode > 0) {
-        console.log('data', JSON.stringify(data, null, 4));
-        console.log('stack', JSON.stringify(stack, null, 4));
-        return { data: {}, coo: '' };
-    }
+export function getNewValueAtCoo(data: Data): { data: Data, coo: string } {
     if (stack.length === 0) {
         setStackByData(data);
     }
@@ -148,7 +136,7 @@ export function getNewValueAtCoo(data: Data, mode: number): { data: Data, coo: s
     };
 }
 
-function getCoosAround(position: Coo): string[] {
+function getCoosAround(position: Position): string[] {
     return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
@@ -202,4 +190,13 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 
 function setDataAtCoo(data: Data, coo: string, value: number) {
     data[coo] = value;
+}
+
+export function showDataAndStack(state: State) {
+    console.log(`export const savedData: SavedData = ${JSON.stringify({
+        state,
+        stack,
+        zoom: camera.state.zoom,
+        position: player.position
+    })};`);
 }

@@ -1,10 +1,5 @@
 
 
-interface Position {
-    x: number;
-    y: number;
-}
-
 export interface IStore {
     canvas: HTMLCanvasElement | null;
     state: {

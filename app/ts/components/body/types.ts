@@ -1,11 +1,6 @@
 import { Vector2 } from 'three';
 
 
-export interface Position {
-    x: number;
-    y: number;
-}
-
 interface Moving {
     left: boolean;
     right: boolean;

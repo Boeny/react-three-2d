@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { IStore as IBodyStore } from '../body/types';
-import { Position, Moving } from './types';
+import { Moving } from './types';
 import { Body } from '../body';
 import { MAX_SPEED } from '~/constants';
 

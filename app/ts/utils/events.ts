@@ -90,6 +90,9 @@ export function onKeyDown(e: KeyboardEvent) {
         case 'v':
             entities.toggleNegative();
             break;
+        case 's':
+            entities.save();
+            break;
     }
 }
 

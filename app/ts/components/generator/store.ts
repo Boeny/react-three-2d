@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, Position } from './types';
+import { IStore } from './types';
 
 
 export function getStore(period: number, tickLength: number, p: Vector2): IStore {

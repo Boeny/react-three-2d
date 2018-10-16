@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx';
-import { IStore, IBodyStore, Position, Colliders } from './types';
+import { IStore, IBodyStore, Colliders } from './types';
 
 
 export const Store: IStore = {

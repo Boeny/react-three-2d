@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { IBodyStore, Position } from './types';
+import { IBodyStore } from './types';
 import { Particle } from '../particle';
 import { SHOW_COLLIDERS } from '~/constants';
 

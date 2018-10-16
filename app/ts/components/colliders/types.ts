@@ -3,11 +3,6 @@ import { IStore as IBodyStore } from '../body/types';
 
 export { IBodyStore };
 
-export interface Position {
-    x: number;
-    y: number;
-}
-
 export type Colliders = Coobject<IBodyStore>;
 
 export interface IStore {

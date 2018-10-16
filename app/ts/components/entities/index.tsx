@@ -2,49 +2,31 @@ import * as React from 'react';
 import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { getDefaultData, getNewData, getNewValueAtCoo, getKey, getSizeFromData } from './utils';
-import { MountAndInit } from '../mount-and-init';
-import { Quad } from '../quad';
+import {
+    getNewData, getNewValueAtCoo, getKey, getSizeFromData, showDataAndStack
+} from './utils';
 import { Store as movable } from '../movable/store';
 import { Store as events } from '../events/store';
+import { Data, IStore } from './types';
+import { MountAndInit } from '../mount-and-init';
+import { Quad } from '../quad';
+import { savedData } from '~/saves';
 import { WIDTH_SCALE } from '~/constants';
 import { INITIAL_VALUE } from './constants';
 
 
-const YELLOW_COLOR: Color = { r: 255, g: 223, b: 0 };
-
-type Data = Coobject<number>; // coo -> color
-type Size = { width: number, height: number };
-
-interface IStore {
-    state: {
-        data: Data;
-        mode: number;
-        currentCoo: string | null;
-        showNegative: boolean;
-        size: Size;
-    };
-    init: () => void;
-    setDataAndSize: (data: Data) => void;
-    nextStep: () => void;
-    setMode: (mode: number) => void;
-    nextMode: () => void;
-    toggleNegative: () => void;
+interface Color {
+    r: number;
+    g: number;
+    b: number;
 }
 
+const YELLOW_COLOR: Color = { r: 255, g: 223, b: 0 };
+
 export const Store: IStore = {
-    state: observable({
-        data: {},
-        mode: 0,
-        currentCoo: null,
-        showNegative: false,
-        size: {
-            width: 0,
-            height: 0
-        }
-    }),
+    state: observable(savedData.state),
     init() {
-        this.setDataAndSize(getDefaultData());
+        this.setDataAndSize(this.state.data);
     },
     setDataAndSize(data: Data) {
         runInAction(() => {
@@ -55,7 +37,7 @@ export const Store: IStore = {
     nextStep() {
         runInAction(() => {
             if (this.state.mode > 0) {
-                const result = getNewValueAtCoo(toJS(this.state.data), this.state.mode);
+                const result = getNewValueAtCoo(toJS(this.state.data));
                 this.state.currentCoo = result.coo;
                 this.setDataAndSize(result.data);
             } else {
@@ -71,7 +53,12 @@ export const Store: IStore = {
         this.setMode(this.state.mode + 1);
     },
     toggleNegative() {
+        console.log(!this.state.showNegative);
         runInAction(() => this.state.showNegative = !this.state.showNegative);
+    },
+    save() {
+        console.log('saving...');
+        showDataAndStack(this.state);
     }
 };
 
@@ -90,7 +77,9 @@ const ConnectedEntities = observer(() => {
     );
 });
 
-function getTextureData(width: number, height: number, { data, currentCoo, showNegative }: IStore['state']): DataTexture {
+function getTextureData(
+    width: number, height: number, { data, currentCoo, showNegative }: IStore['state']
+): DataTexture {
     const size = width * height;
     const texData = new Uint8Array(3 * size);
     const width2 = Math.floor(width / 2);
@@ -108,11 +97,6 @@ function getTextureData(width: number, height: number, { data, currentCoo, showN
     return texture;
 }
 
-interface Color {
-    r: number;
-    g: number;
-    b: number;
-}
 function getColor(color: number, showNegative: boolean): Color {
     const c = Math.round(color * 255 / INITIAL_VALUE);
     return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };

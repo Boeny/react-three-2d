@@ -50,3 +50,21 @@ declare interface ColorProps {
 declare interface Coobject<T> {
     [coo: string]: T | undefined;
 }
+
+declare interface Position {
+    x: number;
+    y: number;
+}
+
+declare module "*.json" {
+    export const zoom: number;
+    export const position: Position;
+    export const state: {
+        data: Coobject<number>;
+        mode: number;
+        currentCoo: string | null;
+        showNegative: boolean;
+        size: { width: number, height: number };
+    };
+    export const stack: string[];
+}

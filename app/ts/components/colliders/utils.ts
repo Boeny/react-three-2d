@@ -1,5 +1,5 @@
 import { Store } from './store';
-import { IBodyStore, Position } from './types';
+import { IBodyStore } from './types';
 
 
 export function getCollider(x: number, y: number): IBodyStore | undefined {

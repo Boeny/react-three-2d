@@ -8,7 +8,7 @@ import { WIDTH_SCALE, Z_INDEX_STEP } from '~/constants';
 const BORDER_WIDTH = 0.1;
 
 interface Props {
-    position: { x: number, y: number };
+    position: Position;
     color: string;
     borderColor?: string;// #000 by default
     width?: number;

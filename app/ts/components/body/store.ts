@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, CommonParams, Position, Signal } from './types';
+import { IStore, CommonParams, Signal } from './types';
 
 
 export interface InitialParams extends CommonParams {

@@ -1,10 +1,5 @@
 
 
-export interface Position {
-    x: number;
-    y: number;
-}
-
 export interface State {
     zoom: number;
     position: Position;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { setCollider, delCollider, updateCollider } from './utils';
-import { IBodyStore, Position } from './types';
+import { IBodyStore } from './types';
 
 
 export interface Props {
