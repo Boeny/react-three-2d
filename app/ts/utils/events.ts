@@ -80,10 +80,15 @@ export function onKeyDown(e: KeyboardEvent) {
         case KEY.SPACE:
             if (events.state.stepMode) {
                 entities.nextStep();
+            } else {
+                events.setStepMode(true);
             }
             break;
         case KEY.ENTER:
             entities.nextMode();
+            break;
+        case 'v':
+            entities.toggleNegative();
             break;
     }
 }
