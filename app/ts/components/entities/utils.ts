@@ -195,10 +195,12 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 // ---
 
 export function showDataAndStack(state: State) {
+    const { data, ...rest } = state;
     console.log(`export const savedData: SavedData = ${JSON.stringify({
-        state,
         stack,
-        ...camera.state
+        data,
+        state: rest,
+        camera: camera.state
     })};`);
 }
 
