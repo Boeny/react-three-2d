@@ -88,6 +88,7 @@ export function onKeyDown(e: KeyboardEvent) {
             }
             break;
         case KEY.ENTER:
+            events.setStepMode(true);
             entities.nextMode();
             break;
         case 'v':
@@ -113,9 +114,6 @@ export function onKeyUp(e: KeyboardEvent) {
         case KEY.DOWN:
             player.moveDown(false);
             break;
-    }
-    if (player.isMoving() === false) {
-        // events.setStepMode(false);
     }
 }
 

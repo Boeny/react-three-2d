@@ -111,7 +111,7 @@ export const Store: IStore = {
             case 1:
                 return {
                     x: 0,
-                    y: rotation.y * POS_MULT,
+                    y: rotation.y * POS_MULT - 0.5,
                     z: 0
                 };
             case 0:

@@ -26,7 +26,7 @@ export const LocalMap = observer(() => {
                     )}
                     width={width}
                     height={width}
-                    depth={width}
+                    depth={width / 2}
                     color={'#ffffff'}
                 />
             ))}
