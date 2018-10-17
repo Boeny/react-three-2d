@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { observer } from 'mobx-react';
 import { Store } from './store';
 import { Store as movable } from '../movable/store';
 import { Store as events } from '../events/store';
@@ -8,14 +7,13 @@ import { GlobalMap } from './global-map';
 import { LocalMap } from './local-map';
 
 
-export const Entities = observer((_: PositionProps) => {
-    const { mode } = Store.state;
+export function Entities(_: PositionProps) {
     return (
         <MountAndInit
             component={(
                 <group>
                     <GlobalMap />
-                    {mode > 0 ? <LocalMap /> : null}
+                    <LocalMap />
                 </group>
             )}
             onMount={() => {
@@ -24,7 +22,7 @@ export const Entities = observer((_: PositionProps) => {
             }}
         />
     );
-});
+}
 
 function onEveryTick() {
     if (events.state.stepMode === false) {

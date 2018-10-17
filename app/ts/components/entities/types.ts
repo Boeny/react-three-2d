@@ -14,6 +14,7 @@ export type Data = Coobject<number>; // coo -> color
 
 export interface State {
     data: Data;
+    local: Coobject<Data>;
     mode: number;
     currentCoo: string;
     showNegative: boolean;
@@ -23,6 +24,7 @@ export interface State {
 export interface IStore {
     state: State;
     init: () => void;
+    initLocal: () => void;
     setDataAndSize: (data: Data) => void;
     nextStep: () => void;
     setMode: (mode: number) => void;

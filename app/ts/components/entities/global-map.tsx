@@ -37,7 +37,7 @@ function getTextureData(
             y: Math.floor(i / width - height2)
         });
         const color = currentCoo === coo ?
-            (mode === 0 ? YELLOW_COLOR : BLACK_COLOR) :
+            (mode === 1 ? YELLOW_COLOR : BLACK_COLOR) :
             getColor(data[coo] || 0, showNegative);
         const stride = i * 3;
         texData[stride] = color.r;

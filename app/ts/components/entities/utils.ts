@@ -2,7 +2,8 @@ import { Store as camera } from '~/components/camera/store';
 import { createArray } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, Color } from './types';
-import { INITIAL_VALUE } from './constants';
+import { WIDTH_SCALE } from '~/constants';
+import { INITIAL_VALUE, LOCAL_WIDTH } from './constants';
 import { savedData } from '~/saves';
 
 
@@ -27,7 +28,7 @@ const frameBuffer: FrameBuffer = {
 // ---
 
 export function getDefaultData(): Data {
-    const data = {};
+    const data: Data = {};
     createArray(DEFAULT_COOS_COUNT).map(() => setDefaultDataAtPosition(data, {
         x: getCoo(),
         y: getCoo()
@@ -67,10 +68,14 @@ export function getKey(position: Position): string {
 }
 
 export function getPositionByCoo(coo: string): Position {
+    if (!coo) {
+        console.warn('Entities.getPosition: input string should not be empty!"');
+        return { x: 0, y: 0 };
+    }
     const position = coo.split(DELIMITER).map(v => parseInt(v, 10)).filter(v => !isNaN(v));
     if (position.length !== 2) {
         console.warn(
-            `Entities.getPosition: input string = 2 coordinates splitted by "${DELIMITER}"`
+            `Entities.getPosition: input string must contain 2 coordinates splitted by "${DELIMITER}"`
         );
         return { x: 0, y: 0 };
     }
@@ -195,16 +200,36 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 // ---
 
 export function showDataAndStack(state: State) {
-    const { data, ...rest } = state;
-    console.log(`export const savedData: SavedData = ${JSON.stringify({
+    const { data, local, ...rest } = state;
+    console.log(JSON.stringify({
         stack,
         data,
+        local,
         state: rest,
         camera: camera.state
-    })};`);
+    }));
 }
 
 export function getColor(color: number, showNegative: boolean): Color {
     const c = Math.round(color * 255 / INITIAL_VALUE);
     return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
+}
+
+// ---
+
+function getLocalCoo(width: number) {
+    const result = Math.floor(Math.random() / width);
+    return WIDTH_SCALE * (result === 0 ? result : result - 1);
+}
+
+export function getLocalData(count: number): Data {
+    const data: Data = {};
+    createArray(count).map(() => {
+        const coo = getKey({
+            x: getLocalCoo(LOCAL_WIDTH),
+            y: getLocalCoo(LOCAL_WIDTH)
+        });
+        data[coo] = 1;
+    });
+    return data;
 }

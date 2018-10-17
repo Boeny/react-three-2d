@@ -1,7 +1,8 @@
 import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
-    getNewData, getNewValueAtCoo, getSizeFromData, showDataAndStack, getPositionByCoo, getDefaultData
+    getNewData, getNewValueAtCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
+    getDefaultData, getLocalData
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
@@ -20,7 +21,7 @@ const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 export const Store: IStore = {
     state: observable(savedData.state),
     init() {
-        console.log(savedData);
+        // console.log(savedData);
         this.setDataAndSize(
             Object.keys(this.state.data).length > 0 ?
                 this.state.data : getDefaultData()
@@ -32,14 +33,30 @@ export const Store: IStore = {
             this.state.size = getSizeFromData(data);
         });
     },
+    initLocal() {
+        const { currentCoo, data } = this.state;
+        if (this.state.local[currentCoo]) {
+            return;
+        }
+        runInAction(() => {
+            this.state.local = { [currentCoo]: getLocalData(data[currentCoo] || 0) };
+        });
+    },
     nextStep() {
         runInAction(() => {
-            if (this.state.mode > 0) {
-                const result = getNewValueAtCoo(toJS(this.state.data));
-                this.state.currentCoo = result.coo;
-                this.setDataAndSize(result.data);
-            } else {
-                this.setDataAndSize(getNewData(toJS(this.state.data)));
+            switch (this.state.mode) {
+                case 0:
+                    this.setDataAndSize(getNewData(toJS(this.state.data)));
+                    break;
+                case 1:
+                    const result = getNewValueAtCoo(toJS(this.state.data));
+                    this.state.currentCoo = result.coo;
+                    this.setDataAndSize(result.data);
+                    break;
+                case 2:
+                    break;
+                default:
+                    console.warn(`there is no action for mode ${this.state.mode}`);
             }
         });
     },
@@ -47,11 +64,17 @@ export const Store: IStore = {
         runInAction(() => this.state.mode = mode);
     },
     nextMode() {
-        this.setMode(this.state.mode + 1);
-        console.log('mode = ', this.state.mode);
-        if (this.state.mode === 1) {
+        const { mode, currentCoo } = this.state;
+        runInAction(() => {
+            this.setMode(mode + 1);
+            console.log(this.state.mode);
+            if (this.state.mode === 2) {
+                this.initLocal();
+            }
+        });
+        if (this.state.mode === 2) {
             const zoom = 4;
-            const positionByCoo = getPositionByCoo(this.state.currentCoo);
+            const positionByCoo = getPositionByCoo(currentCoo);
             const rotation = this.getRotationByZoom(zoom);
             camera.init({
                 zoom,
@@ -76,28 +99,31 @@ export const Store: IStore = {
     getZoomNear(): Zoom | undefined {
         switch (this.state.mode) {
             case 0:
-                return 6;
             case 1:
+                return 6;
+            case 2:
                 return 3.2;
         }
     },
     getZoomFar(): Zoom | undefined {
         switch (this.state.mode) {
             case 0:
-                return 200;
             case 1:
+                return 200;
+            case 2:
                 return 6;
         }
     },
     getRotationByZoom(zoom: number): Position3 {
         switch (this.state.mode) {
-            case 1:
+            case 2:
                 return {
                     x: zoom * ROT_MULT + ROT_BASE,
                     y: 0,
                     z: 0
                 };
             case 0:
+            case 1:
             default:
                 return {
                     x: 0,
@@ -108,13 +134,14 @@ export const Store: IStore = {
     },
     getTranslationByRotation(rotation: Position3): Position3 {
         switch (this.state.mode) {
-            case 1:
+            case 2:
                 return {
                     x: 0,
                     y: rotation.y * POS_MULT - 0.5,
                     z: 0
                 };
             case 0:
+            case 1:
             default:
                 return {
                     x: 0,
