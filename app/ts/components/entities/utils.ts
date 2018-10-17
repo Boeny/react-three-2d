@@ -1,5 +1,5 @@
 import { Store as camera } from '~/components/camera/store';
-import { createArray } from '~/utils';
+import { createArray, getSign } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, Color } from './types';
 import { WIDTH_SCALE } from '~/constants';
@@ -222,14 +222,77 @@ function getLocalCoo(width: number) {
     return WIDTH_SCALE * (result === 0 ? result : result - 1);
 }
 
-export function getLocalData(count: number): Data {
-    const data: Data = {};
+export function getLocalData(count: number): Coobject<string> {
+    const data: Coobject<string> = {};
     createArray(count).map(() => {
         const coo = getKey({
             x: getLocalCoo(LOCAL_WIDTH),
             y: getLocalCoo(LOCAL_WIDTH)
         });
-        data[coo] = 1;
+        data[coo] = getKey({
+            x: getLocalCoo(LOCAL_WIDTH),
+            y: getLocalCoo(LOCAL_WIDTH)
+        });
     });
     return data;
+}
+
+export function getNextLocalData(localData: Coobject<string>): Coobject<string> {
+    const result: Coobject<string> = {};
+    Object.keys(localData).map(coo => {
+        const targetCoo = localData[coo] || '0|0';
+        const position = getPositionByCoo(coo);
+        const targetPosition = getPositionByCoo(targetCoo);
+        const diff = {
+            x: targetPosition.x - position.x,
+            y: targetPosition.x - position.y
+        };
+        const nextPosition = getNextLocalPosition(localData, position, diff);
+        if (nextPosition !== null) {
+            result[getKey(nextPosition)] = targetCoo;
+        }
+    });
+    return result;
+}
+
+function getNextLocalPosition(data: Coobject<string>, position: Position, diff: Position): Position | null {
+    if (diff.x === 0 && diff.y === 0) {
+        return position;
+    }
+    const sign = { x: getSign(diff.x), y: getSign(diff.y) };
+    const byX = Math.abs(diff.x) >= Math.abs(diff.y);
+    let result: Position;
+    if (byX) {
+        result = { ...position, x: position.x + sign.x };
+    } else {
+        result = { ...position, y: position.y + sign.y };
+    }
+    if (!data[getKey(result)]) {
+        return result;
+    }
+    if (byX) {
+        result = { ...position, y: position.y + sign.y };
+    } else {
+        result = { ...position, x: position.x + sign.x };
+    }
+    if (!data[getKey(result)]) {
+        return result;
+    }
+    if (byX) {
+        result = { ...position, y: position.y - sign.y };
+    } else {
+        result = { ...position, x: position.x - sign.x };
+    }
+    if (!data[getKey(result)]) {
+        return result;
+    }
+    if (byX) {
+        result = { ...position, x: position.x - sign.x };
+    } else {
+        result = { ...position, y: position.y - sign.y };
+    }
+    if (!data[getKey(result)]) {
+        return result;
+    }
+    return null;
 }

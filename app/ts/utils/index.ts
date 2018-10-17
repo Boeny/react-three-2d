@@ -70,3 +70,7 @@ export function getRandomArrayIndex<T>(array: T[]): number {
 export function getRandomArrayElement<T>(array: T[]): T {
     return array[getRandomArrayIndex(array)];
 }
+
+export function getSign(v: number): number {
+    return v > 0 ? 1 : (v < 0 ? -1 : 0);
+}

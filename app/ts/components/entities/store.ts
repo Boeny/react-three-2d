@@ -2,7 +2,7 @@ import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
     getNewData, getNewValueAtCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
-    getDefaultData, getLocalData
+    getDefaultData, getLocalData, getNextLocalData
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
@@ -53,6 +53,8 @@ export const Store: IStore = {
                     this.setDataAndSize(result.data);
                     break;
                 case 2:
+                    const { local, currentCoo } = this.state;
+                    this.state.local = { [currentCoo]: getNextLocalData(local[currentCoo] || {}) };
                     break;
                 default:
                     console.warn(`there is no action for mode ${this.state.mode}`);

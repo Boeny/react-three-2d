@@ -16,7 +16,7 @@ export type Data = Coobject<number>; // coo -> color
 
 export interface State {
     data: Data;
-    local: Coobject<Data>;
+    local: Coobject<Coobject<string>>;
     mode: number;
     currentCoo: string;
     showNegative: boolean;
