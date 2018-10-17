@@ -1,12 +1,15 @@
+import { Position3 } from '~/types';
 
+
+export { Position3 };
 
 export type AfterZoom = (zoom: State['zoom']) => void;
 
 export interface State {
     zoom: number;
-    position: { x: number, y: number, z: number };
-    rotation: { x: number, y: number, z: number };
-    translation: { x: number, y: number, z: number };
+    position: Position3;
+    rotation: Position3;
+    translation: Position3;
 }
 
 export interface IStore {
@@ -14,7 +17,8 @@ export interface IStore {
     init: (state: State) => void;
     setZoom: (zoom: number, after?: AfterZoom) => void;
     updateZoomBy: (newZoom: number, near?: number, far?: number, after?: AfterZoom) => void;
-    setPosition: (v: State['position']) => void;
-    setRotation: (v: State['position']) => void;
-    setTranslation: (v: State['position']) => void;
+    setPosition: (v: Position3) => void;
+    setRotation: (v: Position3) => void;
+    setTranslation: (v: Position3) => void;
+    updatePositionBy: (v: Position3) => void;
 }

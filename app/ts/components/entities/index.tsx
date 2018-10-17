@@ -7,7 +7,7 @@ import { GlobalMap } from './global-map';
 import { LocalMap } from './local-map';
 
 
-export function Entities(_: PositionProps) {
+export function Entities() {
     return (
         <MountAndInit
             component={(

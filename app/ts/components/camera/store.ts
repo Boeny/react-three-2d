@@ -1,6 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { clampByMin, clampByMax } from '~/utils';
-import { IStore, State, AfterZoom } from './types';
+import { IStore, State, AfterZoom, Position3 } from './types';
 import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
 
 
@@ -47,9 +47,15 @@ export const Store: IStore = {
     },
     setPosition(v: State['position']) {
         runInAction(() => {
-            this.state.position.x = v.x;
-            this.state.position.y = v.y;
-            this.state.position.z = v.z;
+            this.state.position = v;
+        });
+    },
+    updatePositionBy(coo: Position3) {
+        const { position } = this.state;
+        this.setPosition({
+            x: position.x + coo.x,
+            y: position.y + coo.y,
+            z: position.z + coo.z
         });
     },
     setRotation(v: State['position']) {

@@ -1,4 +1,3 @@
-import { Vector2 } from 'three';
 import { Position } from '~/types';
 
 
@@ -12,7 +11,6 @@ export interface Moving {
 export interface IStore {
     moving: Moving;
     position: Position;
-    init: (position: Vector2) => void;
     setPosition: (x: number, y: number) => void;
     moveLeft: (v: boolean) => void;
     moveRight: (v: boolean) => void;

@@ -69,16 +69,25 @@ export function onKeyDown(e: KeyboardEvent) {
     }
     switch (e.key) {
         case KEY.LEFT:
+        case 'a':
             player.moveLeft(true);
             break;
         case KEY.RIGHT:
+        case 'd':
             player.moveRight(true);
             break;
         case KEY.UP:
+        case 'w':
             player.moveUp(true);
             break;
         case KEY.DOWN:
-            player.moveDown(true);
+        case 's':
+            if (e.ctrlKey) {
+                e.preventDefault();
+                entities.save();
+            } else {
+                player.moveDown(true);
+            }
             break;
         case KEY.SPACE:
             if (events.state.stepMode) {
@@ -94,24 +103,25 @@ export function onKeyDown(e: KeyboardEvent) {
         case 'v':
             entities.toggleNegative();
             break;
-        case 's':
-            entities.save();
-            break;
     }
 }
 
 export function onKeyUp(e: KeyboardEvent) {
     switch (e.key) {
         case KEY.LEFT:
+        case 'a':
             player.moveLeft(false);
             break;
         case KEY.RIGHT:
+        case 'd':
             player.moveRight(false);
             break;
         case KEY.UP:
+        case 'w':
             player.moveUp(false);
             break;
         case KEY.DOWN:
+        case 's':
             player.moveDown(false);
             break;
     }

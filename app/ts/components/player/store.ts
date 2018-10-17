@@ -1,5 +1,4 @@
 import { observable, runInAction } from 'mobx';
-import { Vector2 } from 'three';
 import { IStore } from './types';
 
 
@@ -11,9 +10,6 @@ export const Store: IStore = {
         down: false
     }),
     position: observable({ x: 0, y: 0 }),
-    init(v: Vector2) {
-        this.setPosition(v.x, v.y);
-    },
     setPosition(x: number, y: number) {
         runInAction(() => {
             this.position.x = x;

@@ -2,8 +2,7 @@ import * as React from 'react';
 import * as events from '~/utils/events';
 import * as React3 from 'react3';
 import { Store as html } from './html/store';
-import { Vector2 } from 'three';
-import { Entities, Camera } from '~/components';
+import { Entities, Player } from '~/components';
 import { Html } from './html';
 import { savedData } from '~/saves';
 
@@ -21,13 +20,13 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Camera
+                    <Player
                         position={position}
                         zoom={zoom}
                         rotation={rotation}
                         translation={translation}
                     />
-                    <Entities position={new Vector2()} />
+                    <Entities />
                 </scene>
             </React3>
         </React.Fragment>

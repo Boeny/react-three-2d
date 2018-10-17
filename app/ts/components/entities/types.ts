@@ -1,8 +1,10 @@
 import { State as CameraState } from '~/components/camera/types';
+import { Position3 } from '~/types';
 
+
+export { Position3 };
 
 export type Zoom = CameraState['zoom'];
-export type Position3 = CameraState['position'];
 
 export interface Color {
     r: number;
