@@ -21,7 +21,6 @@ const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 export const Store: IStore = {
     state: observable(savedData.state),
     init() {
-        // console.log(savedData);
         this.setDataAndSize(
             Object.keys(this.state.data).length > 0 ?
                 this.state.data : getDefaultData()
