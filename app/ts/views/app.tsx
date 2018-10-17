@@ -9,7 +9,7 @@ import { savedData } from '~/saves';
 
 
 export function App() {
-    const { position, zoom } = savedData;
+    const { position, zoom, rotation, translation } = savedData;
     return (
         <React.Fragment>
             <Html />
@@ -21,7 +21,12 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Camera position={position} zoom={zoom} />
+                    <Camera
+                        position={position}
+                        zoom={zoom}
+                        rotation={rotation}
+                        translation={translation}
+                    />
                     <Entities position={new Vector2()} />
                 </scene>
             </React3>

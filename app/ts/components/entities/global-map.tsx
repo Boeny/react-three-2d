@@ -10,14 +10,13 @@ import { WIDTH_SCALE } from '~/constants';
 
 const YELLOW_COLOR: Color = { r: 255, g: 223, b: 0 };
 const BLACK_COLOR: Color = { r: 0, g: 0, b: 0 };
-
-const position = new Vector3();
+const POSITION = new Vector3();
 
 export const GlobalMap = observer(() => {
     const { width, height } = Store.state.size;
     return (
         <Quad
-            position={position}
+            position={POSITION}
             width={WIDTH_SCALE * width}
             height={WIDTH_SCALE * height}
             texture={getTextureData(width, height, Store.state)}

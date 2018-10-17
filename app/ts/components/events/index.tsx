@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { Store as camera } from '../camera/store';
 import { Store } from './store';
 import { IStore } from './types';
-import { Box } from '../box';
+import { Box2D } from '../box-2d';
 import { Body } from '../body';
 import { Constants } from '../constants-container';
 import { Mode } from './mode';
@@ -14,13 +14,13 @@ import { Mode } from './mode';
 export function Events(props: PositionProps) {
     const position = props.position || new Vector2();
     return (
-        <Box
+        <Box2D
             color={'#cccccc'}
             width={20}
             position={position}
         >
             <Content position={(new Vector2(1, 1)).add(position)} />
-        </Box>
+        </Box2D>
     );
 }
 

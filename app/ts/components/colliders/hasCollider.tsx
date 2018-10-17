@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { setCollider, delCollider, updateCollider } from './utils';
+import { Position } from '~/types';
 import { IBodyStore } from './types';
 
 

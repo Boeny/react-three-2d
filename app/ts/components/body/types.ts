@@ -1,4 +1,5 @@
 import { Vector2 } from 'three';
+import { Position } from '~/types';
 
 
 interface Moving {

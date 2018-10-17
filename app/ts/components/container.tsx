@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { Box } from './box';
+import { Box2D } from './box-2d';
 import { Body } from './body';
 
 
@@ -24,7 +24,7 @@ export const Container = observer((props: Props) => {
     const height = count > 0 ? Math.floor(count / WIDTH) + 1 : 0;
     const position = props.position || new Vector2();
     return (
-        <Box
+        <Box2D
             color={borderColor || 'grey'}
             width={width + 2}
             height={height + 2}
@@ -34,7 +34,7 @@ export const Container = observer((props: Props) => {
                 data={data}
                 position={(new Vector2(1, 1)).add(position)}
             />
-        </Box>
+        </Box2D>
     );
 });
 

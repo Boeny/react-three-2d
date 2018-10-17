@@ -1,6 +1,6 @@
 
 
-export const ZOOM_SCREEN_DELTA = 1;
+export const ZOOM_SCREEN_DELTA = 5;
 
 export const CAMERA_NEAR = 1;
 

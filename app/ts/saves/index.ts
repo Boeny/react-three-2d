@@ -1,4 +1,12 @@
 import { SavedData } from '~/components/entities/types';
-import * as data from './default.json';
+import { data, stack } from './data.json';
+import { state, camera } from './state.json';
 
-export const savedData = data as SavedData;
+export const savedData = {
+    stack,
+    ...camera,
+    state: {
+        data,
+        ...state
+    }
+} as SavedData;

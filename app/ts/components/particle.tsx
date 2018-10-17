@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
+import { Position } from '~/types';
 import { hasCollider, Props as ColliderProps } from './colliders/hasCollider';
 import { Quad } from './quad';
 import { WIDTH_SCALE, Z_INDEX_STEP } from '~/constants';

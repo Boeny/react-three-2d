@@ -3,7 +3,7 @@ import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
-import { Store as entities } from '~/components/entities';
+import { Store as entities } from '~/components/entities/store';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
@@ -14,7 +14,10 @@ import { MOUSE, KEY } from '~/constants';
 let dragStartPoint: Vector2 | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
-    camera.updateZoomBy(e.deltaY);
+    camera.updateZoomBy(e.deltaY, entities.getZoomNear(), entities.getZoomFar(), zoom => {
+        camera.setRotation(entities.getRotationByZoom(zoom));
+        camera.setTranslation(entities.getTranslationByRotation(camera.state.rotation));
+    });
 }
 
 export function onMouseDown(e: MouseEvent) {

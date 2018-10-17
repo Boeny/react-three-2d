@@ -1,0 +1,29 @@
+{
+    "state": {
+        "currentCoo": "-56|-7",
+        "mode": 0,
+        "showNegative": false,
+        "size": {
+            "width": 154,
+            "height": 152
+        }
+    },
+    "camera": {
+        "zoom": 21.22380553227158,
+        "position": {
+            "x": -55,
+            "y": -6,
+            "z": 0
+        },
+        "rotation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        },
+        "translation": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+        }
+    }
+}

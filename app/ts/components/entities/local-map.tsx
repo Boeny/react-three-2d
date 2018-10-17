@@ -1,45 +1,39 @@
 import * as React from 'react';
-import { Vector3, DataTexture, RGBFormat } from 'three';
+import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { getKey, getPosition, getColor } from './utils';
-import { Quad } from '../quad';
+import { createArray } from '~/utils';
+import { getPositionByCoo } from './utils';
+import { Cube } from '../cube';
 import { WIDTH_SCALE } from '~/constants';
 import { INITIAL_VALUE } from './constants';
 
 
 export const LocalMap = observer(() => {
-    const { x, y } = getPosition(Store.state.currentCoo);
-    const count = Store.getCurrentValue();
-    const width = Math.floor(Math.sqrt(INITIAL_VALUE)) + 1;
+    const { data, currentCoo } = Store.state;
+    const position = getPositionByCoo(currentCoo);
+    const count = data[currentCoo] || 0;
+    const width = WIDTH_SCALE / Math.sqrt(INITIAL_VALUE);
     return (
         <group>
-        <Quad
-            position={new Vector3(x, y, 0)}
-            width={WIDTH_SCALE}
-            height={WIDTH_SCALE}
-        />
+            {createArray(count).map(i => (
+                <Cube
+                    key={i}
+                    position={new Vector3(
+                        position.x + getRandomCoordinate(width),
+                        position.y + getRandomCoordinate(width),
+                        0
+                    )}
+                    width={width}
+                    height={width}
+                    depth={width}
+                    color={'#ffffff'}
+                />
+            ))}
         </group>
     );
 });
 
-function getTextureData(width: number, height: number, count: number): DataTexture {
-    const size = width * height;
-    const texData = new Uint8Array(3 * size);
-    const width2 = Math.floor(width / 2);
-    const height2 = height / 2;
-    for (let i = 0; i < size; i += 1) {
-        const coo = getKey({
-            x: i % width - width2,
-            y: Math.floor(i / width - height2)
-        });
-        const color = getColor(count, false);
-        const stride = i * 3;
-        texData[stride] = color.r;
-        texData[stride + 1] = color.g;
-        texData[stride + 2] = color.b;
-    }
-    const texture = new DataTexture(texData, width, height, RGBFormat);
-    texture.needsUpdate = true;
-    return texture;
+function getRandomCoordinate(width: number) {
+    return WIDTH_SCALE * width * (Math.floor(Math.random() / width) + 0.5);
 }

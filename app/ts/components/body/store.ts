@@ -1,5 +1,6 @@
 import { observable, runInAction } from 'mobx';
 import { Vector2 } from 'three';
+import { Position } from '~/types';
 import { IStore, CommonParams, Signal } from './types';
 
 

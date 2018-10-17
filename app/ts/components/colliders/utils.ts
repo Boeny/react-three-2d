@@ -1,4 +1,5 @@
 import { Store } from './store';
+import { Position } from '~/types';
 import { IBodyStore } from './types';
 
 

@@ -44,7 +44,12 @@ const PlayerComponent = observer((props: ColorProps) => {
     const position = new Vector2(Store.position.x, Store.position.y);
     return (
         <group>
-            <Camera position={position} />
+            <Camera
+                position={{ x: position.x, y: position.y, z: 0 }}
+                zoom={40}
+                rotation={{ x: 0, y: 0, z: 0 }}
+                translation={{ x: 0, y: 0, z: 0 }}
+            />
             <Thruster
                 name={'player'}
                 color={props.color}

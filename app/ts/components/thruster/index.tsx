@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
+import { Position } from '~/types';
 import { IStore as IBodyStore } from '../body/types';
 import { Moving } from './types';
 import { Body } from '../body';

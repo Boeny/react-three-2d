@@ -1,3 +1,4 @@
+import { Position } from '~/types';
 
 
 export { Signal } from '~/components/body/types';

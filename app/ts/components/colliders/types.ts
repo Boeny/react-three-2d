@@ -1,3 +1,4 @@
+import { Position } from '~/types';
 import { IStore as IBodyStore } from '../body/types';
 
 

@@ -20,7 +20,7 @@ export function Quad(props: Props) {
                 width={width}
                 height={height}
                 widthSegments={1}
-                heigthSegments={1}
+                heightSegments={1}
             />
             <meshBasicMaterial
                 wireframe={SHOW_AS_WIREFRAME}

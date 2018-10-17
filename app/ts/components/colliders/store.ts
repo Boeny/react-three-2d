@@ -1,4 +1,5 @@
 import { observable, runInAction } from 'mobx';
+import { Position } from '~/types';
 import { IStore, IBodyStore, Colliders } from './types';
 
 
