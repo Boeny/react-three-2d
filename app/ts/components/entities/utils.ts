@@ -1,7 +1,7 @@
 import { Store as camera } from '~/components/camera/store';
 import { createArray, getSign } from '~/utils';
 import { Position } from '~/types';
-import { Data, State, Color } from './types';
+import { Data, State, Color, BaseState } from './types';
 import { INITIAL_VALUE, LOCAL_WIDTH } from './constants';
 import { savedData } from '~/saves';
 
@@ -13,16 +13,6 @@ const MAX_PRESSURE_PER_FRAME = 0.1;
 const MAX_ITERATIONS_PER_FRAME = 500;
 
 let stack: string[] = savedData.stack;
-
-interface FrameBuffer {
-    before: Data;
-    after: Data;
-}
-
-const frameBuffer: FrameBuffer = {
-    before: {},
-    after: {}
-};
 
 // ---
 
@@ -111,11 +101,16 @@ function setStackByData(data: Data) {
         }
     });
     stack = Object.keys(data);
-    frameBuffer.before = {};
-    Object.keys(frameBuffer.after)
-        .forEach(coo => frameBuffer.before[coo] = frameBuffer.after[coo]);
-    frameBuffer.after = {};
-    stack.forEach(coo => frameBuffer.after[coo] = data[coo]);
+}
+
+function getNewDataIteration(data: Data): { data: Data, coo: string } {
+    const chance = Math.random() * INITIAL_VALUE;
+    const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
+    const index = stack.indexOf(cooToExplode);
+    return {
+        data: updateDataAtCoo(data, stack.splice(index === -1 ? 0 : index, 1)[0]),
+        coo: cooToExplode
+    };
 }
 
 export function getNewData(data: Data): Data {
@@ -125,10 +120,7 @@ export function getNewData(data: Data): Data {
     let result = data;
     let i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
-        const chance = Math.random() * INITIAL_VALUE;
-        const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
-        const index = stack.indexOf(cooToExplode);
-        result = updateDataAtCoo(result, stack.splice(index === -1 ? 0 : index, 2)[0]);
+        result = getNewDataIteration(result).data;
         i += 1;
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
@@ -137,17 +129,22 @@ export function getNewData(data: Data): Data {
     return result;
 }
 
-export function getNewValueAtCoo(data: Data): { data: Data, coo: string } {
+export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } {
     if (stack.length === 0) {
         setStackByData(data);
     }
-    const chance = Math.random() * INITIAL_VALUE;
-    const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
-    const index = stack.indexOf(cooToExplode);
-    return {
-        data: updateDataAtCoo(data, stack.splice(index === -1 ? 0 : index, 1)[0]),
-        coo: cooToExplode
-    };
+    return getNewDataIteration(data);
+}
+
+export function getNextData(data: Data): Data {
+    if (stack.length === 0) {
+        setStackByData(data);
+    }
+    let result = data;
+    while (stack.length > 0) {
+        result = getNewDataIteration(result).data;
+    }
+    return result;
 }
 
 function getCoosAround(position: Position): string[] {
@@ -205,12 +202,13 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 
 // ---
 
-export function showDataAndStack(state: State) {
+export function showDataAndStack(state: State, nextState: BaseState) {
     const { data, local, ...rest } = state;
     console.log(JSON.stringify({
         local,
         stack,
         data,
+        nextState,
         state: rest,
         camera: camera.state
     }));

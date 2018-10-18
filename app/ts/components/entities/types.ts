@@ -7,6 +7,8 @@ export { Position3 };
 
 export type Zoom = CameraState['zoom'];
 
+type Size = { width: number, height: number };
+
 export interface Color {
     r: number;
     g: number;
@@ -15,21 +17,26 @@ export interface Color {
 
 export type Data = Coobject<number>; // coo -> color
 
-export interface State {
-    data: Data;
+export interface State extends BaseState {
     local: Coobject<Coobject<string>>;
     mode: number;
     currentCoo: string;
     showNegative: boolean;
     showStack: boolean;
-    size: { width: number, height: number };
+    size: Size;
+}
+
+export interface BaseState {
+    data: Data;
 }
 
 export interface IStore {
     state: State;
+    nextState: BaseState;
     init: () => void;
     initLocal: () => void;
     setDataAndSize: (data: Data) => void;
+    setNextDataAndSize: (data: Data) => void;
     nextStep: () => void;
     setMode: (mode: number) => void;
     nextMode: () => void;
@@ -44,10 +51,8 @@ export interface IStore {
 }
 
 export interface SavedData {
-    zoom: Zoom;
-    position: Position3;
-    rotation: Position3;
-    translation: Position3;
-    state: State;
+    camera: CameraState;
     stack: string[];
+    state: State;
+    nextState: BaseState;
 }

@@ -2,8 +2,8 @@ import { Vector2 } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
-    getNewData, getNewValueAtCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
-    getDefaultData, getLocalData, getNextLocalData, getKey
+    getNewData, getNewDataForSingleCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
+    getDefaultData, getLocalData, getNextLocalData, getKey, getNextData
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
@@ -20,6 +20,7 @@ const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 
 export const Store: IStore = {
     state: observable(savedData.state),
+    nextState: savedData.nextState,
     init() {
         this.setDataAndSize(
             Object.keys(this.state.data).length > 0 ?
@@ -30,6 +31,11 @@ export const Store: IStore = {
         runInAction(() => {
             this.state.data = data;
             this.state.size = getSizeFromData(data);
+        });
+    },
+    setNextDataAndSize(data: Data) {
+        runInAction(() => {
+            this.nextState.data = data;
         });
     },
     initLocal() {
@@ -48,7 +54,7 @@ export const Store: IStore = {
                     this.setDataAndSize(getNewData(toJS(this.state.data)));
                     break;
                 case 1:
-                    const result = getNewValueAtCoo(toJS(this.state.data));
+                    const result = getNewDataForSingleCoo(toJS(this.state.data));
                     this.state.currentCoo = result.coo;
                     this.setDataAndSize(result.data);
                     break;
@@ -68,7 +74,9 @@ export const Store: IStore = {
         const { mode, currentCoo } = this.state;
         runInAction(() => {
             this.setMode(mode + 1);
-            console.log(this.state.mode);
+            if (this.state.mode === 1) {
+                this.setNextDataAndSize(getNextData(toJS(this.state.data)));
+            } else
             if (this.state.mode === 2) {
                 this.initLocal();
             }
@@ -88,6 +96,7 @@ export const Store: IStore = {
                 translation: this.getTranslationByRotation(rotation)
             });
         }
+        console.log(this.state.mode);
     },
     toggleNegative() {
         runInAction(() => this.state.showNegative = !this.state.showNegative);
@@ -99,7 +108,7 @@ export const Store: IStore = {
     },
     save() {
         console.log('saving...');
-        showDataAndStack(this.state);
+        showDataAndStack(this.state, this.nextState);
     },
     getZoomNear(): Zoom | undefined {
         switch (this.state.mode) {

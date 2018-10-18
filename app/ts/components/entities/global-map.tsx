@@ -26,7 +26,6 @@ export const GlobalMap = observer(() => {
 function getTextureData(
     width: number, height: number, { data, currentCoo, showNegative, mode, showStack }: IStore['state']
 ): DataTexture {
-    // console.log(currentCoo, data[currentCoo]);
     const size = width * height;
     const texData = new Uint8Array(3 * size);
     const width2 = Math.floor(width / 2);
@@ -40,7 +39,7 @@ function getTextureData(
             YELLOW_COLOR : getColor(data[coo] || 0, showNegative);
         switch (mode) {
             case 1:
-                if (coo === currentCoo) {
+                if (coo === currentCoo && data[currentCoo]) {
                     color = YELLOW_COLOR;
                 }
                 break;

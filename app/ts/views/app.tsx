@@ -8,7 +8,7 @@ import { savedData } from '~/saves';
 
 
 export function App() {
-    const { position, zoom, rotation, translation } = savedData;
+    const { camera } = savedData;
     return (
         <React.Fragment>
             <Html />
@@ -20,12 +20,7 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Player
-                        position={position}
-                        zoom={zoom}
-                        rotation={rotation}
-                        translation={translation}
-                    />
+                    <Player {...camera} />
                     <Entities />
                 </scene>
             </React3>
