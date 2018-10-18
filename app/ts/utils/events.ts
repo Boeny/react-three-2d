@@ -85,18 +85,22 @@ export function onKeyDown(e: KeyboardEvent) {
     switch (e.key) {
         case KEY.LEFT:
         case 'a':
+        case 'ф':
             player.moveLeft(true);
             break;
         case KEY.RIGHT:
         case 'd':
+        case 'в':
             player.moveRight(true);
             break;
         case KEY.UP:
         case 'w':
+        case 'ц':
             player.moveUp(true);
             break;
         case KEY.DOWN:
         case 's':
+        case 'ы':
             if (e.ctrlKey) {
                 e.preventDefault();
                 entities.save();
@@ -116,9 +120,11 @@ export function onKeyDown(e: KeyboardEvent) {
             entities.nextMode();
             break;
         case 'v':
+        case 'м':
             entities.toggleNegative();
             break;
         case 't':
+        case 'е':
             entities.toggleStack();
             break;
     }
@@ -128,18 +134,22 @@ export function onKeyUp(e: KeyboardEvent) {
     switch (e.key) {
         case KEY.LEFT:
         case 'a':
+        case 'ф':
             player.moveLeft(false);
             break;
         case KEY.RIGHT:
         case 'd':
+        case 'в':
             player.moveRight(false);
             break;
         case KEY.UP:
         case 'w':
+        case 'ц':
             player.moveUp(false);
             break;
         case KEY.DOWN:
         case 's':
+        case 'ы':
             player.moveDown(false);
             break;
     }
