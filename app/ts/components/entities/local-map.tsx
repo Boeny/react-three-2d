@@ -3,22 +3,29 @@ import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { getPositionByCoo } from './utils';
+import { Position } from '~/types';
 import { MountAndInit } from '../mount-and-init';
 import { Cube } from '../cube';
 import { LOCAL_WIDTH } from './constants';
 
 
-const LocalMapComponent = observer(() => {
-    const { currentCoo, local } = Store.state;
-    const position = getPositionByCoo(currentCoo);
-    const localData = local[currentCoo] || {};
+type Item = { coo: string, color: string };
+
+interface Props {
+    showNegative: boolean;
+    position: Position;
+    data: Item[];
+}
+
+function LocalMapComponent(props: Props) {
+    const { position, data } = props;
     return (
         <group>
-            {Object.keys(localData).map((coo, i) => {
+            {data.map(({ coo, color }, i) => {
                 const localPos = getPositionByCoo(coo);
                 return (
                     <Cube
-                        key={`${i}-${coo}`}
+                        key={i}
                         position={new Vector3(
                             position.x + (localPos.x + 0.5) * LOCAL_WIDTH,
                             position.y + (localPos.y + 0.5) * LOCAL_WIDTH,
@@ -27,13 +34,43 @@ const LocalMapComponent = observer(() => {
                         width={LOCAL_WIDTH}
                         height={LOCAL_WIDTH}
                         depth={LOCAL_WIDTH / 2}
-                        color={'#ffffff'}
+                        color={color}
+                    />
+                );
+            })}
+        </group>
+    );
+}
+
+
+const List = observer(() => {
+    const { local, showNegative, data } = Store.state;
+    return (
+        <group>
+            {Object.keys(local).map((coo, i) => {
+                const count = data[coo] || 0;
+                if (showNegative === false && count < 0) {
+                    return null;
+                }
+                return (
+                    <LocalMapComponent
+                        key={i}
+                        showNegative={showNegative}
+                        position={getPositionByCoo(coo)}
+                        data={getLocalMapData(local[coo] || {}, count)}
                     />
                 );
             })}
         </group>
     );
 });
+
+function getLocalMapData(data: Coobject<string>, count: number): Item[] {
+    return Object.keys(data).map(coo => ({
+        coo,
+        color: count > 0 ? '#ffffff' : '#ff0000'
+    }));
+}
 
 
 export const LocalMap = observer(() => {
@@ -43,7 +80,7 @@ export const LocalMap = observer(() => {
     }
     return (
         <MountAndInit
-            component={<LocalMapComponent />}
+            component={<List />}
             onMount={() => Store.initLocal()}
         />
     );

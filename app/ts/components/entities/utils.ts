@@ -83,15 +83,15 @@ export function isInStack(coo: string) {
 
 // ---
 
-function setStackByData(data: Data) {
-    stack = Object.keys(data);
-    stack.forEach(coo => {
+function getStackByData(data: Data): string[] {
+    const tempStack = Object.keys(data);
+    tempStack.forEach(coo => {
         const v = data[coo];
         if (v === undefined || v <= -1 || v >= 1) {
             return;
         }
         const position = getPositionByCoo(coo);
-        const coos = getCoosAround(position);
+        const coos = getCoosAroundPosition(position);
         if ((data[coos[0]] || 0) <= -1 && (data[coos[1]] || 0) >= 1 ||
             (data[coos[1]] || 0) <= -1 && (data[coos[0]] || 0) >= 1 ||
             (data[coos[2]] || 0) <= -1 && (data[coos[3]] || 0) >= 1 ||
@@ -100,54 +100,67 @@ function setStackByData(data: Data) {
             setDefaultDataAtPosition(data, position);
         }
     });
-    stack = Object.keys(data);
+    return Object.keys(data);
 }
 
-function getNewDataIteration(data: Data): { data: Data, coo: string } {
+function getNewDataIteration(data: Data, tempStack: string[]): { data: Data, coo: string, stack: string[] } {
     const chance = Math.random() * INITIAL_VALUE;
-    const cooToExplode = stack.filter(coo => (data[coo] || 0) > chance)[0];
-    const index = stack.indexOf(cooToExplode);
+    const cooToExplode = tempStack.filter(coo => (data[coo] || 0) > chance)[0];
+    const index = tempStack.indexOf(cooToExplode);
     return {
-        data: updateDataAtCoo(data, stack.splice(index === -1 ? 0 : index, 1)[0]),
-        coo: cooToExplode
+        data: updateDataAtCoo(data, tempStack.splice(index === -1 ? 0 : index, 1)[0]),
+        coo: cooToExplode,
+        stack: tempStack
     };
 }
 
 export function getNewData(data: Data): Data {
     if (stack.length === 0) {
-        setStackByData(data);
+        stack = getStackByData(data);
     }
-    let result = data;
+    let resultData = data;
     let i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
-        result = getNewDataIteration(result).data;
+        const result = getNewDataIteration(resultData, stack);
+        resultData = result.data;
+        stack = result.stack;
         i += 1;
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
         console.warn('max iterations per frame has achieved!');
     }
-    return result;
+    return resultData;
 }
 
 export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } {
     if (stack.length === 0) {
-        setStackByData(data);
+        stack = getStackByData(data);
     }
-    return getNewDataIteration(data);
+    const result = getNewDataIteration(data, stack);
+    stack = result.stack;
+    return {
+        data: result.data,
+        coo: result.coo
+    };
 }
 
 export function getNextData(data: Data): Data {
+    let tempStack;
     if (stack.length === 0) {
-        setStackByData(data);
+        tempStack = getStackByData(data);
+    } else {
+        tempStack = stack.slice();
     }
-    let result = data;
-    while (stack.length > 0) {
-        result = getNewDataIteration(result).data;
+    let resultData = data;
+    while (tempStack.length > 0) {
+        const result = getNewDataIteration(resultData, tempStack);
+        resultData = result.data;
+        tempStack = result.stack;
     }
-    return result;
+    return resultData;
 }
 
-function getCoosAround(position: Position): string[] {
+export function getCoosAroundPosition(position: Position): string[] {
     return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
@@ -160,7 +173,7 @@ function getCoosAround(position: Position): string[] {
 function updateDataAtCoo(data: Data, cooToExplode: string): Data {
     const valueToDecrease = data[cooToExplode] || 0;
     const position = getPositionByCoo(cooToExplode);
-    const coos = getCoosAround(position)
+    const coos = getCoosAroundPosition(position)
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
     const result = decreaseColors(coos.map(o => o.value), valueToDecrease);
@@ -225,24 +238,22 @@ function getLocalCoo(width: number) {
     return Math.floor(Math.random() / width);
 }
 
-export function getLocalData(count: number): Coobject<string> {
+export function getLocalData(count: number, nextCount: number): Coobject<string> {
     const data: Coobject<string> = {};
-    createArray(count).map(() => {
-        let coo = getKey({
-            x: getLocalCoo(LOCAL_WIDTH),
-            y: getLocalCoo(LOCAL_WIDTH)
-        });
-        while (data[coo]) {
+    createArray(count > 0 ? count : -count).map(() => {
+        let coo;
+        do {
             coo = getKey({
                 x: getLocalCoo(LOCAL_WIDTH),
                 y: getLocalCoo(LOCAL_WIDTH)
             });
-        }
+        } while (data[coo]);
         data[coo] = getKey({
             x: getLocalCoo(LOCAL_WIDTH),
             y: getLocalCoo(LOCAL_WIDTH)
         });
     });
+    console.log('need to increase by', nextCount - count);
     return data;
 }
 
@@ -256,7 +267,7 @@ export function getNextLocalData(localData: Coobject<string>): Coobject<string> 
             x: targetPosition.x - position.x,
             y: targetPosition.x - position.y
         };
-        const nextPosition = getNextLocalPosition(localData, position, diff);
+        const nextPosition = getNextLocalPosition(position, diff);
         if (nextPosition !== null) {
             result[getKey(nextPosition)] = targetCoo;
         }
@@ -264,7 +275,7 @@ export function getNextLocalData(localData: Coobject<string>): Coobject<string> 
     return result;
 }
 
-function getNextLocalPosition(data: Coobject<string>, position: Position, diff: Position): Position | null {
+function getNextLocalPosition(position: Position, diff: Position): Position | null {
     if (diff.x === 0 && diff.y === 0) {
         return position;
     }
@@ -276,32 +287,5 @@ function getNextLocalPosition(data: Coobject<string>, position: Position, diff: 
     } else {
         result = { ...position, y: position.y + sign.y };
     }
-    if (!data[getKey(result)]) {
-        return result;
-    }
-    if (byX) {
-        result = { ...position, y: position.y + sign.y };
-    } else {
-        result = { ...position, x: position.x + sign.x };
-    }
-    if (!data[getKey(result)]) {
-        return result;
-    }
-    if (byX) {
-        result = { ...position, y: position.y - sign.y };
-    } else {
-        result = { ...position, x: position.x - sign.x };
-    }
-    if (!data[getKey(result)]) {
-        return result;
-    }
-    if (byX) {
-        result = { ...position, x: position.x - sign.x };
-    } else {
-        result = { ...position, y: position.y - sign.y };
-    }
-    if (!data[getKey(result)]) {
-        return result;
-    }
-    return null;
+    return result;
 }

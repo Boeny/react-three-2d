@@ -3,7 +3,7 @@ import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
     getNewData, getNewDataForSingleCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
-    getDefaultData, getLocalData, getNextLocalData, getKey, getNextData
+    getDefaultData, getLocalData, getNextLocalData, getKey, getNextData, getCoosAroundPosition
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
@@ -43,8 +43,15 @@ export const Store: IStore = {
         if (this.state.local[currentCoo]) {
             return;
         }
+        const nextData = this.nextState.data;
         runInAction(() => {
-            this.state.local = { [currentCoo]: getLocalData(data[currentCoo] || 0) };
+            const localData: Coobject<Coobject<string>> = {
+                [currentCoo]: getLocalData(data[currentCoo] || 0, nextData[currentCoo] || 0)
+            };
+            getCoosAroundPosition(getPositionByCoo(currentCoo)).map(coo => {
+                localData[coo] = getLocalData(data[coo] || 0, nextData[coo] || 0);
+            });
+            this.state.local = localData;
         });
     },
     nextStep() {
@@ -59,8 +66,12 @@ export const Store: IStore = {
                     this.setDataAndSize(result.data);
                     break;
                 case 2:
-                    const { local, currentCoo } = this.state;
-                    this.state.local = { [currentCoo]: getNextLocalData(local[currentCoo] || {}) };
+                    const { local } = this.state;
+                    const localData: Coobject<Coobject<string>> = {};
+                    Object.keys(local).map(coo => {
+                        localData[coo] = getNextLocalData(local[coo] || {});
+                    });
+                    this.state.local = localData;
                     break;
                 default:
                     console.warn(`there is no action for mode ${this.state.mode}`);

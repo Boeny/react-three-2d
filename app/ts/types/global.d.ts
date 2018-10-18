@@ -53,9 +53,12 @@ declare interface Coobject<T> {
 
 declare module "*.json" {
     // data.json
-    export const data: Coobject<number>; // + next-state
+    export const data: Coobject<number>;
     export const stack: string[];
     export const local: Coobject<Coobject<string>>;
+    export const nextState: {
+        data: Coobject<number>;
+    };
     // state.json
     export const state: {
         mode: number;

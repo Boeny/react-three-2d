@@ -24,7 +24,7 @@ export function onWheel(e: MouseWheelEvent) {
 export function onMouseDown(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            if (camera.instance && entities.state.mode === 1) {
+            if (camera.instance && entities.state.mode > 0) {
                 html.setCursor('pointer');
                 dragStartScreenVector = getMouseVector(e);
                 dragStartPoint = toWorldVector(dragStartScreenVector, camera.instance);

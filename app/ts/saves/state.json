@@ -1,12 +1,12 @@
 {
     "state": {
-        "currentCoo": "",
-        "mode": 0,
-        "showNegative": true,
+        "currentCoo": "4|1",
+        "mode": 1,
+        "showNegative": false,
         "showStack": false,
         "size": {
-            "width": 0,
-            "height": 0
+            "width": 42,
+            "height": 36
         }
     },
     "camera": {

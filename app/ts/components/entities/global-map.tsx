@@ -24,12 +24,13 @@ export const GlobalMap = observer(() => {
 });
 
 function getTextureData(
-    width: number, height: number, { data, currentCoo, showNegative, mode, showStack }: IStore['state']
+    width: number, height: number, { data, local, currentCoo, showNegative, mode, showStack }: IStore['state']
 ): DataTexture {
     const size = width * height;
     const texData = new Uint8Array(3 * size);
     const width2 = Math.floor(width / 2);
     const height2 = height / 2;
+    const localCoos = Object.keys(local);
     for (let i = 0; i < size; i += 1) {
         const coo = getKey({
             x: i % width - width2,
@@ -44,7 +45,7 @@ function getTextureData(
                 }
                 break;
             case 2:
-                if (coo === currentCoo) {
+                if (localCoos.indexOf(coo) > -1) {
                     color = BLACK_COLOR;
                 }
                 break;
