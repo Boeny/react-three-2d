@@ -1,3 +1,4 @@
+import { Vector2 } from 'three';
 import { State as CameraState } from '~/components/camera/types';
 import { Position3 } from '~/types';
 
@@ -20,6 +21,7 @@ export interface State {
     mode: number;
     currentCoo: string;
     showNegative: boolean;
+    showStack: boolean;
     size: { width: number, height: number };
 }
 
@@ -32,11 +34,13 @@ export interface IStore {
     setMode: (mode: number) => void;
     nextMode: () => void;
     toggleNegative: () => void;
+    toggleStack: () => void;
     save: () => void;
     getZoomNear: () => Zoom | undefined;
     getZoomFar: () => Zoom | undefined;
     getRotationByZoom: (zoom: Zoom) => Position3;
     getTranslationByRotation: (rotation: Position3) => Position3;
+    select: (v: Vector2) => void;
 }
 
 export interface SavedData {

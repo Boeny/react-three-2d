@@ -1,23 +1,26 @@
-// import { Color, Vector3, Vector2 } from 'three';
-// import { WIDTH_SCALE, COLORS } from '~/constants';
-import { Vector2 } from 'three';
+import { Vector2, Vector3, Camera } from 'three';
 import { COLORS } from '~/constants';
 
-/*
-export function convertToColor(color: string): Color {
-    return new Color(color);
-}
 
-export function pointInTheEllipse(radiusX: number, radiusY: number, angle: number): Vector3 {
-    return new Vector3(
-        radiusX * Math.cos(angle),
-        radiusY * Math.sin(angle),
-        0
-    );
-}
-*/
 export function getMouseVector(e: any): Vector2 {
     return new Vector2(e.clientX, e.clientY);
+}
+
+export function toWorldVector(screenVector: Vector2, camera: Camera): Vector2 {
+    const worldVector = new Vector3(
+        screenVector.x * 2 / window.innerWidth - 1,
+        -screenVector.y * 2 / window.innerHeight + 1,
+        0.5
+    ).unproject(camera);
+    return new Vector2(worldVector.x, worldVector.y).multiplyScalar(100);
+}
+
+export function toScreenVector(worldVector: Vector2, camera: Camera): Vector2 {
+    const screenVector = new Vector3(worldVector.x, worldVector.y, 0).unproject(camera);
+    return new Vector2(
+        (screenVector.x + 1) * window.innerWidth / 2,
+        -(screenVector.y - 1) * window.innerHeight / 2
+    );
 }
 
 export function createArray(count: number): number[] {
@@ -49,14 +52,6 @@ function clamped(n: number, border: number): boolean {
 
 export function clampedVector(v: Vector2, border: number): boolean {
     return clamped(v.x, border) && clamped(v.y, border);
-}
-
-export function toWorldVector(v: Vector2): Vector2 {
-    return v.multiplyScalar(WIDTH_SCALE);
-}
-
-export function toScreenVector(v: Vector2): Vector2 {
-    return v.multiplyScalar(1 / WIDTH_SCALE);
 }
 */
 export function boolColor(v: boolean): string {

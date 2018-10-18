@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Vector3, Euler } from 'three';
+import { Vector3, Euler, Camera as CameraType } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { State } from './types';
@@ -10,6 +10,7 @@ const CameraComponent = observer(() => {
     const { zoom, position, rotation, translation } = Store.state;
     return (
         <perspectiveCamera
+            ref={(el: CameraType) => Store.setInstance(el)}
             name={'camera'}
             fov={75}
             aspect={window.innerWidth / window.innerHeight}

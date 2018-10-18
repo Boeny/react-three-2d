@@ -1,12 +1,12 @@
+import { Vector2 } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
     getNewData, getNewValueAtCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
-    getDefaultData, getLocalData, getNextLocalData
+    getDefaultData, getLocalData, getNextLocalData, getKey
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
-import { WIDTH_SCALE } from '~/constants';
 
 
 const ROT_ZOOM_NEAR = 3.2;
@@ -15,7 +15,7 @@ const ROT_MAX_ANGLE = Math.PI / 4;
 const ROT_BASE = ROT_MAX_ANGLE / (1 - ROT_ZOOM_NEAR / ROT_ZOOM_FAR);
 const ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
 
-const MAX_DELTA_COO = WIDTH_SCALE;
+const MAX_DELTA_COO = 1;
 const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 
 export const Store: IStore = {
@@ -81,8 +81,8 @@ export const Store: IStore = {
                 zoom,
                 rotation,
                 position: {
-                    x: positionByCoo.x + 0.5 * WIDTH_SCALE,
-                    y: positionByCoo.y + 0.5 * WIDTH_SCALE,
+                    x: positionByCoo.x + 0.5,
+                    y: positionByCoo.y + 0.5,
                     z: -3
                 },
                 translation: this.getTranslationByRotation(rotation)
@@ -92,6 +92,10 @@ export const Store: IStore = {
     toggleNegative() {
         runInAction(() => this.state.showNegative = !this.state.showNegative);
         console.log('show negative mass = ', this.state.showNegative);
+    },
+    toggleStack() {
+        runInAction(() => this.state.showStack = !this.state.showStack);
+        console.log('show stack = ', this.state.showStack);
     },
     save() {
         console.log('saving...');
@@ -150,5 +154,16 @@ export const Store: IStore = {
                     z: 0
                 };
         }
+    },
+    select(v: Vector2) {
+        runInAction(() => {
+            this.state.currentCoo = getKey({
+                x: Math.floor(v.x),
+                y: Math.floor(v.y)
+            });
+            if (this.state.showStack) {
+                this.toggleStack();
+            }
+        });
     }
 };

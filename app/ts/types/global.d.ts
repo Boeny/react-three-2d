@@ -61,6 +61,7 @@ declare module "*.json" {
         mode: number;
         currentCoo: string | null;
         showNegative: boolean;
+        showStack: boolean;
         size: { width: number, height: number };
     };
     export const camera: {

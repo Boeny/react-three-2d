@@ -2,15 +2,14 @@ import { Store as camera } from '~/components/camera/store';
 import { createArray, getSign } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, Color } from './types';
-import { WIDTH_SCALE } from '~/constants';
 import { INITIAL_VALUE, LOCAL_WIDTH } from './constants';
 import { savedData } from '~/saves';
 
 
 const DELIMITER = '|';
 const DEFAULT_COOS_COUNT = 10;
-const AREA_WIDTH = 0.25;
-const MAX_PRESSURE_PER_FRAME = 0.2;
+const AREA_WIDTH = 0.3;
+const MAX_PRESSURE_PER_FRAME = 0.1;
 const MAX_ITERATIONS_PER_FRAME = 500;
 
 let stack: string[] = savedData.stack;
@@ -29,10 +28,13 @@ const frameBuffer: FrameBuffer = {
 
 export function getDefaultData(): Data {
     const data: Data = {};
-    createArray(DEFAULT_COOS_COUNT).map(() => setDefaultDataAtPosition(data, {
-        x: getCoo(),
-        y: getCoo()
-    }));
+    createArray(DEFAULT_COOS_COUNT).map(() => {
+        let position;
+        do {
+            position = { x: getCoo(), y: getCoo() };
+        } while (data[getKey(position)] !== undefined);
+        setDefaultDataAtPosition(data, position);
+    });
     return data;
 }
 
@@ -83,6 +85,10 @@ export function getPositionByCoo(coo: string): Position {
         x: position[0],
         y: position[1]
     };
+}
+
+export function isInStack(coo: string) {
+    return stack.indexOf(coo) > -1;
 }
 
 // ---
@@ -202,9 +208,9 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
 export function showDataAndStack(state: State) {
     const { data, local, ...rest } = state;
     console.log(JSON.stringify({
+        local,
         stack,
         data,
-        local,
         state: rest,
         camera: camera.state
     }));
@@ -218,17 +224,22 @@ export function getColor(color: number, showNegative: boolean): Color {
 // ---
 
 function getLocalCoo(width: number) {
-    const result = Math.floor(Math.random() / width);
-    return WIDTH_SCALE * (result === 0 ? result : result - 1);
+    return Math.floor(Math.random() / width);
 }
 
 export function getLocalData(count: number): Coobject<string> {
     const data: Coobject<string> = {};
     createArray(count).map(() => {
-        const coo = getKey({
+        let coo = getKey({
             x: getLocalCoo(LOCAL_WIDTH),
             y: getLocalCoo(LOCAL_WIDTH)
         });
+        while (data[coo]) {
+            coo = getKey({
+                x: getLocalCoo(LOCAL_WIDTH),
+                y: getLocalCoo(LOCAL_WIDTH)
+            });
+        }
         data[coo] = getKey({
             x: getLocalCoo(LOCAL_WIDTH),
             y: getLocalCoo(LOCAL_WIDTH)

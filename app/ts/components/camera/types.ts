@@ -1,3 +1,4 @@
+import { Camera } from 'three';
 import { Position3 } from '~/types';
 
 
@@ -13,7 +14,9 @@ export interface State {
 }
 
 export interface IStore {
+    instance: Camera | null;
     state: State;
+    setInstance: (camera: Camera | null) => void;
     init: (state: State) => void;
     setZoom: (zoom: number, after?: AfterZoom) => void;
     updateZoomBy: (newZoom: number, near?: number, far?: number, after?: AfterZoom) => void;

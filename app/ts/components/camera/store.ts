@@ -1,3 +1,4 @@
+import { Camera } from 'three';
 import { observable, runInAction } from 'mobx';
 import { clampByMin, clampByMax } from '~/utils';
 import { IStore, State, AfterZoom, Position3 } from './types';
@@ -5,12 +6,16 @@ import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './
 
 
 export const Store: IStore = {
+    instance: null,
     state: observable({
         zoom: CAMERA_INIT_ZOOM,
         position: { x: 0, y: 0, z: 0 },
         rotation: { x: 0, y: 0, z: 0 },
         translation: { x: 0, y: 0, z: 0 }
     }),
+    setInstance(camera: Camera | null) {
+        this.instance = camera;
+    },
     init({ position, zoom, rotation, translation }: State) {
         runInAction(() => {
             this.setPosition(position);

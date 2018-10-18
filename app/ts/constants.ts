@@ -41,6 +41,6 @@ export const COLORS = {
 
 export const Z_INDEX_STEP = 0.01;
 
-export const MOUSE_DRAG_MODE_ENABLED: boolean = false;
+export const MOUSE_DRAG_MODE_ENABLED: boolean = true;
 
-export const SHOW_COLLIDERS: boolean = true;
+export const SHOW_COLLIDERS: boolean = false;
