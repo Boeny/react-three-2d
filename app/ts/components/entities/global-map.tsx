@@ -40,7 +40,7 @@ function getTextureData(
             YELLOW_COLOR : getColor(data[coo] || 0, showNegative);
         switch (mode) {
             case 1:
-                if (coo === currentCoo && data[currentCoo]) {
+                if (coo === currentCoo && data[currentCoo] !== undefined) {
                     color = YELLOW_COLOR;
                 }
                 break;

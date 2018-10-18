@@ -11,10 +11,11 @@ interface Props {
     color?: string;
     texture?: Texture;
     transparent?: boolean;
+    recieveLight?: boolean;
 }
 
 export function Cube(props: Props) {
-    const { position, width, height, depth, color, texture, transparent } = props;
+    const { position, width, height, depth, color, texture, transparent, recieveLight } = props;
     return (
         <mesh position={position}>
             <boxGeometry
@@ -25,13 +26,23 @@ export function Cube(props: Props) {
                 heightSegments={1}
                 depthSegments={1}
             />
-            <meshBasicMaterial
-                wireframe={SHOW_AS_WIREFRAME}
-                color={new Color(color) || '#000000'}
-                vertexColors={VertexColors}
-                map={texture}
-                transparent={transparent}
-            />
+            {recieveLight ?
+                <meshLambertMaterial
+                    wireframe={SHOW_AS_WIREFRAME}
+                    color={new Color(color) || '#000000'}
+                    vertexColors={VertexColors}
+                    map={texture}
+                    transparent={transparent}
+                />
+            :
+                <meshBasicMaterial
+                    wireframe={SHOW_AS_WIREFRAME}
+                    color={new Color(color) || '#000000'}
+                    vertexColors={VertexColors}
+                    map={texture}
+                    transparent={transparent}
+                />
+            }
         </mesh>
     );
 }

@@ -9,7 +9,7 @@ import { Cube } from '../cube';
 import { LOCAL_WIDTH } from './constants';
 
 
-type Item = { coo: string, color: string };
+type Item = { coo: string, count: number };
 
 interface Props {
     showNegative: boolean;
@@ -21,7 +21,7 @@ function LocalMapComponent(props: Props) {
     const { position, data } = props;
     return (
         <group>
-            {data.map(({ coo, color }, i) => {
+            {data.map(({ coo, count }, i) => {
                 const localPos = getPositionByCoo(coo);
                 return (
                     <Cube
@@ -34,7 +34,8 @@ function LocalMapComponent(props: Props) {
                         width={LOCAL_WIDTH}
                         height={LOCAL_WIDTH}
                         depth={LOCAL_WIDTH / 2}
-                        color={color}
+                        color={count > 0 ? '#ffffff' : '#ff0000'}
+                        recieveLight={count > 0}
                     />
                 );
             })}
@@ -66,10 +67,7 @@ const List = observer(() => {
 });
 
 function getLocalMapData(data: Coobject<string>, count: number): Item[] {
-    return Object.keys(data).map(coo => ({
-        coo,
-        color: count > 0 ? '#ffffff' : '#ff0000'
-    }));
+    return Object.keys(data).map(coo => ({ coo, count }));
 }
 
 

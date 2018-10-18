@@ -1,7 +1,7 @@
 {
     "state": {
-        "currentCoo": "4|1",
-        "mode": 1,
+        "currentCoo": "4|0",
+        "mode": 2,
         "showNegative": false,
         "showStack": false,
         "size": {
@@ -10,20 +10,20 @@
         }
     },
     "camera": {
-        "zoom": 40,
+        "zoom": 4.07073954983923,
         "position": {
-            "x": 0,
-            "y": 0,
-            "z": 0
+            "x": 4.5,
+            "y": 0.17434083601286154,
+            "z": -3
         },
         "rotation": {
-            "x": 0,
+            "x": 0.5411562908112868,
             "y": 0,
             "z": 0
         },
         "translation": {
             "x": 0,
-            "y": 0,
+            "y": -0.5,
             "z": 0
         }
     }

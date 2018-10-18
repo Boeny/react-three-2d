@@ -1,6 +1,7 @@
 import * as React from 'react';
 import * as events from '~/utils/events';
 import * as React3 from 'react3';
+import { Vector3 } from 'three';
 import { Store as html } from './html/store';
 import { Entities, Player } from '~/components';
 import { Html } from './html';
@@ -20,6 +21,16 @@ export function App() {
                 {...events}
             >
                 <scene>
+                    <directionalLight
+                        color={'#ffffff'}
+                        intensity={1}
+                        position={new Vector3()}
+                        lookAt={new Vector3(1, -1, -1)}
+                    />
+                    <ambientLight
+                        color={'#ffffff'}
+                        intensity={0.5}
+                    />
                     <Player {...camera} />
                     <Entities />
                 </scene>

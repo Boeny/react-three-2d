@@ -26,6 +26,7 @@ declare namespace JSX {
 
         lineBasicMaterial: any;
         meshBasicMaterial: any;
+        meshLambertMaterial: any;
         meshPhongMaterial: any;
 
         onUpdate?: () => void;
