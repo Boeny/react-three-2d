@@ -7,20 +7,19 @@ import { getPositionByCoo } from './utils';
 import { Position } from '~/types';
 import { MountAndInit } from '../mount-and-init';
 import { Cube } from '../cube';
-import { LOCAL_WIDTH, YELLOW_COLOR } from './constants';
+import { LOCAL_WIDTH, YELLOW_COLOR, INITIAL_VALUE, MAX_PRESSURE_PER_FRAME } from './constants';
 
 
 interface Props {
     position: Position;
     parentPosition: Position;
     isSelected: boolean;
-    isPositive: boolean;
+    count: number;
 }
 
 function LocalMapElement(props: Props) {
-    const { parentPosition, position, isPositive, isSelected } = props;
-    const positiveColor = isSelected ?
-            `rgb(${YELLOW_COLOR.r}, ${YELLOW_COLOR.g}, ${YELLOW_COLOR.b})` : '#ffffff';
+    const { parentPosition, position, isSelected, count } = props;
+    const positiveColor = isSelected ? getRGB(YELLOW_COLOR) : getRGB(getColor(count, false));
     return (
         <Cube
             position={new Vector3(
@@ -30,25 +29,40 @@ function LocalMapElement(props: Props) {
             )}
             width={LOCAL_WIDTH}
             height={LOCAL_WIDTH}
-            depth={LOCAL_WIDTH / 2}
-            color={isPositive ? positiveColor : '#ff0000'}
-            recieveLight={isPositive}
+            depth={count > 0 ? LOCAL_WIDTH * count / INITIAL_VALUE : MAX_PRESSURE_PER_FRAME}
+            color={count > 0 ? positiveColor : '#ff0000'}
+            recieveLight={count > 0}
         />
     );
 }
 
+function getRGB(c: Color): string {
+    return `rgb(${c.r}, ${c.g}, ${c.b})`;
+}
+
+interface Color {
+    r: number;
+    g: number;
+    b: number;
+}
+function getColor(color: number, showNegative: boolean): Color {
+    const c = Math.round(color * 255 / INITIAL_VALUE);
+    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
+}
+
 
 const LocalMapConnected = observer(() => {
-    const { local, showNegative, data, selectedObjectPosition, currentCoo } = Store.state;
+    const { local, showNegative, selectedObjectPosition, currentCoo } = Store.state;
     return (
         <group name="local-map">
             {Object.keys(local).map((parentCoo, i) => {
-                const parentCount = data[parentCoo] || 0;
-                if (showNegative === false && parentCount < 0) {
-                    return null;
-                }
-                return Object.keys(local[parentCoo] || {}).map((coo, j) => {
+                const localData = local[parentCoo] || {};
+                return Object.keys(localData).map((coo, j) => {
                     const position = getPositionByCoo(coo);
+                    const count = localData[coo] || 0;
+                    if (showNegative === false && count < 0) {
+                        return null;
+                    }
                     return (
                         <LocalMapElement
                             key={`${i}-${j}`}
@@ -56,7 +70,7 @@ const LocalMapConnected = observer(() => {
                             parentPosition={getPositionByCoo(parentCoo)}
                             isSelected={selectedObjectPosition !== null && parentCoo === currentCoo
                                 && vectorsAreEqual(selectedObjectPosition, position, 0.3)}
-                            isPositive={parentCount > 0}
+                            count={count}
                         />
                     );
                 });

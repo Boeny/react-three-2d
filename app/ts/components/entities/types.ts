@@ -12,7 +12,7 @@ type Size = { width: number, height: number };
 export type Data = Coobject<number>; // coo -> color
 
 export interface State extends BaseState {
-    local: Coobject<Coobject<string>>;
+    local: Coobject<Data>;
     mode: number;
     currentCoo: string;
     showNegative: boolean;

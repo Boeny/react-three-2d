@@ -3,7 +3,7 @@ import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
     getNewData, getNewDataForSingleCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
-    getDefaultData, getLocalData, getNextLocalData, getKey, getNextData, getCoosAroundPosition
+    getDefaultData, getLocalData, getKey, getNextData, getCoosAroundPosition, getNextLocalData
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
@@ -61,7 +61,7 @@ export const Store: IStore = {
                     break;
                 case 2:
                     const { local } = this.state;
-                    const localData: Coobject<Coobject<string>> = {};
+                    const localData: Coobject<Data> = {};
                     Object.keys(local).map(coo => {
                         localData[coo] = getNextLocalData(local[coo] || {});
                     });
@@ -197,14 +197,17 @@ export const Store: IStore = {
 
 
 function setNewLocalDataAroundCoo(
-    counter: number, data: Data, nextData: Data, localData: Coobject<Coobject<string>>,
+    counter: number, data: Data, nextData: Data, localData: Coobject<Data>,
     currentCoo: string
 ) {
+    if (counter < 2) {
+        console.log(currentCoo, 'need to increase by', (nextData[currentCoo] || 0) - (data[currentCoo] || 0));
+    }
     if (counter === MAX_LOCAL_SIZE) {
         return;
     }
     if (!localData[currentCoo]) {
-        localData[currentCoo] = getLocalData(data[currentCoo] || 0, nextData[currentCoo] || 0);
+        localData[currentCoo] = getLocalData(data[currentCoo] || 0);
     }
     getCoosAroundPosition(getPositionByCoo(currentCoo)).map(coo => {
         setNewLocalDataAroundCoo(counter + 1, data, nextData, localData, coo);

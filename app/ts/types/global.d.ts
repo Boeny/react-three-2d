@@ -56,7 +56,7 @@ declare module "*.json" {
     // data.json
     export const data: Coobject<number>;
     export const stack: string[];
-    export const local: Coobject<Coobject<string>>;
+    export const local: Coobject<Coobject<number>>;
     export const nextState: any;
     // state.json
     export const state: any;

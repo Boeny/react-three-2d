@@ -1,15 +1,14 @@
 import { Store as camera } from '~/components/camera/store';
-import { createArray, getSign } from '~/utils';
+import { createArray, getSign, getRandomArrayElement } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, BaseState } from './types';
-import { INITIAL_VALUE, LOCAL_WIDTH } from './constants';
+import { INITIAL_VALUE, LOCAL_WIDTH, MAX_PRESSURE_PER_FRAME } from './constants';
 import { savedData } from '~/saves';
 
 
 const DELIMITER = '|';
 const DEFAULT_COOS_COUNT = 10;
 const AREA_WIDTH = 0.3;
-const MAX_PRESSURE_PER_FRAME = 0.1;
 const MAX_ITERATIONS_PER_FRAME = 500;
 
 let stack: string[] = savedData.stack;
@@ -145,12 +144,7 @@ export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } 
 }
 
 export function getNextData(data: Data): Data {
-    let tempStack;
-    if (stack.length === 0) {
-        tempStack = getStackByData(data);
-    } else {
-        tempStack = stack.slice();
-    }
+    let tempStack = stack.length === 0 ? getStackByData(data) : stack.slice();
     let resultData = data;
     while (tempStack.length > 0) {
         const result = getNewDataIteration(resultData, tempStack);
@@ -192,7 +186,6 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
     if (filtered.length === 0) {
         return { data: sortedValues, value: valueToDecrease };
     }
-    const diff = (valueToDecrease - filtered[0]) / (filtered.length + 1);
     const maxPressure = MAX_PRESSURE_PER_FRAME * INITIAL_VALUE;
     if (valueToDecrease - filtered[0] > maxPressure) {
         return {
@@ -203,6 +196,7 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
             value: valueToDecrease - maxPressure
         };
     }
+    const diff = (valueToDecrease - filtered[0]) / (filtered.length + 1);
     const children = decreaseColors(filtered.map(c => c + diff), filtered[0] + diff);
     return {
         data: [
@@ -233,8 +227,8 @@ function getLocalCoo(width: number) {
     return Math.floor(Math.random() / width);
 }
 
-export function getLocalData(count: number, nextCount: number): Coobject<string> {
-    const data: Coobject<string> = {};
+export function getLocalData(count: number): Data {
+    const data: Data = {};
     createArray(count > 0 ? count : -count).map(() => {
         let coo;
         do {
@@ -243,44 +237,29 @@ export function getLocalData(count: number, nextCount: number): Coobject<string>
                 y: getLocalCoo(LOCAL_WIDTH)
             });
         } while (data[coo]);
-        data[coo] = getKey({
-            x: getLocalCoo(LOCAL_WIDTH),
-            y: getLocalCoo(LOCAL_WIDTH)
-        });
+        data[coo] = INITIAL_VALUE * getSign(count);
     });
-    console.log('need to increase by', nextCount - count);
     return data;
 }
 
-export function getNextLocalData(localData: Coobject<string>): Coobject<string> {
-    const result: Coobject<string> = {};
-    Object.keys(localData).map(coo => {
-        const targetCoo = localData[coo] || '0|0';
-        const position = getPositionByCoo(coo);
-        const targetPosition = getPositionByCoo(targetCoo);
-        const diff = {
-            x: targetPosition.x - position.x,
-            y: targetPosition.x - position.y
-        };
-        const nextPosition = getNextLocalPosition(position, diff);
-        if (nextPosition !== null) {
-            result[getKey(nextPosition)] = targetCoo;
+export function getNextLocalData(data: Data): Data {
+    const tempStack = Object.keys(data);
+    while (tempStack.length > 0) {
+        const cooToExplode = getRandomArrayElement(tempStack);
+        tempStack.splice(tempStack.indexOf(cooToExplode), 1);
+        const valueToDecrease = data[cooToExplode] || 0;
+        const maxPressure = MAX_PRESSURE_PER_FRAME * INITIAL_VALUE;
+        if (valueToDecrease > maxPressure) {
+            data[cooToExplode] = valueToDecrease - maxPressure;
+            getCoosAroundPosition(getPositionByCoo(cooToExplode))
+                .map(coo => ({ coo, value: data[coo] || 0 }))
+                .sort((a, b) => b.value - a.value)
+                .forEach(o => {
+                    if (valueToDecrease - o.value > 0) {
+                        data[o.coo] = o.value + maxPressure;
+                    }
+                });
         }
-    });
-    return result;
-}
-
-function getNextLocalPosition(position: Position, diff: Position): Position | null {
-    if (diff.x === 0 && diff.y === 0) {
-        return position;
     }
-    const sign = { x: getSign(diff.x), y: getSign(diff.y) };
-    const byX = Math.abs(diff.x) >= Math.abs(diff.y);
-    let result: Position;
-    if (byX) {
-        result = { ...position, x: position.x + sign.x };
-    } else {
-        result = { ...position, y: position.y + sign.y };
-    }
-    return result;
+    return data;
 }
