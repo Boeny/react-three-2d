@@ -29,7 +29,11 @@ function LocalMapElement(props: Props) {
             )}
             width={LOCAL_WIDTH}
             height={LOCAL_WIDTH}
-            depth={count > 0 ? LOCAL_WIDTH * count / INITIAL_VALUE : MAX_PRESSURE_PER_FRAME}
+            depth={
+                count > 0 ?
+                    LOCAL_WIDTH * count / INITIAL_VALUE :
+                    LOCAL_WIDTH * MAX_PRESSURE_PER_FRAME
+            }
             color={count > 0 ? positiveColor : '#ff0000'}
             recieveLight={count > 0}
         />
