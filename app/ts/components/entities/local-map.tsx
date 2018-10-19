@@ -49,9 +49,6 @@ const LocalMapConnected = observer(() => {
                 }
                 return Object.keys(local[parentCoo] || {}).map((coo, j) => {
                     const position = getPositionByCoo(coo);
-                    if (selectedObjectPosition !== null && parentCoo === currentCoo) {
-                        console.log(position);
-                    }
                     return (
                         <LocalMapElement
                             key={`${i}-${j}`}

@@ -4,21 +4,24 @@
         "mode": 2,
         "showNegative": false,
         "showStack": false,
-        "selectedObjectPosition": null,
+        "selectedObjectPosition": {
+            "x": 0.9999999999999991,
+            "y": 5
+        },
         "size": {
             "width": 42,
             "height": 36
         }
     },
     "camera": {
-        "zoom": 5.043824701195219,
+        "zoom": 3.282982171799026,
         "position": {
-            "x": 3.4399999999999995,
-            "y": 1.4147410358565774,
+            "x": 3.1603448591012935,
+            "y": 1.835080817527052,
             "z": -3
         },
         "rotation": {
-            "x": 0.26820654413117184,
+            "x": 0.7621217186382745,
             "y": 0,
             "z": 0
         },
