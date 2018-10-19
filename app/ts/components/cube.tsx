@@ -16,7 +16,9 @@ interface Props {
 }
 
 export function Cube(props: Props) {
-    const { position, width, height, depth, color, texture, transparent, recieveLight, name } = props;
+    const {
+        position, width, height, depth, color, texture, transparent, recieveLight, name
+    } = props;
     return (
         <mesh position={position} name={name}>
             <boxGeometry
@@ -30,7 +32,7 @@ export function Cube(props: Props) {
             {recieveLight ?
                 <meshLambertMaterial
                     wireframe={SHOW_AS_WIREFRAME}
-                    color={new Color(color) || '#000000'}
+                    color={color ? new Color(color) : '#000000'}
                     vertexColors={VertexColors}
                     map={texture}
                     transparent={transparent}
@@ -38,7 +40,7 @@ export function Cube(props: Props) {
             :
                 <meshBasicMaterial
                     wireframe={SHOW_AS_WIREFRAME}
-                    color={new Color(color) || '#000000'}
+                    color={color ? new Color(color) : '#000000'}
                     vertexColors={VertexColors}
                     map={texture}
                     transparent={transparent}
