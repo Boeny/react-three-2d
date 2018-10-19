@@ -57,21 +57,8 @@ declare module "*.json" {
     export const data: Coobject<number>;
     export const stack: string[];
     export const local: Coobject<Coobject<string>>;
-    export const nextState: {
-        data: Coobject<number>;
-    };
+    export const nextState: any;
     // state.json
-    export const state: {
-        mode: number;
-        currentCoo: string | null;
-        showNegative: boolean;
-        showStack: boolean;
-        size: { width: number, height: number };
-    };
-    export const camera: {
-        zoom: number;
-        position: { x: number, y: number, z: number };
-        rotation: { x: number, y: number, z: number };
-        translation: { x: number, y: number, z: number };
-    };
+    export const state: any;
+    export const camera: any;
 }

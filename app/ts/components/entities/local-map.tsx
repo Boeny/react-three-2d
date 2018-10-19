@@ -2,73 +2,71 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
+import { vectorsAreEqual } from '~/utils';
 import { getPositionByCoo } from './utils';
 import { Position } from '~/types';
 import { MountAndInit } from '../mount-and-init';
 import { Cube } from '../cube';
-import { LOCAL_WIDTH } from './constants';
+import { LOCAL_WIDTH, YELLOW_COLOR } from './constants';
 
-
-type Item = { coo: string, count: number };
 
 interface Props {
-    showNegative: boolean;
     position: Position;
-    data: Item[];
+    parentPosition: Position;
+    isSelected: boolean;
+    isPositive: boolean;
 }
 
-function LocalMapComponent(props: Props) {
-    const { position, data } = props;
+function LocalMapElement(props: Props) {
+    const { parentPosition, position, isPositive, isSelected } = props;
+    const positiveColor = isSelected ?
+            `rgb(${YELLOW_COLOR.r}, ${YELLOW_COLOR.g}, ${YELLOW_COLOR.b})` : '#ffffff';
     return (
-        <group>
-            {data.map(({ coo, count }, i) => {
-                const localPos = getPositionByCoo(coo);
-                return (
-                    <Cube
-                        key={i}
-                        position={new Vector3(
-                            position.x + (localPos.x + 0.5) * LOCAL_WIDTH,
-                            position.y + (localPos.y + 0.5) * LOCAL_WIDTH,
-                            0
-                        )}
-                        width={LOCAL_WIDTH}
-                        height={LOCAL_WIDTH}
-                        depth={LOCAL_WIDTH / 2}
-                        color={count > 0 ? '#ffffff' : '#ff0000'}
-                        recieveLight={count > 0}
-                    />
-                );
-            })}
-        </group>
+        <Cube
+            position={new Vector3(
+                parentPosition.x + (position.x + 0.5) * LOCAL_WIDTH,
+                parentPosition.y + (position.y + 0.5) * LOCAL_WIDTH,
+                0
+            )}
+            width={LOCAL_WIDTH}
+            height={LOCAL_WIDTH}
+            depth={LOCAL_WIDTH / 2}
+            color={isPositive ? positiveColor : '#ff0000'}
+            recieveLight={isPositive}
+        />
     );
 }
 
 
-const List = observer(() => {
-    const { local, showNegative, data } = Store.state;
+const LocalMapConnected = observer(() => {
+    const { local, showNegative, data, selectedObjectPosition, currentCoo } = Store.state;
     return (
-        <group>
-            {Object.keys(local).map((coo, i) => {
-                const count = data[coo] || 0;
-                if (showNegative === false && count < 0) {
+        <group name="local-map">
+            {Object.keys(local).map((parentCoo, i) => {
+                const parentCount = data[parentCoo] || 0;
+                if (showNegative === false && parentCount < 0) {
                     return null;
                 }
-                return (
-                    <LocalMapComponent
-                        key={i}
-                        showNegative={showNegative}
-                        position={getPositionByCoo(coo)}
-                        data={getLocalMapData(local[coo] || {}, count)}
-                    />
-                );
+                return Object.keys(local[parentCoo] || {}).map((coo, j) => {
+                    const position = getPositionByCoo(coo);
+                    if (selectedObjectPosition !== null && parentCoo === currentCoo) {
+                        console.log(position);
+                    }
+                    return (
+                        <LocalMapElement
+                            key={`${i}-${j}`}
+                            position={position}
+                            parentPosition={getPositionByCoo(parentCoo)}
+                            isSelected={selectedObjectPosition !== null && parentCoo === currentCoo
+                                && vectorsAreEqual(selectedObjectPosition, position, 0.3)}
+                            isPositive={parentCount > 0}
+                        />
+                    );
+                });
             })}
         </group>
     );
 });
-
-function getLocalMapData(data: Coobject<string>, count: number): Item[] {
-    return Object.keys(data).map(coo => ({ coo, count }));
-}
 
 
 export const LocalMap = observer(() => {
@@ -78,7 +76,7 @@ export const LocalMap = observer(() => {
     }
     return (
         <MountAndInit
-            component={<List />}
+            component={<LocalMapConnected />}
             onMount={() => Store.initLocal()}
         />
     );

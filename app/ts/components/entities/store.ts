@@ -1,4 +1,4 @@
-import { Vector2 } from 'three';
+import { Vector2, Object3D } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
@@ -7,6 +7,7 @@ import {
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
 import { savedData } from '~/saves';
+import { LOCAL_WIDTH } from './constants';
 
 
 const ROT_ZOOM_NEAR = 3.2;
@@ -17,6 +18,8 @@ const ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
 
 const MAX_DELTA_COO = 1;
 const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
+
+const MAX_LOCAL_SIZE = 5;
 
 export const Store: IStore = {
     state: observable(savedData.state),
@@ -39,19 +42,10 @@ export const Store: IStore = {
         });
     },
     initLocal() {
-        const { currentCoo, data } = this.state;
-        if (this.state.local[currentCoo]) {
-            return;
-        }
+        const { currentCoo, data, local } = this.state;
         const nextData = this.nextState.data;
         runInAction(() => {
-            const localData: Coobject<Coobject<string>> = {
-                [currentCoo]: getLocalData(data[currentCoo] || 0, nextData[currentCoo] || 0)
-            };
-            getCoosAroundPosition(getPositionByCoo(currentCoo)).map(coo => {
-                localData[coo] = getLocalData(data[coo] || 0, nextData[coo] || 0);
-            });
-            this.state.local = localData;
+            setNewLocalDataAroundCoo(0, data, nextData, local, currentCoo);
         });
     },
     nextStep() {
@@ -111,11 +105,11 @@ export const Store: IStore = {
     },
     toggleNegative() {
         runInAction(() => this.state.showNegative = !this.state.showNegative);
-        console.log('show negative mass = ', this.state.showNegative);
+        console.log('show negative mass =', this.state.showNegative);
     },
     toggleStack() {
         runInAction(() => this.state.showStack = !this.state.showStack);
-        console.log('show stack = ', this.state.showStack);
+        console.log('show stack =', this.state.showStack);
     },
     save() {
         console.log('saving...');
@@ -185,5 +179,34 @@ export const Store: IStore = {
                 this.toggleStack();
             }
         });
+    },
+    selectObject(o: Object3D | null) {
+        runInAction(() => {
+            if (o === null) {
+                this.state.selectedObjectPosition = null;
+                return;
+            }
+            const parentPosition = getPositionByCoo(this.state.currentCoo);
+            this.state.selectedObjectPosition = {
+                x: (o.position.x - parentPosition.x) / LOCAL_WIDTH - 0.5,
+                y: (o.position.y - parentPosition.y) / LOCAL_WIDTH - 0.5
+            };
+        });
     }
 };
+
+
+function setNewLocalDataAroundCoo(
+    counter: number, data: Data, nextData: Data, localData: Coobject<Coobject<string>>,
+    currentCoo: string
+) {
+    if (counter === MAX_LOCAL_SIZE) {
+        return;
+    }
+    if (!localData[currentCoo]) {
+        localData[currentCoo] = getLocalData(data[currentCoo] || 0, nextData[currentCoo] || 0);
+    }
+    getCoosAroundPosition(getPositionByCoo(currentCoo)).map(coo => {
+        setNewLocalDataAroundCoo(counter + 1, data, nextData, localData, coo);
+    });
+}

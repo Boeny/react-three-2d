@@ -12,12 +12,13 @@ interface Props {
     texture?: Texture;
     transparent?: boolean;
     recieveLight?: boolean;
+    name?: string;
 }
 
 export function Cube(props: Props) {
-    const { position, width, height, depth, color, texture, transparent, recieveLight } = props;
+    const { position, width, height, depth, color, texture, transparent, recieveLight, name } = props;
     return (
-        <mesh position={position}>
+        <mesh position={position} name={name}>
             <boxGeometry
                 width={width}
                 height={height}

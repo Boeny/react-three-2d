@@ -1,6 +1,6 @@
-import { Vector2 } from 'three';
+import { Vector2, Object3D } from 'three';
 import { State as CameraState } from '~/components/camera/types';
-import { Position3 } from '~/types';
+import { Position3, Position } from '~/types';
 
 
 export { Position3 };
@@ -8,12 +8,6 @@ export { Position3 };
 export type Zoom = CameraState['zoom'];
 
 type Size = { width: number, height: number };
-
-export interface Color {
-    r: number;
-    g: number;
-    b: number;
-}
 
 export type Data = Coobject<number>; // coo -> color
 
@@ -24,6 +18,7 @@ export interface State extends BaseState {
     showNegative: boolean;
     showStack: boolean;
     size: Size;
+    selectedObjectPosition: Position | null;
 }
 
 export interface BaseState {
@@ -48,6 +43,7 @@ export interface IStore {
     getRotationByZoom: (zoom: Zoom) => Position3;
     getTranslationByRotation: (rotation: Position3) => Position3;
     select: (v: Vector2) => void;
+    selectObject: (o: Object3D | null) => void;
 }
 
 export interface SavedData {

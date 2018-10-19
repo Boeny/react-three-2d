@@ -1,7 +1,7 @@
 import { Store as camera } from '~/components/camera/store';
 import { createArray, getSign } from '~/utils';
 import { Position } from '~/types';
-import { Data, State, Color, BaseState } from './types';
+import { Data, State, BaseState } from './types';
 import { INITIAL_VALUE, LOCAL_WIDTH } from './constants';
 import { savedData } from '~/saves';
 
@@ -225,11 +225,6 @@ export function showDataAndStack(state: State, nextState: BaseState) {
         state: rest,
         camera: camera.state
     }));
-}
-
-export function getColor(color: number, showNegative: boolean): Color {
-    const c = Math.round(color * 255 / INITIAL_VALUE);
-    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
 }
 
 // ---

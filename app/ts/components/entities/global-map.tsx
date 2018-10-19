@@ -2,13 +2,13 @@ import * as React from 'react';
 import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { getKey, getColor, isInStack } from './utils';
-import { IStore, Color } from './types';
+import { getKey, isInStack } from './utils';
+import { IStore } from './types';
 import { Quad } from '../quad';
+import { YELLOW_COLOR, INITIAL_VALUE } from './constants';
 
 
-const YELLOW_COLOR: Color = { r: 255, g: 223, b: 0 };
-const BLACK_COLOR: Color = { r: 0, g: 0, b: 0 };
+const BLACK_COLOR = { r: 0, g: 0, b: 0 };
 const POSITION = new Vector3();
 
 export const GlobalMap = observer(() => {
@@ -58,4 +58,14 @@ function getTextureData(
     const texture = new DataTexture(texData, width, height, RGBFormat);
     texture.needsUpdate = true;
     return texture;
+}
+
+interface Color {
+    r: number;
+    g: number;
+    b: number;
+}
+function getColor(color: number, showNegative: boolean): Color {
+    const c = Math.round(color * 255 / INITIAL_VALUE);
+    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
 }

@@ -1,6 +1,20 @@
-import { Vector2, Vector3, Camera } from 'three';
-import { COLORS } from '~/constants';
+import { Vector2, Vector3, Camera, Raycaster, Scene, Intersection } from 'three';
+import { Position } from '~/types';
+import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL } from '~/constants';
 
+
+const raycaster = new Raycaster();
+
+export function getSelectedObject(screenVector: Vector2, camera: Camera, scene: Scene): Intersection | null {
+    raycaster.setFromCamera(
+        {
+            x: screenVector.x * 2 / window.innerWidth - 1,
+            y: -screenVector.y * 2 / window.innerHeight + 1
+        },
+        camera
+    );
+    return raycaster.intersectObjects(scene.getObjectByName('local-map').children)[0] || null;
+}
 
 export function getMouseVector(e: any): Vector2 {
     return new Vector2(e.clientX, e.clientY);
@@ -68,4 +82,13 @@ export function getRandomArrayElement<T>(array: T[]): T {
 
 export function getSign(v: number): number {
     return v > 0 ? 1 : (v < 0 ? -1 : 0);
+}
+
+export function vectorsAreEqual(v1: Position, v2: Position, accuracy?: number): boolean {
+    return floatEquals(v1.x, v2.x, accuracy) && floatEquals(v1.y, v2.y, accuracy);
+}
+
+function floatEquals(v1: number, v2: number, accuracy?: number): boolean {
+    const diff = Math.abs(v1 - v2);
+    return accuracy ? diff < accuracy : diff < FLOAT_MIN_DIFF_TO_BE_EQUAL;
 }

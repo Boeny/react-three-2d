@@ -1,23 +1,24 @@
 {
     "state": {
-        "currentCoo": "4|0",
+        "currentCoo": "3|1",
         "mode": 2,
         "showNegative": false,
         "showStack": false,
+        "selectedObjectPosition": null,
         "size": {
             "width": 42,
             "height": 36
         }
     },
     "camera": {
-        "zoom": 4.07073954983923,
+        "zoom": 5.043824701195219,
         "position": {
-            "x": 4.5,
-            "y": 0.17434083601286154,
+            "x": 3.4399999999999995,
+            "y": 1.4147410358565774,
             "z": -3
         },
         "rotation": {
-            "x": 0.5411562908112868,
+            "x": 0.26820654413117184,
             "y": 0,
             "z": 0
         },

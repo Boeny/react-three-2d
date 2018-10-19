@@ -1,18 +1,19 @@
-import { Vector2 } from 'three';
+import { Vector2, Intersection, Scene } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as entities } from '~/components/entities/store';
 import { Store as html } from '~/views/html/store';
-import { getMouseVector, toWorldVector } from '~/utils';
+import { getMouseVector, toWorldVector, getSelectedObject } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 
 
-let dragStartScreenVector: Vector2 | null;
+let dragStartScreenVector: Vector2 | null = null;
 let dragStartPoint: Vector2 | null = null;
+let dragStartObject: Intersection | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
     camera.updateZoomBy(e.deltaY, entities.getZoomNear(), entities.getZoomFar(), zoom => {
@@ -24,10 +25,17 @@ export function onWheel(e: MouseWheelEvent) {
 export function onMouseDown(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            if (camera.instance && entities.state.mode > 0) {
+            const { mode } = entities.state;
+            if (camera.instance && mode > 0) {
                 html.setCursor('pointer');
                 dragStartScreenVector = getMouseVector(e);
-                dragStartPoint = toWorldVector(dragStartScreenVector, camera.instance);
+                if (mode === 1) {
+                    dragStartPoint = toWorldVector(dragStartScreenVector, camera.instance);
+                } else {
+                    dragStartObject = getSelectedObject(
+                        dragStartScreenVector, camera.instance, camera.instance.parent as Scene
+                    );
+                }
             }
             break;
         case MOUSE.right:
@@ -40,16 +48,22 @@ export function onMouseDown(e: MouseEvent) {
 export function onMouseUp(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            if (dragStartPoint === null) {
-                return;
-            }
             if (events.mouseDragMode) {
                 events.setMouseDragMode(false);
             } else {
-                entities.select(dragStartPoint.clone());
+                if (dragStartPoint) {
+                    entities.select(dragStartPoint.clone());
+                }
+                if (dragStartObject) {
+                    entities.selectObject(dragStartObject.object);
+                } else if (entities.state.selectedObjectPosition !== null) {
+                    entities.selectObject(null);
+                }
             }
             html.setCursor('default');
             dragStartPoint = null;
+            dragStartObject = null;
+            dragStartScreenVector = null;
             break;
         case MOUSE.right:
             break;
