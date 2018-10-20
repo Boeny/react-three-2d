@@ -3,8 +3,9 @@ import * as React from 'react';
 
 interface Props {
     component: JSX.Element;
-    onMount?: () => void;
     defaultComponent?: JSX.Element;
+    onMount?: () => void;
+    onUnmount?: () => void;
 }
 
 interface State {
@@ -21,6 +22,10 @@ export class MountAndInit extends React.Component<Props, State> {
     componentDidMount() {
         this.props.onMount && this.props.onMount();
         this.setState({ ready: true });
+    }
+
+    componentWillUnmount() {
+        this.props.onUnmount && this.props.onUnmount();
     }
 
     render() {

@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     context: __dirname,
@@ -36,7 +35,7 @@ module.exports = {
                 test: /\.styl$/,
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader','stylus-loader']
+                    use: ['css-loader', 'postcss-loader', 'stylus-loader']
                 }),
                 exclude: /(node_modules)/
             },
@@ -56,8 +55,7 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin("main.css"),
-        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/),
-        //new BundleAnalyzerPlugin()
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/)
     ],
     // watch: true
 };
