@@ -19,7 +19,6 @@ interface Props {
 
 function LocalMapElement(props: Props) {
     const { parentPosition, position, isSelected, count } = props;
-    const positiveColor = isSelected ? getRGB(YELLOW_COLOR) : getRGB(getColor(count, false));
     return (
         <Cube
             position={new Vector3(
@@ -34,7 +33,7 @@ function LocalMapElement(props: Props) {
                     LOCAL_WIDTH * count / INITIAL_VALUE :
                     LOCAL_WIDTH * MAX_PRESSURE_PER_FRAME
             }
-            color={count > 0 ? positiveColor : '#ff0000'}
+            color={getRGB(isSelected && count > 0 ? YELLOW_COLOR : getColor(count))}
             recieveLight={count > 0}
         />
     );
@@ -49,9 +48,9 @@ interface Color {
     g: number;
     b: number;
 }
-function getColor(color: number, showNegative: boolean): Color {
+function getColor(color: number): Color {
     const c = Math.round(color * 255 / INITIAL_VALUE);
-    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
+    return c >= 0 ? { r: c, g: c, b: c } : { r: -c, g: 0, b: 0 };
 }
 
 
