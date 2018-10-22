@@ -23,6 +23,7 @@ declare namespace JSX {
         parametricGeometry: any;
         textGeometry: any;
         planeGeometry: any;
+        bufferGeometry: any;
 
         lineBasicMaterial: any;
         meshBasicMaterial: any;

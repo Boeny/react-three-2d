@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as events from '~/utils/events';
 import * as React3 from 'react3';
-import { Vector3 } from 'three';
+import { Vector3, BasicShadowMap } from 'three';
 import { Store as html } from './html/store';
 import { Entities, Player } from '~/components';
 import { Html } from './html';
@@ -14,6 +14,8 @@ export function App() {
         <React.Fragment>
             <Html />
             <React3
+                shadowMapEnabled={true}
+                shadowMapType={BasicShadowMap}
                 mainCamera={'camera'}
                 width={window.innerWidth}
                 height={window.innerHeight}
@@ -24,8 +26,9 @@ export function App() {
                     <directionalLight
                         color={'#ffffff'}
                         intensity={1}
-                        position={new Vector3()}
-                        lookAt={new Vector3(1, -1, -1)}
+                        position={new Vector3(0, 0, 10)}
+                        lookAt={new Vector3(10, -10, 5)}
+                        castShadow={true}
                     />
                     <ambientLight
                         color={'#ffffff'}
