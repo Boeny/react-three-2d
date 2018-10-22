@@ -16,6 +16,7 @@ let dragStartPoint: Vector2 | null = null;
 let dragStartObject: Intersection | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
+    e.preventDefault();
     camera.updateZoomBy(e.deltaY, entities.getZoomNear(), entities.getZoomFar(), zoom => {
         camera.setRotation(entities.getRotationByZoom(zoom));
         camera.setTranslation(entities.getTranslationByRotation(camera.state.rotation));
@@ -93,6 +94,7 @@ export function onMouseMove(e: MouseEvent) {
 }
 
 export function onKeyDown(e: KeyboardEvent) {
+    e.preventDefault();
     if (e.shiftKey) {
         events.setStepMode(false);
     }
