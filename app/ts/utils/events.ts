@@ -94,6 +94,7 @@ export function onMouseMove(e: MouseEvent) {
 }
 
 export function onKeyDown(e: KeyboardEvent) {
+    e.preventDefault();
     if (e.shiftKey) {
         events.setStepMode(false);
     }

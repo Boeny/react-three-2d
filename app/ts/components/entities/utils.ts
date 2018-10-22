@@ -15,6 +15,22 @@ let stack: string[] = savedData.stack;
 
 // ---
 
+interface Color {
+    r: number;
+    g: number;
+    b: number;
+}
+export function getColor(count: number): Color {
+    const c = Math.round(count * 255 / INITIAL_VALUE);
+    return c >= 0 ? { r: c, g: c, b: c } : { r: -c, g: 0, b: 0 };
+}
+
+export function getRGB(c: Color): string {
+    return `rgb(${c.r}, ${c.g}, ${c.b})`;
+}
+
+// ---
+
 export function getDefaultData(): Data {
     const data: Data = {};
     createArray(DEFAULT_COOS_COUNT).map(() => {

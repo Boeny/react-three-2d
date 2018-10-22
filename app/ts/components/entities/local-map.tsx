@@ -3,7 +3,7 @@ import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
 import { vectorsAreEqual } from '~/utils';
-import { getPositionByCoo } from './utils';
+import { getPositionByCoo, getColor, getRGB } from './utils';
 import { Position } from '~/types';
 import { MountAndInit } from '../mount-and-init';
 import { Cube } from '../cube';
@@ -37,20 +37,6 @@ function LocalMapElement(props: Props) {
             recieveLight={count > 0}
         />
     );
-}
-
-function getRGB(c: Color): string {
-    return `rgb(${c.r}, ${c.g}, ${c.b})`;
-}
-
-interface Color {
-    r: number;
-    g: number;
-    b: number;
-}
-function getColor(color: number): Color {
-    const c = Math.round(color * 255 / INITIAL_VALUE);
-    return c >= 0 ? { r: c, g: c, b: c } : { r: -c, g: 0, b: 0 };
 }
 
 

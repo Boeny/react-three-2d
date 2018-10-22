@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { getKey, isInStack } from './utils';
+import { getKey, isInStack, getColor } from './utils';
 import { IStore } from './types';
 import { Quad } from '../quad';
-import { YELLOW_COLOR, INITIAL_VALUE } from './constants';
+import { YELLOW_COLOR } from './constants';
 
 
 const BLACK_COLOR = { r: 0, g: 0, b: 0 };
@@ -36,8 +36,11 @@ function getTextureData(
             x: i % width - width2,
             y: Math.floor(i / width - height2)
         });
+        const count = data[coo] || 0;
         let color = showStack && isInStack(coo) ?
-            YELLOW_COLOR : getColor(data[coo] || 0, showNegative);
+            YELLOW_COLOR : (
+                showNegative === false && count < 0 ? BLACK_COLOR : getColor(count)
+            );
         switch (mode) {
             case 1:
                 if (coo === currentCoo && data[currentCoo] !== undefined) {
@@ -58,14 +61,4 @@ function getTextureData(
     const texture = new DataTexture(texData, width, height, RGBFormat);
     texture.needsUpdate = true;
     return texture;
-}
-
-interface Color {
-    r: number;
-    g: number;
-    b: number;
-}
-function getColor(color: number, showNegative: boolean): Color {
-    const c = Math.round(color * 255 / INITIAL_VALUE);
-    return c >= 0 ? { r: c, g: c, b: c } : { r: showNegative ? -c : 0, g: 0, b: 0 };
 }
