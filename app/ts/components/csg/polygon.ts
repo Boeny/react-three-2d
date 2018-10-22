@@ -1,14 +1,14 @@
-import { Vector3 } from 'three';
+import { Vertex } from './vertex';
 import { EPSILON, COPLANAR, FRONT, BACK, SPANNING } from './constants';
 
 
 export class Polygon {
 
-    vertices: Vector3[] = [];
-    normal: Vector3 = new Vector3();
-    w: number;
+    vertices: Vertex[] = [];
+    normal: Vertex | null = null;
+    w: number = 0;
 
-    constructor(vertices?: Vector3[]) {
+    constructor(vertices?: Vertex[]) {
         if (vertices && vertices.length > 0) {
             this.vertices = vertices;
             this.calculateProperties();
@@ -36,6 +36,9 @@ export class Polygon {
     }
 
     flip(): this {
+        if (this.normal === null) {
+            return this;
+        }
         const vertices = [];
         this.normal.multiplyScalar(-1);
         this.w *= -1;
@@ -46,7 +49,10 @@ export class Polygon {
         return this;
     }
 
-    classifyVertex(vertex: Vector3): 0 | 1 | 2 {
+    classifyVertex(vertex: Vertex): 0 | 1 | 2 {
+        if (this.normal === null) {
+            return COPLANAR;
+        }
         const sideValue = this.normal.dot(vertex) - this.w;
         if (sideValue < -EPSILON) {
             return BACK;
@@ -86,9 +92,14 @@ export class Polygon {
         polygon: Polygon, coplanarFront: Polygon[], coplanarBack: Polygon[], front: Polygon[],
         back: Polygon[]
     ) {
+        if (!this.normal) {
+            return;
+        }
         const classification = this.classifySide(polygon);
         if (classification === COPLANAR) {
-            (this.normal.dot(polygon.normal) > 0 ? coplanarFront : coplanarBack).push(polygon);
+            const polygons = polygon.normal && this.normal.dot(polygon.normal) > 0 ?
+                coplanarFront : coplanarBack;
+            polygons.push(polygon);
             return;
         }
         if (classification === FRONT) {
@@ -101,13 +112,11 @@ export class Polygon {
         }
         const frontVertices = [];
         const backVertices = [];
-
         for (let i = 0; i < polygon.vertices.length; i += 1) {
             const vi = polygon.vertices[i];
             const vj = polygon.vertices[(i + 1) % polygon.vertices.length];
             const ti = this.classifyVertex(vi);
             const tj = this.classifyVertex(vj);
-
             if (ti !== BACK) {
                 frontVertices.push(vi);
             }
@@ -115,7 +124,7 @@ export class Polygon {
                 backVertices.push(vi);
             }
             if ((ti | tj) === SPANNING) {
-                const result = vi.lerp(
+                const result = vi.clone().lerp(
                     vj,
                     (this.w - this.normal.dot(vi)) / this.normal.dot(vj.clone().sub(vi))
                 );
