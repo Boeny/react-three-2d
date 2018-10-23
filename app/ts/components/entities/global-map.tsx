@@ -23,6 +23,13 @@ export const GlobalMap = observer(() => {
     );
 });
 
+function getBlue(count?: number) {
+    const c = count === undefined ? 0 : (
+        count >= 0 ? 1 - count : 1 + count
+    );
+    return { r: 0, g: 0, b: 255 * c };
+}
+
 function getTextureData(
     width: number, height: number, { data, local, currentCoo, showNegative, mode, showStack }: IStore['state']
 ): DataTexture {
@@ -39,7 +46,9 @@ function getTextureData(
         const count = data[coo] || 0;
         let color = showStack && isInStack(coo) ?
             YELLOW_COLOR : (
-                showNegative === false && count < 0 ? BLACK_COLOR : getColor(count)
+                showNegative === false && count <= -1 ? BLACK_COLOR : (
+                    count > -1 && count < 1 ? getBlue(data[coo]) : getColor(count)
+                )
             );
         switch (mode) {
             case 1:

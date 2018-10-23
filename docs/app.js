@@ -101558,6 +101558,23 @@ exports.getDefaultData = getDefaultData;
 function getCoo(width) {
     return Math.floor((width || AREA_WIDTH) * constants_1.INITIAL_VALUE * (Math.random() - 0.5));
 }
+function setDefaultDataAtPosition(data, position, value) {
+    Object.keys(data).forEach(function (coo) {
+        if ((data[coo] || 0) <= 0) {
+            return;
+        }
+        var p = getPositionByCoo(coo);
+        var middleCoo = getKey({
+            x: Math.round((p.x + position.x) / 2),
+            y: Math.round((p.y + position.y) / 2)
+        });
+        data[middleCoo] = (data[middleCoo] || 0) - value;
+    });
+    data[getKey(position)] = value;
+    // TODO:
+    // at firts negative mass created by clockwise rotation, then
+    // positive mass, created around the negative mass by counterclockwise rotation, then...
+}
 function getSizeFromData(data) {
     var width = 0;
     var height = 0;
@@ -101576,13 +101593,6 @@ function getSizeFromData(data) {
     };
 }
 exports.getSizeFromData = getSizeFromData;
-function setDefaultDataAtPosition(data, position, value) {
-    data[getKey(position)] = -value;
-    data[getKey({ x: -position.x, y: -position.y })] = value;
-    // TODO:
-    // at firts negative mass created by clockwise rotation, then
-    // positive mass, created around the negative mass by counterclockwise rotation, then...
-}
 function getKey(position) {
     return "" + position.x + DELIMITER + position.y;
 }
@@ -101609,7 +101619,6 @@ function isInStack(coo) {
 exports.isInStack = isInStack;
 // ---
 function getStackByData(data) {
-    getDefaultData(data);
     return Object.keys(data);
     // TODO: new stars frequency by size
 }
@@ -142333,6 +142342,10 @@ exports.GlobalMap = mobx_react_1.observer(function () {
     var _a = utils_1.getSizeFromData(store_1.Store.state.data), width = _a.width, height = _a.height;
     return (React.createElement(quad_1.Quad, { position: POSITION, width: width, height: height, texture: getTextureData(width, height, store_1.Store.state) }));
 });
+function getBlue(count) {
+    var c = count === undefined ? 0 : (count >= 0 ? 1 - count : 1 + count);
+    return { r: 0, g: 0, b: 255 * c };
+}
 function getTextureData(width, height, _a) {
     var data = _a.data, local = _a.local, currentCoo = _a.currentCoo, showNegative = _a.showNegative, mode = _a.mode, showStack = _a.showStack;
     var size = width * height;
@@ -142347,7 +142360,7 @@ function getTextureData(width, height, _a) {
         });
         var count = data[coo] || 0;
         var color = showStack && utils_1.isInStack(coo) ?
-            constants_1.YELLOW_COLOR : (showNegative === false && count < 0 ? BLACK_COLOR : utils_1.getColor(count));
+            constants_1.YELLOW_COLOR : (showNegative === false && count <= -1 ? BLACK_COLOR : (count > -1 && count < 1 ? getBlue(data[coo]) : utils_1.getColor(count)));
         switch (mode) {
             case 1:
                 if (coo === currentCoo && data[currentCoo] !== undefined) {

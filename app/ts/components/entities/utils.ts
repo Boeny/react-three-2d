@@ -44,6 +44,21 @@ function getCoo(width?: number): number {
     return Math.floor((width || AREA_WIDTH) * INITIAL_VALUE * (Math.random() - 0.5));
 }
 
+function setDefaultDataAtPosition(data: Data, position: Position, value: number) {
+    Object.keys(data).forEach(coo => {
+        if ((data[coo] || 0) <= 0) {
+            return;
+        }
+        const p = getPositionByCoo(coo);
+        const middleCoo = getKey({
+            x: Math.round((p.x + position.x) / 2),
+            y: Math.round((p.y + position.y) / 2)
+        });
+        data[middleCoo] = (data[middleCoo] || 0) - value;
+    });
+    data[getKey(position)] = value;
+}
+
 export function getSizeFromData(data: Data): { width: number, height: number } {
     let width = 0;
     let height = 0;
@@ -60,14 +75,6 @@ export function getSizeFromData(data: Data): { width: number, height: number } {
         width: width * 2,
         height: height * 2
     };
-}
-
-function setDefaultDataAtPosition(data: Data, position: Position, value: number) {
-    data[getKey(position)] = -value;
-    data[getKey({ x: -position.x, y: -position.y })] = value;
-    // TODO:
-    // at firts negative mass created by clockwise rotation, then
-    // positive mass, created around the negative mass by counterclockwise rotation, then...
 }
 
 export function getKey(position: Position): string {
@@ -99,7 +106,6 @@ export function isInStack(coo: string) {
 // ---
 
 function getStackByData(data: Data): string[] {
-    getDefaultData(data);
     return Object.keys(data);
     // TODO: new stars frequency by size
 }
@@ -184,6 +190,7 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
 
 type Children = { data: number[], value: number };
 function decreaseValues(sortedValues: number[], valueToDecrease: number): Children {
+    // TODO: decrease values only between negative and positive directions
     const filtered = sortedValues.filter(c => valueToDecrease - c > 0);
     if (filtered.length === 0) {
         return { data: sortedValues, value: valueToDecrease };
