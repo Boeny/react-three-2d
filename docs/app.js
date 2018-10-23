@@ -101579,6 +101579,7 @@ exports.getSizeFromData = getSizeFromData;
 function setDefaultDataAtPosition(data, position, value) {
     data[getKey(position)] = -value;
     data[getKey({ x: -position.x, y: -position.y })] = value;
+    // TODO:
     // at firts negative mass created by clockwise rotation, then
     // positive mass, created around the negative mass by counterclockwise rotation, then...
 }
@@ -101610,6 +101611,7 @@ exports.isInStack = isInStack;
 function getStackByData(data) {
     getDefaultData(data);
     return Object.keys(data);
+    // TODO: new stars frequency by size
 }
 function getNewDataIteration(data, tempStack) {
     var chance = Math.random() * constants_1.INITIAL_VALUE;
