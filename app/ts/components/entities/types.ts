@@ -7,8 +7,6 @@ export { Position3 };
 
 export type Zoom = CameraState['zoom'];
 
-type Size = { width: number, height: number };
-
 export type Data = Coobject<number>; // coo -> color
 
 export interface State extends BaseState {
@@ -17,7 +15,6 @@ export interface State extends BaseState {
     currentCoo: string;
     showNegative: boolean;
     showStack: boolean;
-    size: Size;
     selectedObjectPosition: Position | null;
 }
 
@@ -30,7 +27,7 @@ export interface IStore {
     nextState: BaseState;
     init: () => void;
     initLocal: () => void;
-    setDataAndSize: (data: Data) => void;
+    setData: (data: Data) => void;
     setNextDataAndSize: (data: Data) => void;
     nextStep: () => void;
     setMode: (mode: number) => void;

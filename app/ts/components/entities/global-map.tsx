@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observer } from 'mobx-react';
 import { Store } from './store';
-import { getKey, isInStack, getColor } from './utils';
+import { getKey, isInStack, getColor, getSizeFromData } from './utils';
 import { IStore } from './types';
 import { Quad } from '../quad';
 import { YELLOW_COLOR } from './constants';
@@ -12,7 +12,7 @@ const BLACK_COLOR = { r: 0, g: 0, b: 0 };
 const POSITION = new Vector3();
 
 export const GlobalMap = observer(() => {
-    const { width, height } = Store.state.size;
+    const { width, height } = getSizeFromData(Store.state.data);
     return (
         <Quad
             position={POSITION}

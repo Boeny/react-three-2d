@@ -2,7 +2,7 @@ import { Vector2, Object3D } from 'three';
 import { observable, runInAction, toJS } from 'mobx';
 import { Store as camera } from '../camera/store';
 import {
-    getNewData, getNewDataForSingleCoo, getSizeFromData, showDataAndStack, getPositionByCoo,
+    getNewData, getNewDataForSingleCoo, showDataAndStack, getPositionByCoo,
     getDefaultData, getLocalData, getKey, getNextData, getCoosAroundPosition, getNextLocalData
 } from './utils';
 import { IStore, Data, Zoom, Position3 } from './types';
@@ -19,21 +19,20 @@ const ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
 const MAX_DELTA_COO = 1;
 const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 
-const MAX_LOCAL_SIZE = 5;
+const MAX_LOCAL_SIZE = 7;
 
 export const Store: IStore = {
     state: observable(savedData.state),
     nextState: savedData.nextState,
     init() {
-        this.setDataAndSize(
+        this.setData(
             Object.keys(this.state.data).length > 0 ?
                 this.state.data : getDefaultData()
         );
     },
-    setDataAndSize(data: Data) {
+    setData(data: Data) {
         runInAction(() => {
             this.state.data = data;
-            this.state.size = getSizeFromData(data);
         });
     },
     setNextDataAndSize(data: Data) {
@@ -52,12 +51,12 @@ export const Store: IStore = {
         runInAction(() => {
             switch (this.state.mode) {
                 case 0:
-                    this.setDataAndSize(getNewData(toJS(this.state.data)));
+                    this.setData(getNewData(toJS(this.state.data)));
                     break;
                 case 1:
                     const result = getNewDataForSingleCoo(toJS(this.state.data));
                     this.state.currentCoo = result.coo;
-                    this.setDataAndSize(result.data);
+                    this.setData(result.data);
                     break;
                 case 2:
                     const { local } = this.state;
@@ -201,7 +200,7 @@ function setNewLocalDataAroundCoo(
     currentCoo: string
 ) {
     if (counter < 2) {
-        console.log(currentCoo, 'need to increase by', (nextData[currentCoo] || 0) - (data[currentCoo] || 0));
+        console.log(currentCoo, data[currentCoo], 'need to increase by', (nextData[currentCoo] || 0) - (data[currentCoo] || 0));
     }
     if (counter === MAX_LOCAL_SIZE) {
         return;

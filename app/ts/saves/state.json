@@ -1,33 +1,26 @@
 {
     "state": {
-        "currentCoo": "3|1",
-        "mode": 2,
+        "currentCoo": "",
+        "mode": 0,
         "showNegative": false,
         "showStack": false,
-        "selectedObjectPosition": {
-            "x": 0.9999999999999991,
-            "y": 5
-        },
-        "size": {
-            "width": 42,
-            "height": 36
-        }
+        "selectedObjectPosition": null
     },
     "camera": {
-        "zoom": 3.282982171799026,
+        "zoom": 40,
         "position": {
-            "x": 3.1603448591012935,
-            "y": 1.835080817527052,
-            "z": -3
+            "x": 0,
+            "y": 0,
+            "z": 0
         },
         "rotation": {
-            "x": 0.7621217186382745,
+            "x": 0,
             "y": 0,
             "z": 0
         },
         "translation": {
             "x": 0,
-            "y": -0.5,
+            "y": 0,
             "z": 0
         }
     }

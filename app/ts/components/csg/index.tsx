@@ -1,31 +1,31 @@
 import * as React from 'react';
-import { Mesh, Geometry } from 'three';
+import { Mesh, Geometry, Texture } from 'three';
+import { getMaterialParams } from '~/utils';
 
 
 interface Props {
     components: (Mesh | null)[][];
-    withShadows?: boolean;
+    color?: string;
+    texture?: Texture;
 }
 
 export function Union(props: Props) {
-    const { components, withShadows } = props;
+    const { components, color, texture } = props;
     const geometry = new Geometry();
     components.forEach(group => group.forEach(m => {
         if (m) {
             geometry.merge(m.geometry as Geometry, m.matrix);
         }
     }));
+    const matParams = getMaterialParams(color, texture);
     return (
-        <mesh
-            castShadow={!!withShadows}
-            receiveShadow={!!withShadows}
-        >
+        <mesh>
             <geometry
                 vertices={geometry.vertices}
                 faces={geometry.faces}
                 faceVertexUvs={geometry.faceVertexUvs}
             />
-            <meshLambertMaterial color={'#ffffff'} />
+            <meshLambertMaterial {...matParams} />
         </mesh>
     );
 }

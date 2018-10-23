@@ -9,7 +9,8 @@ import { savedData } from '~/saves';
 const DELIMITER = '|';
 const DEFAULT_COOS_COUNT = 10;
 const AREA_WIDTH = 0.3;
-const MAX_ITERATIONS_PER_FRAME = 500;
+const MAX_ITERATIONS_PER_FRAME = 100;
+const COUNT_TO_DELETE = 1;
 
 let stack: string[] = savedData.stack;
 
@@ -31,23 +32,19 @@ export function getRGB(c: Color): string {
 
 // ---
 
-export function getDefaultData(): Data {
-    const data: Data = {};
+export function getDefaultData(exist?: Data, width?: number): Data {
+    const data: Data = exist || {};
     createArray(DEFAULT_COOS_COUNT).map(() => {
-        let position;
-        do {
-            position = { x: getCoo(), y: getCoo() };
-        } while (data[getKey(position)] !== undefined);
-        setDefaultDataAtPosition(data, position);
+        setDefaultDataAtPosition(data, { x: getCoo(width), y: getCoo(width) }, INITIAL_VALUE);
     });
     return data;
 }
 
-function getCoo(): number {
-    return Math.floor(AREA_WIDTH * INITIAL_VALUE * (Math.random() - 0.5));
+function getCoo(width?: number): number {
+    return Math.floor((width || AREA_WIDTH) * INITIAL_VALUE * (Math.random() - 0.5));
 }
 
-export function getSizeFromData(data: Data): State['size'] {
+export function getSizeFromData(data: Data): { width: number, height: number } {
     let width = 0;
     let height = 0;
     Object.keys(data).map(coo => {
@@ -65,9 +62,12 @@ export function getSizeFromData(data: Data): State['size'] {
     };
 }
 
-function setDefaultDataAtPosition(data: Data, position: Position) {
-    data[getKey(position)] = INITIAL_VALUE;
-    data[getKey({ x: -position.x, y: -position.y })] = -INITIAL_VALUE;
+function setDefaultDataAtPosition(data: Data, position: Position, value: number) {
+    data[getKey(position)] = -value;
+    data[getKey({ x: -position.x, y: -position.y })] = value;
+    // TODO:
+    // at firts negative mass created by clockwise rotation, then
+    // positive mass, created around the negative mass by counterclockwise rotation, then...
 }
 
 export function getKey(position: Position): string {
@@ -99,23 +99,9 @@ export function isInStack(coo: string) {
 // ---
 
 function getStackByData(data: Data): string[] {
-    const tempStack = Object.keys(data);
-    tempStack.forEach(coo => {
-        const v = data[coo];
-        if (v === undefined || v <= -1 || v >= 1) {
-            return;
-        }
-        const position = getPositionByCoo(coo);
-        const coos = getCoosAroundPosition(position);
-        if ((data[coos[0]] || 0) <= -1 && (data[coos[1]] || 0) >= 1 ||
-            (data[coos[1]] || 0) <= -1 && (data[coos[0]] || 0) >= 1 ||
-            (data[coos[2]] || 0) <= -1 && (data[coos[3]] || 0) >= 1 ||
-            (data[coos[3]] || 0) <= -1 && (data[coos[2]] || 0) >= 1
-        ) {
-            setDefaultDataAtPosition(data, position);
-        }
-    });
+    getDefaultData(data);
     return Object.keys(data);
+    // TODO: new stars frequency by size
 }
 
 function getNewDataIteration(data: Data, tempStack: string[]): { data: Data, coo: string, stack: string[] } {
@@ -123,7 +109,7 @@ function getNewDataIteration(data: Data, tempStack: string[]): { data: Data, coo
     const cooToExplode = tempStack.filter(coo => (data[coo] || 0) > chance)[0];
     const index = tempStack.indexOf(cooToExplode);
     return {
-        data: updateDataAtCoo(data, tempStack.splice(index === -1 ? 0 : index, 1)[0]),
+        data: updateDataAtCoo(data, tempStack.splice(index === -1 ? 0 : index, COUNT_TO_DELETE)[0]),
         coo: cooToExplode,
         stack: tempStack
     };
@@ -186,7 +172,7 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
     const coos = getCoosAroundPosition(position)
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
-    const result = decreaseColors(coos.map(o => o.value), valueToDecrease);
+    const result = decreaseValues(coos.map(o => o.value), valueToDecrease);
     if (result.data.length !== 4) {
         console.warn('result colors length must be 4!');
         return data;
@@ -197,7 +183,7 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
 }
 
 type Children = { data: number[], value: number };
-function decreaseColors(sortedValues: number[], valueToDecrease: number): Children {
+function decreaseValues(sortedValues: number[], valueToDecrease: number): Children {
     const filtered = sortedValues.filter(c => valueToDecrease - c > 0);
     if (filtered.length === 0) {
         return { data: sortedValues, value: valueToDecrease };
@@ -213,7 +199,7 @@ function decreaseColors(sortedValues: number[], valueToDecrease: number): Childr
         };
     }
     const diff = (valueToDecrease - filtered[0]) / (filtered.length + 1);
-    const children = decreaseColors(filtered.map(c => c + diff), filtered[0] + diff);
+    const children = decreaseValues(filtered.map(c => c + diff), filtered[0] + diff);
     return {
         data: [
             ...sortedValues.filter(c => valueToDecrease - c <= 0),
@@ -262,7 +248,7 @@ export function getNextLocalData(data: Data): Data {
     const tempStack = Object.keys(data);
     while (tempStack.length > 0) {
         const cooToExplode = getRandomArrayElement(tempStack);
-        tempStack.splice(tempStack.indexOf(cooToExplode), 1);
+        tempStack.splice(tempStack.indexOf(cooToExplode), COUNT_TO_DELETE);
         const valueToDecrease = data[cooToExplode] || 0;
         const maxPressure = MAX_PRESSURE_PER_FRAME * INITIAL_VALUE;
         if (valueToDecrease > maxPressure) {

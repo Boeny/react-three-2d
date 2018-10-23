@@ -33,7 +33,7 @@ function LocalMapElementMesh(props: Props): Mesh {
                 LOCAL_WIDTH * count / INITIAL_VALUE :
                 LOCAL_WIDTH * MAX_PRESSURE_PER_FRAME,
             color: getRGB(isSelected && count > 0 ? YELLOW_COLOR : getColor(count)),
-            withShadows: count > 0
+            receiveLight: count > 0
         })
     );
 }
@@ -54,7 +54,7 @@ function LocalMapElement(props: Props) {
                 LOCAL_WIDTH * count / INITIAL_VALUE :
                 LOCAL_WIDTH * MAX_PRESSURE_PER_FRAME}
             color={getRGB(isSelected && count > 0 ? YELLOW_COLOR : getColor(count))}
-            withShadows={count > 0}
+            receiveLight={count > 0}
         />
     );
 }
@@ -64,27 +64,29 @@ export const LocalMapUnionConnected = observer(() => {
     const { local, showNegative, selectedObjectPosition, currentCoo } = Store.state;
     return (
         <group name="local-map">
-            <Union components={(
-                Object.keys(local).map(parentCoo => {
-                    const localData = local[parentCoo] || {};
-                    return Object.keys(localData).map(coo => {
-                        const count = localData[coo] || 0;
-                        if (showNegative === false && count < 0) {
-                            return null;
-                        }
-                        const position = getPositionByCoo(coo);
-                        return (
-                            LocalMapElementMesh({
-                                count,
-                                position,
-                                parentPosition: getPositionByCoo(parentCoo),
-                                isSelected: selectedObjectPosition !== null && parentCoo === currentCoo
-                                    && vectorsAreEqual(selectedObjectPosition, position, 0.3)
-                            })
-                        );
-                    });
-                })
-            )} />
+            <Union
+                components={(
+                    Object.keys(local).map(parentCoo => {
+                        const localData = local[parentCoo] || {};
+                        return Object.keys(localData).map(coo => {
+                            const count = localData[coo] || 0;
+                            if (showNegative === false && count < 0) {
+                                return null;
+                            }
+                            const position = getPositionByCoo(coo);
+                            return (
+                                LocalMapElementMesh({
+                                    count,
+                                    position,
+                                    parentPosition: getPositionByCoo(parentCoo),
+                                    isSelected: selectedObjectPosition !== null && parentCoo === currentCoo
+                                        && vectorsAreEqual(selectedObjectPosition, position, 0.3)
+                                })
+                            );
+                        });
+                    })
+                )}
+            />
         </group>
     );
 });

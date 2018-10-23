@@ -1,7 +1,18 @@
-import { Vector2, Vector3, Camera, Raycaster, Scene, Intersection } from 'three';
+import {
+    Vector2, Vector3, Camera, Raycaster, Scene, Intersection, VertexColors, Color, Texture
+} from 'three';
 import { Position } from '~/types';
-import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL } from '~/constants';
+import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constants';
 
+
+export function getMaterialParams(color?: string, texture?: Texture) {
+    return {
+        wireframe: SHOW_AS_WIREFRAME,
+        color: color ? new Color(color) : '#ffffff',
+        vertexColors: VertexColors,
+        map: texture
+    };
+}
 
 const raycaster = new Raycaster();
 

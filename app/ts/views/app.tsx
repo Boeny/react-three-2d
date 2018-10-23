@@ -14,7 +14,7 @@ export function App() {
         <React.Fragment>
             <Html />
             <React3
-                shadowMapEnabled={true}
+                shadowMapEnabled={false}
                 shadowMapType={BasicShadowMap}
                 mainCamera={'camera'}
                 width={window.innerWidth}
@@ -27,7 +27,7 @@ export function App() {
                         color={'#ffffff'}
                         intensity={1}
                         position={new Vector3(0, 0, 10)}
-                        lookAt={new Vector3(10, -10, 5)}
+                        lookAt={new Vector3(10, -10, 6)}
                         castShadow={true}
                     />
                     <ambientLight
