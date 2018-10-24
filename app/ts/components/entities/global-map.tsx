@@ -10,6 +10,7 @@ import { YELLOW_COLOR } from './constants';
 
 const BLACK_COLOR = { r: 0, g: 0, b: 0 };
 const POSITION = new Vector3();
+const BLUE_BORDER = 0.1;
 
 export const GlobalMap = observer(() => {
     const { width, height } = getSizeFromData(Store.state.data);
@@ -25,9 +26,9 @@ export const GlobalMap = observer(() => {
 
 function getBlue(count?: number) {
     const c = count === undefined ? 0 : (
-        count >= 0 ? 1 - count : 1 + count
+        count >= 0 ? BLUE_BORDER - count : BLUE_BORDER + count
     );
-    return { r: 0, g: 0, b: 255 * c };
+    return { r: 0, g: 0, b: 255 * c / BLUE_BORDER };
 }
 
 function getTextureData(
@@ -47,7 +48,7 @@ function getTextureData(
         let color = showStack && isInStack(coo) ?
             YELLOW_COLOR : (
                 showNegative === false && count <= -1 ? BLACK_COLOR : (
-                    count > -1 && count < 1 ? getBlue(data[coo]) : getColor(count)
+                    count > 0 && count < BLUE_BORDER ? getBlue(data[coo]) : getColor(count)
                 )
             );
         switch (mode) {

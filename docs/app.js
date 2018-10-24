@@ -101532,9 +101532,9 @@ var utils_1 = __webpack_require__(24);
 var constants_1 = __webpack_require__(39);
 var saves_1 = __webpack_require__(52);
 var DELIMITER = '|';
-var DEFAULT_COOS_COUNT = 10;
-var AREA_WIDTH = 0.3;
-var MAX_ITERATIONS_PER_FRAME = 100;
+var DEFAULT_COOS_COUNT = 20;
+var AREA_WIDTH = 0.5;
+var MAX_ITERATIONS_PER_FRAME = 500;
 var COUNT_TO_DELETE = 1;
 var stack = saves_1.savedData.stack;
 function getColor(count) {
@@ -101559,12 +101559,20 @@ function getCoo(width) {
     return Math.floor((width || AREA_WIDTH) * constants_1.INITIAL_VALUE * (Math.random() - 0.5));
 }
 function getCoosWithPositiveValues(data) {
-    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) >= 1; });
+    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) > 0; });
 }
 function getCoosWithNegativeValues(data) {
-    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) <= -1; });
+    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) < 0; });
 }
 function setDefaultDataAtPosition(data, position, value) {
+    getCoosWithPositiveValues(data).forEach(function (coo) {
+        var p = getPositionByCoo(coo);
+        var middleCoo = getKey({
+            x: Math.round((p.x + position.x) / 2),
+            y: Math.round((p.y + position.y) / 2)
+        });
+        data[middleCoo] = (data[middleCoo] || 0) - value;
+    });
     data[getKey(position)] = value;
 }
 function getSizeFromData(data) {
@@ -101625,10 +101633,14 @@ function getNewDataIteration(data, tempStack) {
     };
 }
 function getNewData(data) {
-    if (stack.length === 0) {
-        stack = getStackByData(data);
-    }
     var resultData = data;
+    if (stack.length === 0) {
+        resultData = {};
+        getCoosWithPositiveValues(data).forEach(function (coo) {
+            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+        });
+        stack = getStackByData(resultData);
+    }
     var i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
         var result = getNewDataIteration(resultData, stack);
@@ -101643,10 +101655,15 @@ function getNewData(data) {
 }
 exports.getNewData = getNewData;
 function getNewDataForSingleCoo(data) {
+    var resultData = data;
     if (stack.length === 0) {
-        stack = getStackByData(data);
+        resultData = {};
+        getCoosWithPositiveValues(data).forEach(function (coo) {
+            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+        });
+        stack = getStackByData(resultData);
     }
-    var result = getNewDataIteration(data, stack);
+    var result = getNewDataIteration(resultData, stack);
     stack = result.stack;
     return {
         data: result.data,
@@ -101681,16 +101698,22 @@ function getCoosByDirections(cooToExplode, targetCoos) {
     var targetPositions = targetCoos.map(getPositionByCoo);
     var currentPosition = getPositionByCoo(cooToExplode);
     return getPositionsAround(currentPosition).filter(function (positionAround) {
-        return targetPositions.some(function (p) { return Math.abs((p.y - currentPosition.y) * positionAround.x / (p.x - currentPosition.x)
-            - positionAround.y) < 0.5; });
+        return targetPositions.some(function (p) {
+            var diff = {
+                x: p.x - currentPosition.x,
+                y: p.y - currentPosition.y
+            };
+            return Math.abs(diff.x) > 1 && Math.abs(diff.y) > 1
+                && Math.abs(diff.y * positionAround.x / diff.x - positionAround.y) < 0.5;
+        });
     }).map(getKey);
 }
 function updateDataAtCoo(data, cooToExplode) {
     var valueToDecrease = data[cooToExplode] || 0;
-    if (valueToDecrease > -1 && valueToDecrease < 1) {
+    if (valueToDecrease < 0) {
         return data;
     }
-    var coos = getCoosByDirections(cooToExplode, valueToDecrease <= -1 ? getCoosWithPositiveValues(data) : getCoosWithNegativeValues(data))
+    var coos = getCoosByDirections(cooToExplode, getCoosWithNegativeValues(data))
         .map(function (coo) { return ({ coo: coo, value: data[coo] || 0 }); })
         .sort(function (a, b) { return b.value - a.value; });
     var result = decreaseValues(coos.map(function (o) { return o.value; }), valueToDecrease);
@@ -142338,13 +142361,14 @@ var quad_1 = __webpack_require__(285);
 var constants_1 = __webpack_require__(39);
 var BLACK_COLOR = { r: 0, g: 0, b: 0 };
 var POSITION = new three_1.Vector3();
+var BLUE_BORDER = 0.1;
 exports.GlobalMap = mobx_react_1.observer(function () {
     var _a = utils_1.getSizeFromData(store_1.Store.state.data), width = _a.width, height = _a.height;
     return (React.createElement(quad_1.Quad, { position: POSITION, width: width, height: height, texture: getTextureData(width, height, store_1.Store.state) }));
 });
 function getBlue(count) {
-    var c = count === undefined ? 0 : (count >= 0 ? 1 - count : 1 + count);
-    return { r: 0, g: 0, b: 255 * c };
+    var c = count === undefined ? 0 : (count >= 0 ? BLUE_BORDER - count : BLUE_BORDER + count);
+    return { r: 0, g: 0, b: 255 * c / BLUE_BORDER };
 }
 function getTextureData(width, height, _a) {
     var data = _a.data, local = _a.local, currentCoo = _a.currentCoo, showNegative = _a.showNegative, mode = _a.mode, showStack = _a.showStack;
@@ -142360,7 +142384,7 @@ function getTextureData(width, height, _a) {
         });
         var count = data[coo] || 0;
         var color = showStack && utils_1.isInStack(coo) ?
-            constants_1.YELLOW_COLOR : (showNegative === false && count <= -1 ? BLACK_COLOR : (count > -1 && count < 1 ? getBlue(data[coo]) : utils_1.getColor(count)));
+            constants_1.YELLOW_COLOR : (showNegative === false && count <= -1 ? BLACK_COLOR : (count > 0 && count < BLUE_BORDER ? getBlue(data[coo]) : utils_1.getColor(count)));
         switch (mode) {
             case 1:
                 if (coo === currentCoo && data[currentCoo] !== undefined) {

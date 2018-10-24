@@ -7,9 +7,9 @@ import { savedData } from '~/saves';
 
 
 const DELIMITER = '|';
-const DEFAULT_COOS_COUNT = 10;
-const AREA_WIDTH = 0.3;
-const MAX_ITERATIONS_PER_FRAME = 100;
+const DEFAULT_COOS_COUNT = 20;
+const AREA_WIDTH = 0.5;
+const MAX_ITERATIONS_PER_FRAME = 500;
 const COUNT_TO_DELETE = 1;
 
 let stack: string[] = savedData.stack;
@@ -45,11 +45,11 @@ function getCoo(width?: number): number {
 }
 
 function getCoosWithPositiveValues(data: Data): string[] {
-    return Object.keys(data).filter(coo => (data[coo] || 0) >= 1);
+    return Object.keys(data).filter(coo => (data[coo] || 0) > 0);
 }
 
 function getCoosWithNegativeValues(data: Data): string[] {
-    return Object.keys(data).filter(coo => (data[coo] || 0) <= -1);
+    return Object.keys(data).filter(coo => (data[coo] || 0) < 0);
 }
 
 function setDefaultDataAtPosition(data: Data, position: Position, value: number) {
@@ -127,10 +127,14 @@ function getNewDataIteration(data: Data, tempStack: string[]): { data: Data, coo
 }
 
 export function getNewData(data: Data): Data {
-    if (stack.length === 0) {
-        stack = getStackByData(data);
-    }
     let resultData = data;
+    if (stack.length === 0) {
+        resultData = {};
+        getCoosWithPositiveValues(data).forEach(coo => {
+            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+        });
+        stack = getStackByData(resultData);
+    }
     let i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
         const result = getNewDataIteration(resultData, stack);
@@ -145,10 +149,15 @@ export function getNewData(data: Data): Data {
 }
 
 export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } {
+    let resultData = data;
     if (stack.length === 0) {
-        stack = getStackByData(data);
+        resultData = {};
+        getCoosWithPositiveValues(data).forEach(coo => {
+            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+        });
+        stack = getStackByData(resultData);
     }
-    const result = getNewDataIteration(data, stack);
+    const result = getNewDataIteration(resultData, stack);
     stack = result.stack;
     return {
         data: result.data,
@@ -184,23 +193,25 @@ function getCoosByDirections(cooToExplode: string, targetCoos: string[]): string
     const targetPositions = targetCoos.map(getPositionByCoo);
     const currentPosition = getPositionByCoo(cooToExplode);
     return getPositionsAround(currentPosition).filter(positionAround => {
-        return targetPositions.some(
-            p => Math.abs(
-                (p.y - currentPosition.y) * positionAround.x / (p.x - currentPosition.x)
-                    - positionAround.y
-            ) < 0.5
-        );
+        return targetPositions.some(p => {
+            const diff = {
+                x: p.x - currentPosition.x,
+                y: p.y - currentPosition.y
+            };
+            return Math.abs(diff.x) > 1 && Math.abs(diff.y) > 1
+                && Math.abs(diff.y * positionAround.x / diff.x - positionAround.y) < 0.5;
+        });
     }).map(getKey);
 }
 
 function updateDataAtCoo(data: Data, cooToExplode: string): Data {
     const valueToDecrease = data[cooToExplode] || 0;
-    if (valueToDecrease > -1 && valueToDecrease < 1) {
+    if (valueToDecrease < 0) {
         return data;
     }
     const coos = getCoosByDirections(
         cooToExplode,
-        valueToDecrease <= -1 ? getCoosWithPositiveValues(data) : getCoosWithNegativeValues(data)
+        getCoosWithNegativeValues(data)
     )
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
