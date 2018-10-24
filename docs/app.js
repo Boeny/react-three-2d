@@ -101558,22 +101558,14 @@ exports.getDefaultData = getDefaultData;
 function getCoo(width) {
     return Math.floor((width || AREA_WIDTH) * constants_1.INITIAL_VALUE * (Math.random() - 0.5));
 }
+function getCoosWithPositiveValues(data) {
+    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) >= 1; });
+}
+function getCoosWithNegativeValues(data) {
+    return Object.keys(data).filter(function (coo) { return (data[coo] || 0) <= -1; });
+}
 function setDefaultDataAtPosition(data, position, value) {
-    Object.keys(data).forEach(function (coo) {
-        if ((data[coo] || 0) <= 0) {
-            return;
-        }
-        var p = getPositionByCoo(coo);
-        var middleCoo = getKey({
-            x: Math.round((p.x + position.x) / 2),
-            y: Math.round((p.y + position.y) / 2)
-        });
-        data[middleCoo] = (data[middleCoo] || 0) - value;
-    });
     data[getKey(position)] = value;
-    // TODO:
-    // at firts negative mass created by clockwise rotation, then
-    // positive mass, created around the negative mass by counterclockwise rotation, then...
 }
 function getSizeFromData(data) {
     var width = 0;
@@ -101673,27 +101665,35 @@ function getNextData(data) {
     return resultData;
 }
 exports.getNextData = getNextData;
-function getCoosAroundPosition(position) {
+function getPositionsAround(position) {
     return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
         { x: position.x + 1, y: position.y },
         { x: position.x - 1, y: position.y }
-    ]
-        .map(getKey);
+    ];
+}
+function getCoosAroundPosition(position) {
+    return getPositionsAround(position).map(getKey);
 }
 exports.getCoosAroundPosition = getCoosAroundPosition;
+function getCoosByDirections(cooToExplode, targetCoos) {
+    var targetPositions = targetCoos.map(getPositionByCoo);
+    var currentPosition = getPositionByCoo(cooToExplode);
+    return getPositionsAround(currentPosition).filter(function (positionAround) {
+        return targetPositions.some(function (p) { return Math.abs((p.y - currentPosition.y) * positionAround.x / (p.x - currentPosition.x)
+            - positionAround.y) < 0.5; });
+    }).map(getKey);
+}
 function updateDataAtCoo(data, cooToExplode) {
     var valueToDecrease = data[cooToExplode] || 0;
-    var position = getPositionByCoo(cooToExplode);
-    var coos = getCoosAroundPosition(position)
+    if (valueToDecrease > -1 && valueToDecrease < 1) {
+        return data;
+    }
+    var coos = getCoosByDirections(cooToExplode, valueToDecrease <= -1 ? getCoosWithPositiveValues(data) : getCoosWithNegativeValues(data))
         .map(function (coo) { return ({ coo: coo, value: data[coo] || 0 }); })
         .sort(function (a, b) { return b.value - a.value; });
     var result = decreaseValues(coos.map(function (o) { return o.value; }), valueToDecrease);
-    if (result.data.length !== 4) {
-        console.warn('result colors length must be 4!');
-        return data;
-    }
     coos.forEach(function (o, i) { return data[o.coo] = result.data[i]; });
     data[cooToExplode] = result.value;
     return data;

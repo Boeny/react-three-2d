@@ -44,11 +44,16 @@ function getCoo(width?: number): number {
     return Math.floor((width || AREA_WIDTH) * INITIAL_VALUE * (Math.random() - 0.5));
 }
 
+function getCoosWithPositiveValues(data: Data): string[] {
+    return Object.keys(data).filter(coo => (data[coo] || 0) >= 1);
+}
+
+function getCoosWithNegativeValues(data: Data): string[] {
+    return Object.keys(data).filter(coo => (data[coo] || 0) <= -1);
+}
+
 function setDefaultDataAtPosition(data: Data, position: Position, value: number) {
-    Object.keys(data).forEach(coo => {
-        if ((data[coo] || 0) <= 0) {
-            return;
-        }
+    getCoosWithPositiveValues(data).forEach(coo => {
         const p = getPositionByCoo(coo);
         const middleCoo = getKey({
             x: Math.round((p.x + position.x) / 2),
@@ -162,27 +167,44 @@ export function getNextData(data: Data): Data {
     return resultData;
 }
 
-export function getCoosAroundPosition(position: Position): string[] {
+function getPositionsAround(position: Position): Position[] {
     return [
         { x: position.x, y: position.y + 1 },
         { x: position.x, y: position.y - 1 },
         { x: position.x + 1, y: position.y },
         { x: position.x - 1, y: position.y }
-    ]
-        .map(getKey);
+    ];
+}
+
+export function getCoosAroundPosition(position: Position): string[] {
+    return getPositionsAround(position).map(getKey);
+}
+
+function getCoosByDirections(cooToExplode: string, targetCoos: string[]): string[] {
+    const targetPositions = targetCoos.map(getPositionByCoo);
+    const currentPosition = getPositionByCoo(cooToExplode);
+    return getPositionsAround(currentPosition).filter(positionAround => {
+        return targetPositions.some(
+            p => Math.abs(
+                (p.y - currentPosition.y) * positionAround.x / (p.x - currentPosition.x)
+                    - positionAround.y
+            ) < 0.5
+        );
+    }).map(getKey);
 }
 
 function updateDataAtCoo(data: Data, cooToExplode: string): Data {
     const valueToDecrease = data[cooToExplode] || 0;
-    const position = getPositionByCoo(cooToExplode);
-    const coos = getCoosAroundPosition(position)
+    if (valueToDecrease > -1 && valueToDecrease < 1) {
+        return data;
+    }
+    const coos = getCoosByDirections(
+        cooToExplode,
+        valueToDecrease <= -1 ? getCoosWithPositiveValues(data) : getCoosWithNegativeValues(data)
+    )
         .map(coo => ({ coo, value: data[coo] || 0 }))
         .sort((a, b) => b.value - a.value);
     const result = decreaseValues(coos.map(o => o.value), valueToDecrease);
-    if (result.data.length !== 4) {
-        console.warn('result colors length must be 4!');
-        return data;
-    }
     coos.forEach((o, i) => data[o.coo] = result.data[i]);
     data[cooToExplode] = result.value;
     return data;
@@ -190,7 +212,6 @@ function updateDataAtCoo(data: Data, cooToExplode: string): Data {
 
 type Children = { data: number[], value: number };
 function decreaseValues(sortedValues: number[], valueToDecrease: number): Children {
-    // TODO: decrease values only between negative and positive directions
     const filtered = sortedValues.filter(c => valueToDecrease - c > 0);
     if (filtered.length === 0) {
         return { data: sortedValues, value: valueToDecrease };
