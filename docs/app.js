@@ -99354,16 +99354,17 @@ var utils_1 = __webpack_require__(51);
 var saves_1 = __webpack_require__(52);
 var constants_1 = __webpack_require__(39);
 var GLOBAL_ZOOM_FAR = 200;
+var GLOBAL_ZOOM_NEAR = 20;
 var LOCAL_ZOOM_NEAR = 3.2;
-var LOCAL_ZOOM_FAR = 20;
+var LOCAL_ZOOM_FAR = 40;
 var ROT_ZOOM_NEAR = LOCAL_ZOOM_NEAR;
-var ROT_ZOOM_FAR = 6;
+var ROT_ZOOM_FAR = 10;
 var ROT_MAX_ANGLE = Math.PI / 4;
 var ROT_BASE = ROT_MAX_ANGLE / (1 - ROT_ZOOM_NEAR / ROT_ZOOM_FAR);
 var ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
 var MAX_DELTA_COO = 1;
 var POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
-var MAX_LOCAL_SIZE = 7;
+var MAX_LOCAL_SIZE = 10;
 exports.Store = {
     state: mobx_1.observable(saves_1.savedData.state),
     nextState: saves_1.savedData.nextState,
@@ -99466,7 +99467,7 @@ exports.Store = {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return LOCAL_ZOOM_FAR;
+                return GLOBAL_ZOOM_NEAR;
             case 2:
                 return LOCAL_ZOOM_NEAR;
         }
@@ -142376,7 +142377,7 @@ var quad_1 = __webpack_require__(285);
 var constants_1 = __webpack_require__(39);
 var BLACK_COLOR = { r: 0, g: 0, b: 0 };
 var POSITION = new three_1.Vector3();
-var BLUE_BORDER = 0.1;
+var BLUE_BORDER = 1;
 exports.GlobalMap = mobx_react_1.observer(function () {
     var _a = utils_1.getSizeFromData(store_1.Store.state.data), width = _a.width, height = _a.height;
     return (React.createElement(quad_1.Quad, { position: POSITION, width: width, height: height, texture: getTextureData(width, height, store_1.Store.state) }));
@@ -142407,7 +142408,7 @@ function getTextureData(width, height, _a) {
                 }
                 break;
             case 2:
-                if (localCoos.indexOf(coo) > -1) {
+                if (localCoos.indexOf(coo) > -1 && count >= BLUE_BORDER) {
                     color = BLACK_COLOR;
                 }
                 break;

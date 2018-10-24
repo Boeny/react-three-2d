@@ -11,11 +11,12 @@ import { LOCAL_WIDTH } from './constants';
 
 
 const GLOBAL_ZOOM_FAR = 200;
+const GLOBAL_ZOOM_NEAR = 20;
 const LOCAL_ZOOM_NEAR = 3.2;
-const LOCAL_ZOOM_FAR = 20;
+const LOCAL_ZOOM_FAR = 40;
 
 const ROT_ZOOM_NEAR = LOCAL_ZOOM_NEAR;
-const ROT_ZOOM_FAR = 6;
+const ROT_ZOOM_FAR = 10;
 const ROT_MAX_ANGLE = Math.PI / 4;
 const ROT_BASE = ROT_MAX_ANGLE / (1 - ROT_ZOOM_NEAR / ROT_ZOOM_FAR);
 const ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
@@ -23,7 +24,7 @@ const ROT_MULT = -ROT_BASE / ROT_ZOOM_FAR;
 const MAX_DELTA_COO = 1;
 const POS_MULT = MAX_DELTA_COO / ROT_MAX_ANGLE;
 
-const MAX_LOCAL_SIZE = 7;
+const MAX_LOCAL_SIZE = 10;
 
 export const Store: IStore = {
     state: observable(savedData.state),
@@ -122,7 +123,7 @@ export const Store: IStore = {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return LOCAL_ZOOM_FAR;
+                return GLOBAL_ZOOM_NEAR;
             case 2:
                 return LOCAL_ZOOM_NEAR;
         }

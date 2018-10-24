@@ -10,7 +10,7 @@ import { YELLOW_COLOR } from './constants';
 
 const BLACK_COLOR = { r: 0, g: 0, b: 0 };
 const POSITION = new Vector3();
-const BLUE_BORDER = 0.1;
+const BLUE_BORDER = 1;
 
 export const GlobalMap = observer(() => {
     const { width, height } = getSizeFromData(Store.state.data);
@@ -58,7 +58,7 @@ function getTextureData(
                 }
                 break;
             case 2:
-                if (localCoos.indexOf(coo) > -1) {
+                if (localCoos.indexOf(coo) > -1 && count >= BLUE_BORDER) {
                     color = BLACK_COLOR;
                 }
                 break;
