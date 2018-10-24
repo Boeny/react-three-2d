@@ -10,7 +10,11 @@ import { savedData } from '~/saves';
 import { LOCAL_WIDTH } from './constants';
 
 
-const ROT_ZOOM_NEAR = 3.2;
+const GLOBAL_ZOOM_FAR = 200;
+const LOCAL_ZOOM_NEAR = 3.2;
+const LOCAL_ZOOM_FAR = 20;
+
+const ROT_ZOOM_NEAR = LOCAL_ZOOM_NEAR;
 const ROT_ZOOM_FAR = 6;
 const ROT_MAX_ANGLE = Math.PI / 4;
 const ROT_BASE = ROT_MAX_ANGLE / (1 - ROT_ZOOM_NEAR / ROT_ZOOM_FAR);
@@ -118,25 +122,25 @@ export const Store: IStore = {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return 6;
+                return LOCAL_ZOOM_FAR;
             case 2:
-                return 3.2;
+                return LOCAL_ZOOM_NEAR;
         }
     },
     getZoomFar(): Zoom | undefined {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return 200;
+                return GLOBAL_ZOOM_FAR;
             case 2:
-                return 6;
+                return LOCAL_ZOOM_FAR;
         }
     },
     getRotationByZoom(zoom: number): Position3 {
         switch (this.state.mode) {
             case 2:
                 return {
-                    x: zoom * ROT_MULT + ROT_BASE,
+                    x: zoom < ROT_ZOOM_FAR ? zoom * ROT_MULT + ROT_BASE : 0,
                     y: 0,
                     z: 0
                 };

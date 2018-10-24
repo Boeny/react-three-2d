@@ -1,8 +1,8 @@
 import { Store as camera } from '~/components/camera/store';
-import { createArray, getSign, getRandomArrayElement } from '~/utils';
+import { createArray, getSign, getRandomArrayElement, getRandomArrayIndex } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, BaseState } from './types';
-import { INITIAL_VALUE, LOCAL_WIDTH, MAX_PRESSURE_PER_FRAME } from './constants';
+import { INITIAL_VALUE, MAX_PRESSURE_PER_FRAME } from './constants';
 import { savedData } from '~/saves';
 
 
@@ -11,6 +11,7 @@ const DEFAULT_COOS_COUNT = 20;
 const AREA_WIDTH = 0.5;
 const MAX_ITERATIONS_PER_FRAME = 500;
 const COUNT_TO_DELETE = 1;
+const WIDTH_OF_LOCAL_CELL = Math.sqrt(INITIAL_VALUE);
 
 let stack: string[] = savedData.stack;
 
@@ -110,8 +111,15 @@ export function isInStack(coo: string) {
 
 // ---
 
-function getStackByData(data: Data): string[] {
-    return Object.keys(data);
+function getStackByData(data: Data): { data: Data, stack: string[] } {
+    const resultData = {};
+    getCoosWithPositiveValues(data).forEach(coo => {
+        setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+    });
+    return {
+        stack: Object.keys(data),
+        data: resultData
+    };
     // TODO: new stars frequency by size
 }
 
@@ -129,17 +137,15 @@ function getNewDataIteration(data: Data, tempStack: string[]): { data: Data, coo
 export function getNewData(data: Data): Data {
     let resultData = data;
     if (stack.length === 0) {
-        resultData = {};
-        getCoosWithPositiveValues(data).forEach(coo => {
-            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
-        });
-        stack = getStackByData(resultData);
+        const result = getStackByData(resultData);
+        stack = result.stack;
+        resultData = result.data;
     }
     let i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
         const result = getNewDataIteration(resultData, stack);
-        resultData = result.data;
         stack = result.stack;
+        resultData = result.data;
         i += 1;
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
@@ -151,11 +157,9 @@ export function getNewData(data: Data): Data {
 export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } {
     let resultData = data;
     if (stack.length === 0) {
-        resultData = {};
-        getCoosWithPositiveValues(data).forEach(coo => {
-            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
-        });
-        stack = getStackByData(resultData);
+        const result = getStackByData(resultData);
+        stack = result.stack;
+        resultData = result.data;
     }
     const result = getNewDataIteration(resultData, stack);
     stack = result.stack;
@@ -166,12 +170,17 @@ export function getNewDataForSingleCoo(data: Data): { data: Data, coo: string } 
 }
 
 export function getNextData(data: Data): Data {
-    let tempStack = stack.length === 0 ? getStackByData(data) : stack.slice();
+    let tempStack = stack.slice();
     let resultData = data;
+    if (stack.length === 0) {
+        const result = getStackByData(resultData);
+        tempStack = result.stack;
+        resultData = result.data;
+    }
     while (tempStack.length > 0) {
         const result = getNewDataIteration(resultData, tempStack);
-        resultData = result.data;
         tempStack = result.stack;
+        resultData = result.data;
     }
     return resultData;
 }
@@ -264,21 +273,24 @@ export function showDataAndStack(state: State, nextState: BaseState) {
 
 // ---
 
-function getLocalCoo(width: number) {
-    return Math.floor(Math.random() / width);
+function getAndRemoveRandomLocalIndex(array: number[]): number {
+    return array.splice(array.length === 1 ? 0 : getRandomArrayIndex(array), 1)[0];
 }
 
 export function getLocalData(count: number): Data {
     const data: Data = {};
+    const xArray = createArray(WIDTH_OF_LOCAL_CELL);
+    const yArray = createArray(WIDTH_OF_LOCAL_CELL);
     createArray(count > 0 ? count : -count).map(() => {
-        let coo;
-        do {
-            coo = getKey({
-                x: getLocalCoo(LOCAL_WIDTH),
-                y: getLocalCoo(LOCAL_WIDTH)
-            });
-        } while (data[coo]);
-        data[coo] = INITIAL_VALUE * getSign(count);
+        if (xArray.length === 0 || yArray.length === 0) {
+            return;
+        }
+        const position = {
+            x: getAndRemoveRandomLocalIndex(xArray),
+            y: getAndRemoveRandomLocalIndex(yArray)
+        };
+        data[getKey(position)] = INITIAL_VALUE * getSign(count);
+        setDefaultDataAtPosition(data, position, INITIAL_VALUE * getSign(count));
     });
     return data;
 }

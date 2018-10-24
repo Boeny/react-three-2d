@@ -99353,7 +99353,10 @@ var store_1 = __webpack_require__(31);
 var utils_1 = __webpack_require__(51);
 var saves_1 = __webpack_require__(52);
 var constants_1 = __webpack_require__(39);
-var ROT_ZOOM_NEAR = 3.2;
+var GLOBAL_ZOOM_FAR = 200;
+var LOCAL_ZOOM_NEAR = 3.2;
+var LOCAL_ZOOM_FAR = 20;
+var ROT_ZOOM_NEAR = LOCAL_ZOOM_NEAR;
 var ROT_ZOOM_FAR = 6;
 var ROT_MAX_ANGLE = Math.PI / 4;
 var ROT_BASE = ROT_MAX_ANGLE / (1 - ROT_ZOOM_NEAR / ROT_ZOOM_FAR);
@@ -99463,25 +99466,25 @@ exports.Store = {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return 6;
+                return LOCAL_ZOOM_FAR;
             case 2:
-                return 3.2;
+                return LOCAL_ZOOM_NEAR;
         }
     },
     getZoomFar: function () {
         switch (this.state.mode) {
             case 0:
             case 1:
-                return 200;
+                return GLOBAL_ZOOM_FAR;
             case 2:
-                return 6;
+                return LOCAL_ZOOM_FAR;
         }
     },
     getRotationByZoom: function (zoom) {
         switch (this.state.mode) {
             case 2:
                 return {
-                    x: zoom * ROT_MULT + ROT_BASE,
+                    x: zoom < ROT_ZOOM_FAR ? zoom * ROT_MULT + ROT_BASE : 0,
                     y: 0,
                     z: 0
                 };
@@ -101536,6 +101539,7 @@ var DEFAULT_COOS_COUNT = 20;
 var AREA_WIDTH = 0.5;
 var MAX_ITERATIONS_PER_FRAME = 500;
 var COUNT_TO_DELETE = 1;
+var WIDTH_OF_LOCAL_CELL = Math.sqrt(constants_1.INITIAL_VALUE);
 var stack = saves_1.savedData.stack;
 function getColor(count) {
     var c = Math.round(count * 255 / constants_1.INITIAL_VALUE);
@@ -101619,7 +101623,14 @@ function isInStack(coo) {
 exports.isInStack = isInStack;
 // ---
 function getStackByData(data) {
-    return Object.keys(data);
+    var resultData = {};
+    getCoosWithPositiveValues(data).forEach(function (coo) {
+        setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
+    });
+    return {
+        stack: Object.keys(data),
+        data: resultData
+    };
     // TODO: new stars frequency by size
 }
 function getNewDataIteration(data, tempStack) {
@@ -101635,17 +101646,15 @@ function getNewDataIteration(data, tempStack) {
 function getNewData(data) {
     var resultData = data;
     if (stack.length === 0) {
-        resultData = {};
-        getCoosWithPositiveValues(data).forEach(function (coo) {
-            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
-        });
-        stack = getStackByData(resultData);
+        var result = getStackByData(resultData);
+        stack = result.stack;
+        resultData = result.data;
     }
     var i = 0;
     while (stack.length > 0 && i < MAX_ITERATIONS_PER_FRAME) {
         var result = getNewDataIteration(resultData, stack);
-        resultData = result.data;
         stack = result.stack;
+        resultData = result.data;
         i += 1;
     }
     if (i === MAX_ITERATIONS_PER_FRAME) {
@@ -101657,11 +101666,9 @@ exports.getNewData = getNewData;
 function getNewDataForSingleCoo(data) {
     var resultData = data;
     if (stack.length === 0) {
-        resultData = {};
-        getCoosWithPositiveValues(data).forEach(function (coo) {
-            setDefaultDataAtPosition(resultData, getPositionByCoo(coo), 2 * (data[coo] || 0));
-        });
-        stack = getStackByData(resultData);
+        var result_1 = getStackByData(resultData);
+        stack = result_1.stack;
+        resultData = result_1.data;
     }
     var result = getNewDataIteration(resultData, stack);
     stack = result.stack;
@@ -101672,12 +101679,17 @@ function getNewDataForSingleCoo(data) {
 }
 exports.getNewDataForSingleCoo = getNewDataForSingleCoo;
 function getNextData(data) {
-    var tempStack = stack.length === 0 ? getStackByData(data) : stack.slice();
+    var tempStack = stack.slice();
     var resultData = data;
+    if (stack.length === 0) {
+        var result = getStackByData(resultData);
+        tempStack = result.stack;
+        resultData = result.data;
+    }
     while (tempStack.length > 0) {
         var result = getNewDataIteration(resultData, tempStack);
-        resultData = result.data;
         tempStack = result.stack;
+        resultData = result.data;
     }
     return resultData;
 }
@@ -101754,20 +101766,23 @@ function showDataAndStack(state, nextState) {
 }
 exports.showDataAndStack = showDataAndStack;
 // ---
-function getLocalCoo(width) {
-    return Math.floor(Math.random() / width);
+function getAndRemoveRandomLocalIndex(array) {
+    return array.splice(array.length === 1 ? 0 : utils_1.getRandomArrayIndex(array), 1)[0];
 }
 function getLocalData(count) {
     var data = {};
+    var xArray = utils_1.createArray(WIDTH_OF_LOCAL_CELL);
+    var yArray = utils_1.createArray(WIDTH_OF_LOCAL_CELL);
     utils_1.createArray(count > 0 ? count : -count).map(function () {
-        var coo;
-        do {
-            coo = getKey({
-                x: getLocalCoo(constants_1.LOCAL_WIDTH),
-                y: getLocalCoo(constants_1.LOCAL_WIDTH)
-            });
-        } while (data[coo]);
-        data[coo] = constants_1.INITIAL_VALUE * utils_1.getSign(count);
+        if (xArray.length === 0 || yArray.length === 0) {
+            return;
+        }
+        var position = {
+            x: getAndRemoveRandomLocalIndex(xArray),
+            y: getAndRemoveRandomLocalIndex(yArray)
+        };
+        data[getKey(position)] = constants_1.INITIAL_VALUE * utils_1.getSign(count);
+        setDefaultDataAtPosition(data, position, constants_1.INITIAL_VALUE * utils_1.getSign(count));
     });
     return data;
 }
