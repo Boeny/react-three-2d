@@ -142400,7 +142400,7 @@ function getTextureData(width, height, _a) {
         });
         var count = data[coo] || 0;
         var color = showStack && utils_1.isInStack(coo) ?
-            constants_1.YELLOW_COLOR : (showNegative === false && count <= -1 ? BLACK_COLOR : (count > 0 && count < BLUE_BORDER ? getBlue(data[coo]) : utils_1.getColor(count)));
+            constants_1.YELLOW_COLOR : (showNegative === false && count < 0 ? BLACK_COLOR : (count < BLUE_BORDER ? getBlue(data[coo]) : utils_1.getColor(count)));
         switch (mode) {
             case 1:
                 if (coo === currentCoo && data[currentCoo] !== undefined) {
