@@ -142408,7 +142408,7 @@ function getTextureData(width, height, _a) {
                 }
                 break;
             case 2:
-                if (localCoos.indexOf(coo) > -1 && count >= BLUE_BORDER) {
+                if (localCoos.indexOf(coo) > -1 && (count < 0 || count >= BLUE_BORDER)) {
                     color = BLACK_COLOR;
                 }
                 break;
