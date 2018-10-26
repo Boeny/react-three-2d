@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Vector2 } from 'three';
 import { observable, action, toJS } from 'mobx';
 import { observer } from 'mobx-react';
-import { getDefaultData, getNonEmptyCoordinates, getPosition, getColor, getNewData } from './utils';
+import { AudioStore } from '../audio';
+import { INITIAL_VALUE, getDefaultData, getNonEmptyCoordinates, getPosition, getColor, getNewData } from './utils';
 import { MountAndInit } from '../mount-and-init';
 import { Body } from '../body';
 
@@ -32,6 +33,9 @@ const ConnectedEntities = observer((props: ConnectedProps) => {
             {getNonEmptyCoordinates(data).map((coo, i) => {
                 const position = getPosition(coo);
                 const color = data[coo] || 0;
+                if (AudioStore.source && color > 20) {
+                    AudioStore.source.frequency.value = color;
+                }
                 return (
                     <Body
                         key={`${coo}-${i}-${color}`}
@@ -48,13 +52,17 @@ const ConnectedEntities = observer((props: ConnectedProps) => {
 });
 
 
-type Props = PositionProps;
-
-export function Entities(props: Props) {
+export function Entities() {
     return (
         <MountAndInit
             component={<ConnectedEntities onUpdate={setData} />}
-            onMount={() => setData(getDefaultData(props.position))}
+            onMount={() => {
+                setData(getDefaultData());
+                if (AudioStore.source) {
+                    AudioStore.source.frequency.value = INITIAL_VALUE;
+                    AudioStore.source.start(0);
+                }
+            }}
         />
     );
 }

@@ -3,10 +3,12 @@ import * as React from 'react';
 
 interface IStore {
     context: AudioContext | null;
+    source: OscillatorNode | null;
 }
 
 export const AudioStore: IStore = {
-    context: null
+    context: null,
+    source: null
 };
 
 
@@ -25,15 +27,14 @@ export class Audio extends React.Component {
 
 export class AudioSource extends React.Component {
 
-    source: OscillatorNode | null = null;
-
     componentDidMount() {
         const { context } = AudioStore;
         if (context === null) {
             console.warn('no audio context!');
             return;
         }
-        this.source = context.createOscillator();
+        AudioStore.source = context.createOscillator();
+        AudioStore.source.frequency.value = 100;
 
         const analyser = context.createAnalyser();
         // Размерность преобразования Фурье
@@ -44,9 +45,8 @@ export class AudioSource extends React.Component {
         const bFrequencyData = new Uint8Array(analyser.frequencyBinCount);
         const bTimeData = new Uint8Array(analyser.frequencyBinCount);
 
-        this.source.connect(analyser);
+        AudioStore.source.connect(analyser);
         analyser.connect(context.destination);
-        this.source.start(0);
 
         // Получаем данные
         analyser.getFloatFrequencyData(fFrequencyData);

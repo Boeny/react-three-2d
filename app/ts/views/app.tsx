@@ -22,8 +22,8 @@ export function App() {
                 {...events}
             >
                 <scene>
-                    <Player position={new Vector2()} color={'#330000'} />
-                    <Entities position={new Vector2()} />
+                    <Player position={new Vector2()} color={'#000000'} />
+                    <Entities />
                 </scene>
             </React3>
         </React.Fragment>
