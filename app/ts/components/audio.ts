@@ -6,35 +6,24 @@ interface IStore {
     source: OscillatorNode | null;
 }
 
-export const AudioStore: IStore = {
+export const Store: IStore = {
     context: null,
     source: null
 };
 
 
-export class Audio extends React.Component {
-
-    componentDidMount() {
-        window.AudioContext = window.AudioContext || window.webkitAudioContext;
-        AudioStore.context = new AudioContext();
-    }
-
-    render() {
-        return null;
-    }
-}
-
-
 export class AudioSource extends React.Component {
 
     componentDidMount() {
-        const { context } = AudioStore;
-        if (context === null) {
+        window.AudioContext = window.AudioContext || window.webkitAudioContext || null;
+        if (!window.AudioContext) {
             console.warn('no audio context!');
             return;
         }
-        AudioStore.source = context.createOscillator();
-        AudioStore.source.frequency.value = 100;
+        const context = new AudioContext();
+        Store.context = context;
+        Store.source = context.createOscillator();
+        Store.source.frequency.value = 0;
 
         const analyser = context.createAnalyser();
         // Размерность преобразования Фурье
@@ -45,7 +34,7 @@ export class AudioSource extends React.Component {
         const bFrequencyData = new Uint8Array(analyser.frequencyBinCount);
         const bTimeData = new Uint8Array(analyser.frequencyBinCount);
 
-        AudioStore.source.connect(analyser);
+        Store.source.connect(analyser);
         analyser.connect(context.destination);
 
         // Получаем данные

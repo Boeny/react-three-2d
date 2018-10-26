@@ -65,5 +65,6 @@ declare module "*.json" {
 }
 
 declare interface Window {
-    AudioContext: AudioContext;
+    AudioContext?: AudioContext | null;
+    webkitAudioContext?: AudioContext;
 }

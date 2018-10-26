@@ -3,7 +3,7 @@ import * as events from '~/utils/events';
 import * as React3 from 'react3';
 import { Vector3, BasicShadowMap } from 'three';
 import { Store as html } from './html/store';
-import { Entities, Player } from '~/components';
+import { Entities, Player, AudioSource } from '~/components';
 import { Html } from './html';
 import { savedData } from '~/saves';
 
@@ -23,6 +23,7 @@ export function App() {
                 {...events}
             >
                 <scene>
+                    <AudioSource />
                     <directionalLight
                         color={'#ffffff'}
                         intensity={1}
