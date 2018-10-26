@@ -49,7 +49,7 @@ function getTextureData(
         let color = showStack && isInStack(coo) ?
             YELLOW_COLOR : (
                 showNegative === false && count < 0 ? BLACK_COLOR : (
-                    count < BLUE_BORDER ? getBlue(data[coo]) : getColor(count)
+                    count > 0 && count < BLUE_BORDER ? getBlue(data[coo]) : getColor(count)
                 )
             );
         switch (mode) {

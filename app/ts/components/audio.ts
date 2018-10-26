@@ -1,6 +1,15 @@
 import * as React from 'react';
 
 
+const FREQ_MAX = 10000;
+const FREQ_MIN = 100;
+
+export function getFreqFunction(min: number, max: number) {
+    const FREQ_MULT = (FREQ_MAX - FREQ_MIN) / (max - min);
+    const FREQ_BASE = FREQ_MIN - min * FREQ_MULT;
+    return (v: number) => v * FREQ_MULT + FREQ_BASE;
+}
+
 interface IStore {
     context: AudioContext | null;
     source: OscillatorNode | null;

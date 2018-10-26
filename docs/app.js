@@ -110542,6 +110542,14 @@ exports.Camera = Camera;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(15);
 var React = __webpack_require__(8);
+var FREQ_MAX = 10000;
+var FREQ_MIN = 100;
+function getFreqFunction(min, max) {
+    var FREQ_MULT = (FREQ_MAX - FREQ_MIN) / (max - min);
+    var FREQ_BASE = FREQ_MIN - min * FREQ_MULT;
+    return function (v) { return v * FREQ_MULT + FREQ_BASE; };
+}
+exports.getFreqFunction = getFreqFunction;
 exports.Store = {
     context: null,
     source: null
@@ -142400,6 +142408,7 @@ var mount_and_init_1 = __webpack_require__(49);
 var global_map_1 = __webpack_require__(285);
 var local_map_1 = __webpack_require__(287);
 var constants_1 = __webpack_require__(33);
+var getFreq = audio_1.getFreqFunction(-constants_1.INITIAL_VALUE, constants_1.INITIAL_VALUE);
 function Entities() {
     return (React.createElement(mount_and_init_1.MountAndInit, { component: (React.createElement("group", null,
             React.createElement(global_map_1.GlobalMap, null),
@@ -142407,7 +142416,7 @@ function Entities() {
             store_2.Store.add({ onEveryTick: onEveryTick });
             store_1.Store.init();
             if (audio_1.Store.source) {
-                audio_1.Store.source.frequency.value = getFreq(constants_1.INITIAL_VALUE);
+                audio_1.Store.source.frequency.value = 0;
                 audio_1.Store.source.start(0);
             }
         } }));
@@ -142417,12 +142426,10 @@ function onEveryTick() {
     if (store_3.Store.state.stepMode === false) {
         store_1.Store.nextStep();
         if (audio_1.Store.source) {
-            audio_1.Store.source.frequency.value = getFreq(store_1.Store.state.data[store_1.Store.state.currentCoo] || 0);
+            var value = store_1.Store.state.data[store_1.Store.state.currentCoo] || 0;
+            audio_1.Store.source.frequency.value = value === 0 ? 0 : getFreq(value);
         }
     }
-}
-function getFreq(v) {
-    return (v > 0 ? 10000 * v + 5000 : -v * 5000 + 20) / constants_1.INITIAL_VALUE;
 }
 
 
@@ -142465,7 +142472,7 @@ function getTextureData(width, height, _a) {
         });
         var count = data[coo] || 0;
         var color = showStack && utils_1.isInStack(coo) ?
-            constants_1.YELLOW_COLOR : (showNegative === false && count < 0 ? BLACK_COLOR : (count < BLUE_BORDER ? getBlue(data[coo]) : utils_1.getColor(count)));
+            constants_1.YELLOW_COLOR : (showNegative === false && count < 0 ? BLACK_COLOR : (count > 0 && count < BLUE_BORDER ? getBlue(data[coo]) : utils_1.getColor(count)));
         switch (mode) {
             case 1:
                 if (coo === currentCoo && data[currentCoo] !== undefined) {
