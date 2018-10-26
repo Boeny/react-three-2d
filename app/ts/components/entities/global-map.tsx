@@ -14,6 +14,7 @@ const BLUE_BORDER = 1;
 
 export const GlobalMap = observer(() => {
     const { width, height } = getSizeFromData(Store.state.data);
+
     return (
         <Quad
             position={POSITION}

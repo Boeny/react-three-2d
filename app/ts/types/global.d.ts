@@ -63,3 +63,7 @@ declare module "*.json" {
     export const state: any;
     export const camera: any;
 }
+
+declare interface Window {
+    AudioContext: AudioContext;
+}
