@@ -1,5 +1,6 @@
-import { Camera } from 'three';
+import { Camera, Vector2, Vector3 } from 'three';
 import { observable, runInAction } from 'mobx';
+import { Store as html } from '~/views/html/store';
 import { clampByMin, clampByMax } from '~/utils';
 import { IStore, State, AfterZoom, Position3 } from './types';
 import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './constants';
@@ -35,18 +36,16 @@ export const Store: IStore = {
         if (delta === 0) {
             return;
         }
-        const width = window.innerWidth;
+        const width = html.state.windowWidth;
         const { zoom } = this.state;
         const dz = 2 * ZOOM_SCREEN_DELTA * zoom;
         // zoom in
         if (delta < 0) {
-            // console.log(zoom * width / (width + dz));
             this.setZoom(clampByMin(zoom * width / (width + dz), near || CAMERA_NEAR), after);
             return;
         }
         // zoom out
         if (width > dz) {
-            // console.log(zoom * width / (width - dz));
             this.setZoom(clampByMax(zoom * width / (width - dz), far || CAMERA_FAR), after);
         }
     },
@@ -55,12 +54,12 @@ export const Store: IStore = {
             this.state.position = v;
         });
     },
-    updatePositionBy(coo: Position3) {
+    updatePositionBy(p: Position3) {
         const { position } = this.state;
         this.setPosition({
-            x: position.x + coo.x,
-            y: position.y + coo.y,
-            z: position.z + coo.z
+            x: position.x + p.x,
+            y: position.y + p.y,
+            z: position.z + p.z
         });
     },
     setRotation(v: State['position']) {
@@ -72,5 +71,11 @@ export const Store: IStore = {
         runInAction(() => {
             this.state.translation = v;
         });
+    },
+    getVector2Position(): Vector2 {
+        return new Vector2(this.state.position.x, this.state.position.y);
+    },
+    getVector3Position(): Vector3 {
+        return new Vector3(this.state.position.x, this.state.position.y, this.state.position.z);
     }
 };

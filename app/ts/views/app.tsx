@@ -2,14 +2,15 @@ import * as React from 'react';
 import * as events from '~/utils/events';
 import * as React3 from 'react3';
 import { Vector3, BasicShadowMap } from 'three';
-import { Store as html } from './html/store';
-import { Entities, Player, AudioSource } from '~/components';
-import { Html } from './html';
+import { Store as html } from '~/views/html/store';
+import { Map, Player, AudioSource } from '~/components';
+import { Html } from '~/views/html';
 import { savedData } from '~/saves';
 
 
 export function App() {
     const { camera } = savedData;
+    const { windowWidth, windowHeight } = html.state;
     return (
         <React.Fragment>
             <Html />
@@ -17,8 +18,8 @@ export function App() {
                 shadowMapEnabled={false}
                 shadowMapType={BasicShadowMap}
                 mainCamera={'camera'}
-                width={window.innerWidth}
-                height={window.innerHeight}
+                width={windowWidth}
+                height={windowHeight}
                 canvasRef={(el: HTMLCanvasElement | null) => html.setCanvas(el)}
                 {...events}
             >
@@ -36,7 +37,7 @@ export function App() {
                         intensity={0.5}
                     />
                     <Player {...camera} />
-                    <Entities />
+                    <Map />
                 </scene>
             </React3>
         </React.Fragment>

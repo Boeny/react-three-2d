@@ -6,7 +6,9 @@ export const Store: IStore = {
     canvas: null,
     state: observable({
         content: null,
-        position: { x: 0, y: 0 }
+        position: { x: 0, y: 0 },
+        windowWidth: window.innerWidth,
+        windowHeight: window.innerHeight
     }),
     setCanvas(el: HTMLCanvasElement | null) {
         this.canvas = el;
@@ -19,6 +21,12 @@ export const Store: IStore = {
     setContent(text: string | JSX.Element | null) {
         runInAction(() => {
             this.state.content = text;
+        });
+    },
+    setSize() {
+        runInAction(() => {
+            this.state.windowWidth = window.innerWidth;
+            this.state.windowHeight = window.innerHeight;
         });
     }
 };

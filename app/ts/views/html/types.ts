@@ -6,8 +6,11 @@ export interface IStore {
     state: {
         position: Position;
         content: string | JSX.Element | null;
+        windowWidth: number;
+        windowHeight: number;
     };
     setCanvas: (el: HTMLCanvasElement | null) => void;
     setCursor: (cursor: string) => void;
     setContent: (text: string | JSX.Element | null) => void;
+    setSize: () => void;
 }

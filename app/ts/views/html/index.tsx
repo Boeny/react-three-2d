@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Store } from './store';
 
 
-export const Html = observer(() => {
+const Component = observer(() => {
     const { content } = Store.state;
     if (!content) {
         return null;
@@ -24,3 +24,15 @@ export const Html = observer(() => {
         </div>
     );
 });
+
+
+export class Html extends React.Component {
+
+    componentDidMount() {
+        window.removeEventListener('resize', () => Store.setSize());
+    }
+
+    render() {
+        return <Component />;
+    }
+}

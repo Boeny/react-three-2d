@@ -1,6 +1,7 @@
 import {
     Vector2, Vector3, Camera, Raycaster, Scene, Intersection, VertexColors, Color, Texture
 } from 'three';
+import { Store as html } from '~/views/html/store';
 import { Position } from '~/types';
 import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constants';
 
@@ -19,8 +20,8 @@ const raycaster = new Raycaster();
 export function getSelectedObject(screenVector: Vector2, camera: Camera, scene: Scene): Intersection | null {
     raycaster.setFromCamera(
         {
-            x: screenVector.x * 2 / window.innerWidth - 1,
-            y: -screenVector.y * 2 / window.innerHeight + 1
+            x: screenVector.x * 2 / html.state.windowWidth - 1,
+            y: -screenVector.y * 2 / html.state.windowHeight + 1
         },
         camera
     );
@@ -33,8 +34,8 @@ export function getMouseVector(e: any): Vector2 {
 
 export function toWorldVector(screenVector: Vector2, camera: Camera): Vector2 {
     const worldVector = new Vector3(
-        screenVector.x * 2 / window.innerWidth - 1,
-        -screenVector.y * 2 / window.innerHeight + 1,
+        screenVector.x * 2 / html.state.windowWidth - 1,
+        -screenVector.y * 2 / html.state.windowHeight + 1,
         0.5
     ).unproject(camera);
     return new Vector2(worldVector.x, worldVector.y).multiplyScalar(100);
@@ -43,8 +44,8 @@ export function toWorldVector(screenVector: Vector2, camera: Camera): Vector2 {
 export function toScreenVector(worldVector: Vector2, camera: Camera): Vector2 {
     const screenVector = new Vector3(worldVector.x, worldVector.y, 0).unproject(camera);
     return new Vector2(
-        (screenVector.x + 1) * window.innerWidth / 2,
-        -(screenVector.y - 1) * window.innerHeight / 2
+        (screenVector.x + 1) * html.state.windowWidth / 2,
+        -(screenVector.y - 1) * html.state.windowHeight / 2
     );
 }
 

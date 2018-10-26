@@ -32,7 +32,6 @@ export class AudioSource extends React.Component {
         const context = new AudioContext();
         Store.context = context;
         Store.source = context.createOscillator();
-        Store.source.frequency.value = 0;
 
         const analyser = context.createAnalyser();
         // Размерность преобразования Фурье
@@ -50,6 +49,9 @@ export class AudioSource extends React.Component {
         analyser.getFloatFrequencyData(fFrequencyData);
         analyser.getByteFrequencyData(bFrequencyData);
         analyser.getByteTimeDomainData(bTimeData);
+
+        Store.source.frequency.value = 0;
+        Store.source.start(0);
     }
 
     render() {

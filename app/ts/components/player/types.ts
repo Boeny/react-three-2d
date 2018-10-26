@@ -1,6 +1,8 @@
 import { Position } from '~/types';
 
 
+export { Position };
+
 export interface Moving {
     left: boolean;
     right: boolean;
@@ -10,8 +12,11 @@ export interface Moving {
 
 export interface IStore {
     moving: Moving;
-    position: Position;
-    setPosition: (x: number, y: number) => void;
+    state: {
+        position: Position;
+    };
+    setPosition: (p: Position, after?: (p: Position) => void) => void;
+    updatePositionBy: (p: Position, after?: (p: Position) => void) => void;
     moveLeft: (v: boolean) => void;
     moveRight: (v: boolean) => void;
     moveUp: (v: boolean) => void;

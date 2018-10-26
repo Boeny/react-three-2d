@@ -1,5 +1,5 @@
 import { observable, runInAction } from 'mobx';
-import { IStore } from './types';
+import { IStore, Position } from './types';
 
 
 export const Store: IStore = {
@@ -9,12 +9,24 @@ export const Store: IStore = {
         up: false,
         down: false
     }),
-    position: observable({ x: 0, y: 0 }),
-    setPosition(x: number, y: number) {
+    state: observable({
+        position: { x: 0, y: 0 }
+    }),
+    setPosition(p: Position, after?: (p: Position) => void) {
         runInAction(() => {
-            this.position.x = x;
-            this.position.y = y;
+            this.state.position = p;
+            after && after(p);
         });
+    },
+    updatePositionBy(p: Position, after?: (p: Position) => void) {
+        const { position } = this.state;
+        this.setPosition(
+            {
+                x: position.x + p.x,
+                y: position.y + p.y
+            },
+            after
+        );
     },
     moveRight(v: boolean) {
         if (this.moving.right === v) {

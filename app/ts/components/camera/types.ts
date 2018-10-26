@@ -1,4 +1,4 @@
-import { Camera } from 'three';
+import { Camera, Vector2, Vector3 } from 'three';
 import { Position3 } from '~/types';
 
 
@@ -24,4 +24,6 @@ export interface IStore {
     setRotation: (v: Position3) => void;
     setTranslation: (v: Position3) => void;
     updatePositionBy: (v: Position3) => void;
+    getVector2Position: () => Vector2;
+    getVector3Position: () => Vector3;
 }
