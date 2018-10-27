@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { Store as movable } from './movable/store';
-import { Store as player } from './player/store';
-import { Store as camera } from './camera/store';
 import { Store as html } from '~/views/html/store';
+import { Store as movable } from '../movable/store';
+import { Store as camera } from '../camera/store';
+import { Store as player } from './store';
 import { Position } from '~/types';
-import { Moving } from './player/types';
-import { MountAndInit } from './mount-and-init';
-import { Tank } from './tank';
-import { MAX_SPEED } from '../constants';
+import { Moving } from './types';
+import { MountAndInit } from '../mount-and-init';
+import { Tank } from '../tank';
+import { MAX_SPEED } from '../../constants';
 
 
 const BORDER_PERCENT = 0.5;
