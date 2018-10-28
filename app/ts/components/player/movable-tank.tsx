@@ -9,14 +9,14 @@ import { getSign } from '~/utils';
 import { Position } from '~/types';
 import { VertDirection, HorDirection } from './types';
 import { MountAndInit } from '../mount-and-init';
-import { Tank, STEPS_IN_UNIT, TRACK_LENGTH } from '../tank';
+import { Tank, STEPS_IN_UNIT, TRACK_LENGTH, TRACK_DISTANCE } from '../tank';
 import { MAX_SPEED, MIN_SPEED } from '../../constants';
 
 
 const BORDER_PERCENT = 0.5;
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
-const ACCELERATION = MIN_SPEED * 1.25;
+const ACCELERATION = MIN_SPEED * 1.5;
 const DECELERATION = MIN_SPEED * 1.05;
 
 const DEGREE = Math.PI / 180;
@@ -25,14 +25,16 @@ const MIN_ROT_SPEED = 0;
 const ROT_SPEED_ACC = DEGREE * 1.25;
 const ROT_SPEED_DEC = DEGREE * 1.05;
 
-let offset = 0;
+let offsetLeft = 0;
+let offsetRight = 0;
 
 const Component = observer(() => {
     return (
         <Tank
             position={player.state.position}
             rotation={player.state.rotation}
-            offset={offset}
+            trackOffsetLeft={offsetLeft}
+            trackOffsetRight={offsetRight}
         />
     );
 });
@@ -70,12 +72,13 @@ function onEveryTick(deltaTime: number) {
         },
         onPlayerPositionUpdate
     );
+
     let deltaOffset = Math.round(length * STEPS_IN_UNIT);
     if (length > 0) {
         if (player.moving.down) {
             deltaOffset = TRACK_LENGTH - deltaOffset % TRACK_LENGTH;
         }
-        offset = (offset + deltaOffset) % TRACK_LENGTH;
+        offsetLeft = offsetRight = (offsetLeft + deltaOffset) % TRACK_LENGTH;
     }
 
     if (player.isRotating()) {
@@ -89,10 +92,23 @@ function onEveryTick(deltaTime: number) {
     }
     if (length > MAX_ROT_SPEED) {
         player.rotSpeed = MAX_ROT_SPEED * sign;
+        length = MAX_ROT_SPEED;
     } else if (length < MIN_ROT_SPEED) {
         player.rotSpeed = 0;
+        length = 0;
     }
     player.setRotation(player.state.rotation + player.rotSpeed);
+
+    deltaOffset = Math.round(Math.tan(length) * TRACK_DISTANCE * STEPS_IN_UNIT);
+    if (length > 0) {
+        offsetLeft = (offsetLeft + (TRACK_LENGTH - deltaOffset % TRACK_LENGTH)) % TRACK_LENGTH;
+        offsetRight = (offsetRight + deltaOffset) % TRACK_LENGTH;
+        if (player.rotating.right) {
+            const temp = offsetLeft;
+            offsetLeft = offsetRight;
+            offsetRight = temp;
+        }
+    }
 }
 
 function decreaseSpeed(vel: number, acc: number): number {

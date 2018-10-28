@@ -142483,16 +142483,17 @@ var constants_1 = __webpack_require__(37);
 var BORDER_PERCENT = 0.5;
 var MAX_MOVE_SPEED = constants_1.MAX_SPEED / 2;
 var MIN_MOVE_SPEED = 0;
-var ACCELERATION = constants_1.MIN_SPEED * 1.25;
+var ACCELERATION = constants_1.MIN_SPEED * 1.5;
 var DECELERATION = constants_1.MIN_SPEED * 1.05;
 var DEGREE = Math.PI / 180;
 var MAX_ROT_SPEED = DEGREE * 5;
 var MIN_ROT_SPEED = 0;
 var ROT_SPEED_ACC = DEGREE * 1.25;
 var ROT_SPEED_DEC = DEGREE * 1.05;
-var offset = 0;
+var offsetLeft = 0;
+var offsetRight = 0;
 var Component = mobx_react_1.observer(function () {
-    return (React.createElement(tank_1.Tank, { position: store_4.Store.state.position, rotation: store_4.Store.state.rotation, offset: offset }));
+    return (React.createElement(tank_1.Tank, { position: store_4.Store.state.position, rotation: store_4.Store.state.rotation, trackOffsetLeft: offsetLeft, trackOffsetRight: offsetRight }));
 });
 function MovableTank() {
     return (React.createElement(mount_and_init_1.MountAndInit, { component: React.createElement(Component, null), onMount: function () { return store_2.Store.add({ onEveryTick: onEveryTick }); } }));
@@ -142524,7 +142525,7 @@ function onEveryTick(deltaTime) {
         if (store_4.Store.moving.down) {
             deltaOffset = tank_1.TRACK_LENGTH - deltaOffset % tank_1.TRACK_LENGTH;
         }
-        offset = (offset + deltaOffset) % tank_1.TRACK_LENGTH;
+        offsetLeft = offsetRight = (offsetLeft + deltaOffset) % tank_1.TRACK_LENGTH;
     }
     if (store_4.Store.isRotating()) {
         store_4.Store.rotSpeed += getRotationAcceleration(store_4.Store.rotating);
@@ -142537,11 +142538,23 @@ function onEveryTick(deltaTime) {
     }
     if (length > MAX_ROT_SPEED) {
         store_4.Store.rotSpeed = MAX_ROT_SPEED * sign;
+        length = MAX_ROT_SPEED;
     }
     else if (length < MIN_ROT_SPEED) {
         store_4.Store.rotSpeed = 0;
+        length = 0;
     }
     store_4.Store.setRotation(store_4.Store.state.rotation + store_4.Store.rotSpeed);
+    deltaOffset = Math.round(Math.tan(length) * tank_1.TRACK_DISTANCE * tank_1.STEPS_IN_UNIT);
+    if (length > 0) {
+        offsetLeft = (offsetLeft + (tank_1.TRACK_LENGTH - deltaOffset % tank_1.TRACK_LENGTH)) % tank_1.TRACK_LENGTH;
+        offsetRight = (offsetRight + deltaOffset) % tank_1.TRACK_LENGTH;
+        if (store_4.Store.rotating.right) {
+            var temp = offsetLeft;
+            offsetLeft = offsetRight;
+            offsetRight = temp;
+        }
+    }
 }
 function decreaseSpeed(vel, acc) {
     return vel > acc || vel < -acc ? vel - acc : 0;
@@ -142593,6 +142606,12 @@ var BASEMENT_WIDTH = 3;
 exports.TRACK_LENGTH = 24;
 var TRACK_STEPS_COUNT = 512;
 exports.STEPS_IN_UNIT = TRACK_STEPS_COUNT / BASEMENT_WIDTH;
+exports.TRACK_DISTANCE = 0.75;
+var POSITION = new three_1.Vector3();
+var TRACK_COLOR = { r: 5, g: 5, b: 5 };
+var GAP_COLOR = { r: 200, g: 200, b: 200 };
+var LEFT_TRACK_TEX = new Uint8Array(3 * TRACK_STEPS_COUNT);
+var RIGHT_TRACK_TEX = new Uint8Array(3 * TRACK_STEPS_COUNT);
 function Tank(props) {
     return (React.createElement("group", null,
         React.createElement(Basement, tslib_1.__assign({}, props)),
@@ -142600,32 +142619,31 @@ function Tank(props) {
 }
 exports.Tank = Tank;
 function Basement(props) {
-    var position = props.position, rotation = props.rotation, offset = props.offset;
+    var position = props.position, rotation = props.rotation, trackOffsetLeft = props.trackOffsetLeft, trackOffsetRight = props.trackOffsetRight;
     return (React.createElement("group", { position: new three_1.Vector3(position.x, position.y, 0), rotation: new three_1.Euler(0, 0, rotation) },
-        React.createElement(cube_1.Cube, { position: new three_1.Vector3(), width: BASEMENT_WIDTH, height: 2, depth: 0.75, color: '#dddddd' }),
-        React.createElement(quad_1.Quad, { width: 3, height: 0.5, position: new three_1.Vector3(0, 0.75, 0.5), texture: getTextureData(TRACK_STEPS_COUNT, 1, offset || 0) }),
-        React.createElement(quad_1.Quad, { width: 3, height: 0.5, position: new three_1.Vector3(0, -0.75, 0.5), texture: getTextureData(TRACK_STEPS_COUNT, 1, offset || 0) })));
+        React.createElement(cube_1.Cube, { position: POSITION, width: BASEMENT_WIDTH, height: 2, depth: 0.75, color: '#dddddd' }),
+        React.createElement(quad_1.Quad, { width: 3, height: 0.5, position: new three_1.Vector3(0, exports.TRACK_DISTANCE, 0.5), texture: getTextureData(RIGHT_TRACK_TEX, trackOffsetLeft || 0) }),
+        React.createElement(quad_1.Quad, { width: 3, height: 0.5, position: new three_1.Vector3(0, -exports.TRACK_DISTANCE, 0.5), texture: getTextureData(LEFT_TRACK_TEX, trackOffsetRight || 0) })));
 }
-var TRACK_COLOR = { r: 5, g: 5, b: 5 };
-var GAP_COLOR = { r: 200, g: 200, b: 200 };
-function getTextureData(width, height, offset) {
-    var size = width * height;
-    var texData = new Uint8Array(3 * size);
-    for (var i = 0; i < size; i += 1) {
-        var color = (i % width) % exports.TRACK_LENGTH === offset ? GAP_COLOR : TRACK_COLOR;
+function getTextureData(data, offset) {
+    for (var i = 0; i < TRACK_STEPS_COUNT; i += 1) {
+        var x = i % TRACK_STEPS_COUNT;
+        var color = x % exports.TRACK_LENGTH === offset || (x + 1) % exports.TRACK_LENGTH === offset
+            || (x + 2) % exports.TRACK_LENGTH === offset ?
+            GAP_COLOR : TRACK_COLOR;
         var stride = i * 3;
-        texData[stride] = color.r;
-        texData[stride + 1] = color.g;
-        texData[stride + 2] = color.b;
+        data[stride] = color.r;
+        data[stride + 1] = color.g;
+        data[stride + 2] = color.b;
     }
-    var texture = new three_1.DataTexture(texData, width, height, three_1.RGBFormat);
+    var texture = new three_1.DataTexture(data, TRACK_STEPS_COUNT, 1, three_1.RGBFormat);
     texture.needsUpdate = true;
     return texture;
 }
 function Tower(props) {
     var position = props.position, rotation = props.rotation;
     return (React.createElement("group", { position: new three_1.Vector3(position.x, position.y, 0.75), rotation: new three_1.Euler(0, 0, rotation) },
-        React.createElement(cube_1.Cube, { position: new three_1.Vector3(), rotation: { x: 0, y: 0, z: 0 }, width: 1, height: 0.9, depth: 0.5, color: '#cccccc' }),
+        React.createElement(cube_1.Cube, { position: POSITION, rotation: { x: 0, y: 0, z: 0 }, width: 1, height: 0.9, depth: 0.5, color: '#cccccc' }),
         React.createElement(cube_1.Cube, { position: new three_1.Vector3(1, 0, 0.0625), rotation: { x: 0, y: 0, z: 0 }, width: 2, height: 0.25, depth: 0.25, color: '#aaaaaa' })));
 }
 
@@ -142689,21 +142707,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(8);
 var three_1 = __webpack_require__(13);
 var quad_1 = __webpack_require__(116);
+var SIZE = 1024 * 1024;
 var POSITION = new three_1.Vector3();
-var map = getTextureData(1024, 1024);
+var MAP_TEX = getTextureData(new Uint8Array(3 * SIZE));
 exports.Map = function () {
-    return (React.createElement(quad_1.Quad, { position: POSITION, width: 100, height: 100, texture: map }));
+    return (React.createElement(quad_1.Quad, { position: POSITION, width: 100, height: 100, texture: MAP_TEX }));
 };
-function getTextureData(width, height) {
-    var size = width * height;
-    var texData = new Uint8Array(3 * size);
-    for (var i = 0; i < size; i += 1) {
+function getTextureData(data) {
+    for (var i = 0; i < SIZE; i += 1) {
         var stride = i * 3;
-        texData[stride] = Math.round(Math.random() * 20);
-        texData[stride + 1] = Math.round(Math.random() * 150 + 50);
-        texData[stride + 2] = Math.round(Math.random() * 50);
+        data[stride] = Math.round(Math.random() * 20);
+        data[stride + 1] = Math.round(Math.random() * 150 + 50);
+        data[stride + 2] = Math.round(Math.random() * 50);
     }
-    var texture = new three_1.DataTexture(texData, width, height, three_1.RGBFormat);
+    var texture = new three_1.DataTexture(data, 1024, 1024, three_1.RGBFormat);
     texture.needsUpdate = true;
     return texture;
 }
