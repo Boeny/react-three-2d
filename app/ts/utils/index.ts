@@ -54,14 +54,17 @@ export function createArray(count: number): number[] {
         .from({ length: count }).map((_, i) => i);
 }
 
-export function clamp(n: number, border: number): number {
-    if (n > border) {
-        return border;
+export function clamp(v: number, min: number, max: number) {
+    if (v < -max) {
+        return -max;
     }
-    if (n < -border) {
-        return -border;
+    if (v > max) {
+        return max;
     }
-    return n;
+    if (v > -min && v < min) {
+        return 0;
+    }
+    return v;
 }
 
 export function clampByMin(n: number, min: number): number {
@@ -71,11 +74,12 @@ export function clampByMin(n: number, min: number): number {
 export function clampByMax(n: number, max: number): number {
     return n > max ? max : n;
 }
-/*
-function clamped(n: number, border: number): boolean {
-    return n >= -border && n <= border;
+
+export function isBordered(n: number, border: number): boolean {
+    return n > -border && n < border;
 }
 
+/*
 export function clampedVector(v: Vector2, border: number): boolean {
     return clamped(v.x, border) && clamped(v.y, border);
 }
@@ -92,8 +96,8 @@ export function getRandomArrayElement<T>(array: T[]): T {
     return array[getRandomArrayIndex(array)];
 }
 
-export function getSign(v: number): number {
-    return v > 0 ? 1 : (v < 0 ? -1 : 0);
+export function getSign(v: number, def?: number): number {
+    return v > 0 ? (def || 1) : (v < 0 ? -(def || 1) : 0);
 }
 
 export function vectorsAreEqual(v1: Position, v2: Position, accuracy?: number): boolean {

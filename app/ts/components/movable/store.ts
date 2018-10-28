@@ -11,6 +11,7 @@ export const Store: IStore = {
         this.bodies.splice(i, 1);
     },
     isBody(el: MovableStore): el is IBodyStore {
-        return el.hasOwnProperty('state');
+        return el.hasOwnProperty('velocity') && el.hasOwnProperty('position')
+            && el.hasOwnProperty('setVelocity') && el.hasOwnProperty('updatePositionBy');
     }
 };

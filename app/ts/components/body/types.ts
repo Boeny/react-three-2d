@@ -16,11 +16,13 @@ export interface IStore extends CommonParams {
     };
     position: Position;
     velocity: Vector2;
+    rotation: number;
+    rotationVelocity: number;
     setColor: (color: string) => void;
     setName: (name?: string | JSX.Element) => void;
     setPosition: (v: Position) => void;
     setVelocity: (v: number, coo: 'x' | 'y') => void;
-    changePosition: (v: Vector2, withCollider?: boolean) => void;
+    updatePositionBy: (v: Vector2, withCollider?: boolean) => void;
     signal: (s: Signal) => void;
 }
 

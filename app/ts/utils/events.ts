@@ -17,10 +17,7 @@ let dragStartObject: Intersection | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
     e.preventDefault();
-    camera.updateZoomBy(e.deltaY, entities.getZoomNear(), entities.getZoomFar(), zoom => {
-        camera.setRotation(entities.getRotationByZoom(zoom));
-        camera.setTranslation(entities.getTranslationByRotation(camera.state.rotation));
-    });
+    camera.updateZoomBy(e.deltaY);
 }
 
 export function onMouseDown(e: MouseEvent) {
@@ -102,46 +99,31 @@ export function onKeyDown(e: KeyboardEvent) {
         case KEY.LEFT:
         case 'a':
         case 'ф':
-            player.moveLeft(true);
+            player.rotateLeft(true);
             break;
         case KEY.RIGHT:
         case 'd':
         case 'в':
-            player.moveRight(true);
+            player.rotateRight(true);
             break;
         case KEY.UP:
         case 'w':
         case 'ц':
-            player.moveUp(true);
+            player.moveForward(true);
             break;
         case KEY.DOWN:
+            if (!e.ctrlKey) {
+                player.moveBack(true);
+            }
+            break;
         case 's':
         case 'ы':
             if (e.ctrlKey) {
                 e.preventDefault();
                 entities.save();
             } else {
-                player.moveDown(true);
+                player.moveBack(true);
             }
-            break;
-        case KEY.SPACE:
-            if (events.state.stepMode) {
-                entities.nextStep();
-            } else {
-                events.setStepMode(true);
-            }
-            break;
-        case KEY.ENTER:
-            events.setStepMode(true);
-            entities.nextMode();
-            break;
-        case 'v':
-        case 'м':
-            entities.toggleNegative();
-            break;
-        case 't':
-        case 'е':
-            entities.toggleStack();
             break;
     }
 }
@@ -151,22 +133,22 @@ export function onKeyUp(e: KeyboardEvent) {
         case KEY.LEFT:
         case 'a':
         case 'ф':
-            player.moveLeft(false);
+            player.rotateLeft(false);
             break;
         case KEY.RIGHT:
         case 'd':
         case 'в':
-            player.moveRight(false);
+            player.rotateRight(false);
             break;
         case KEY.UP:
         case 'w':
         case 'ц':
-            player.moveUp(false);
+            player.moveForward(false);
             break;
         case KEY.DOWN:
         case 's':
         case 'ы':
-            player.moveDown(false);
+            player.moveBack(false);
             break;
     }
 }
@@ -179,7 +161,7 @@ export function onAnimate() {
             checkCollision(body, 'y');
             body.onEveryTick && body.onEveryTick(body);
         } else {
-            body.onEveryTick();
+            body.onEveryTick(1);
         }
     }
 }
@@ -205,7 +187,7 @@ function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
         }
     } else {// free way
         body.onUnCollide && body.onUnCollide();
-        body.changePosition(velocityVector);
+        body.updatePositionBy(velocityVector);
         body.setVelocity(0, coo);
     }
 }

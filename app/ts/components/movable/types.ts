@@ -1,7 +1,7 @@
 import { IStore as IBodyStore } from '../body/types';
 
 export { IBodyStore };
-export type MovableStore = IBodyStore | { onEveryTick: () => void };
+export type MovableStore = IBodyStore | { onEveryTick: (deltaTime: number) => void };
 
 export interface IStore {
     bodies: MovableStore[];

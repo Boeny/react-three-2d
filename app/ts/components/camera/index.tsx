@@ -23,7 +23,7 @@ const CameraComponent = observer(() => {
                 position.y + translation.y,
                 position.z + translation.z + zoom
             )}
-            rotation={new Euler(rotation.x, rotation.y, rotation.z, 'XYZ')}
+            rotation={new Euler(rotation.x, rotation.y, rotation.z)}
         />
     );
 });

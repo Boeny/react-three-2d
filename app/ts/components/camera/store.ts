@@ -49,7 +49,7 @@ export const Store: IStore = {
             this.setZoom(clampByMax(zoom * width / (width - dz), far || CAMERA_FAR), after);
         }
     },
-    setPosition(v: State['position']) {
+    setPosition(v: Position3) {
         runInAction(() => {
             this.state.position = v;
         });
@@ -62,12 +62,20 @@ export const Store: IStore = {
             z: position.z + p.z
         });
     },
-    setRotation(v: State['position']) {
+    setRotation(v: Position3) {
         runInAction(() => {
             this.state.rotation = v;
         });
     },
-    setTranslation(v: State['position']) {
+    updateRotationBy(rot: Position3) {
+        const { rotation } = this.state;
+        this.setRotation({
+            x: rotation.x + rot.x,
+            y: rotation.y + rot.y,
+            z: rotation.z + rot.z
+        });
+    },
+    setTranslation(v: Position3) {
         runInAction(() => {
             this.state.translation = v;
         });

@@ -21,9 +21,10 @@ export interface IStore {
     setZoom: (zoom: number, after?: AfterZoom) => void;
     updateZoomBy: (newZoom: number, near?: number, far?: number, after?: AfterZoom) => void;
     setPosition: (v: Position3) => void;
-    setRotation: (v: Position3) => void;
-    setTranslation: (v: Position3) => void;
     updatePositionBy: (v: Position3) => void;
+    setRotation: (v: Position3) => void;
+    updateRotationBy: (v: Position3) => void;
+    setTranslation: (v: Position3) => void;
     getVector2Position: () => Vector2;
     getVector3Position: () => Vector3;
 }

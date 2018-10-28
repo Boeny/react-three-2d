@@ -23,6 +23,8 @@ export function getStore({ name, position, color, velocity, ...common }: Initial
             y: position.y
         }),
         velocity: velocity || new Vector2(),
+        rotation: 0,
+        rotationVelocity: 0,
         setColor(color: string) {
             runInAction(() => {
                 this.state.color = color;
@@ -44,7 +46,7 @@ export function getStore({ name, position, color, velocity, ...common }: Initial
             this.velocity[coo] = v;
             this.onVelocityChange && this.onVelocityChange(this.velocity);
         },
-        changePosition(v: Vector2) {
+        updatePositionBy(v: Vector2) {
             runInAction(() => {
                 this.position.x += v.x;
                 this.position.y += v.y;
