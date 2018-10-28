@@ -9,7 +9,7 @@ import { getSign } from '~/utils';
 import { Position } from '~/types';
 import { VertDirection, HorDirection } from './types';
 import { MountAndInit } from '../mount-and-init';
-import { Tank, STEPS_IN_UNIT, TRACK_LENGTH, TRACK_DISTANCE } from '../tank';
+import { Tank, STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from '../tank';
 import { MAX_SPEED, MIN_SPEED } from '../../constants';
 
 
@@ -76,9 +76,9 @@ function onEveryTick(deltaTime: number) {
     let deltaOffset = Math.round(length * STEPS_IN_UNIT);
     if (length > 0) {
         if (player.moving.down) {
-            deltaOffset = TRACK_LENGTH - deltaOffset % TRACK_LENGTH;
+            deltaOffset = STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK;
         }
-        offsetLeft = offsetRight = (offsetLeft + deltaOffset) % TRACK_LENGTH;
+        offsetLeft = offsetRight = (offsetLeft + deltaOffset) % STEPS_IN_SINGLE_TRACK;
     }
 
     if (player.isRotating()) {
@@ -101,8 +101,8 @@ function onEveryTick(deltaTime: number) {
 
     deltaOffset = Math.round(Math.tan(length) * TRACK_DISTANCE * STEPS_IN_UNIT);
     if (length > 0) {
-        offsetLeft = (offsetLeft + (TRACK_LENGTH - deltaOffset % TRACK_LENGTH)) % TRACK_LENGTH;
-        offsetRight = (offsetRight + deltaOffset) % TRACK_LENGTH;
+        offsetLeft = (offsetLeft + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
+        offsetRight = (offsetRight + deltaOffset) % STEPS_IN_SINGLE_TRACK;
         if (player.rotating.right) {
             const temp = offsetLeft;
             offsetLeft = offsetRight;
@@ -112,7 +112,7 @@ function onEveryTick(deltaTime: number) {
 }
 
 function decreaseSpeed(vel: number, acc: number): number {
-    return vel > acc || vel < -acc ? vel - acc : 0;
+    return vel > acc || vel < -acc ? Math.abs(vel - acc) : 0;
 }
 
 function getMovingAcceleration({ up, down }: VertDirection, rot: number): Vector2 {

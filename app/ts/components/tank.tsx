@@ -5,18 +5,20 @@ import { Cube } from './cube';
 import { Quad } from './quad';
 
 
-const BASEMENT_WIDTH = 3;
-export const TRACK_LENGTH = 24;
-const TRACK_STEPS_COUNT = 512;
-export const STEPS_IN_UNIT = TRACK_STEPS_COUNT / BASEMENT_WIDTH;
+const BASEMENT_LENGTH = 3;
+const TRACK_WIDTH = 0.5;
+export const STEPS_IN_SINGLE_TRACK = 24;
+const STEPS_IN_WHOLE_TRACK_COUNT = 256;
+export const STEPS_IN_UNIT = STEPS_IN_WHOLE_TRACK_COUNT / BASEMENT_LENGTH;
+// const UNITS_IN_STEP = 1 / STEPS_IN_UNIT;
 export const TRACK_DISTANCE = 0.75;
 const POSITION = new Vector3();
 
 const TRACK_COLOR = { r: 5, g: 5, b: 5 };
 const GAP_COLOR = { r: 200, g: 200, b: 200 };
 
-const LEFT_TRACK_TEX = new Uint8Array(3 * TRACK_STEPS_COUNT);
-const RIGHT_TRACK_TEX = new Uint8Array(3 * TRACK_STEPS_COUNT);
+const LEFT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
+const RIGHT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
 
 interface Props extends TowerProps {
     trackOffsetLeft: number;
@@ -41,20 +43,20 @@ function Basement(props: Props) {
         >
             <Cube
                 position={POSITION}
-                width={BASEMENT_WIDTH}
+                width={BASEMENT_LENGTH}
                 height={2}
                 depth={0.75}
                 color={'#dddddd'}
             />
             <Quad
-                width={3}
-                height={0.5}
+                width={BASEMENT_LENGTH}
+                height={TRACK_WIDTH}
                 position={new Vector3(0, TRACK_DISTANCE, 0.5)}
                 texture={getTextureData(RIGHT_TRACK_TEX, trackOffsetLeft || 0)}
             />
             <Quad
-                width={3}
-                height={0.5}
+                width={BASEMENT_LENGTH}
+                height={TRACK_WIDTH}
                 position={new Vector3(0, -TRACK_DISTANCE, 0.5)}
                 texture={getTextureData(LEFT_TRACK_TEX, trackOffsetRight || 0)}
             />
@@ -63,17 +65,17 @@ function Basement(props: Props) {
 }
 
 function getTextureData(data: Uint32Array, offset: number): DataTexture {
-    for (let i = 0; i < TRACK_STEPS_COUNT; i += 1) {
-        const x = i % TRACK_STEPS_COUNT;
-        const color = x % TRACK_LENGTH === offset || (x + 1) % TRACK_LENGTH === offset
-            || (x + 2) % TRACK_LENGTH === offset ?
+    for (let i = 0; i < STEPS_IN_WHOLE_TRACK_COUNT; i += 1) {
+        const x = i % STEPS_IN_WHOLE_TRACK_COUNT;
+        const color = x % STEPS_IN_SINGLE_TRACK === offset || (x + 1) % STEPS_IN_SINGLE_TRACK === offset
+            || (x + 2) % STEPS_IN_SINGLE_TRACK === offset ?
                 GAP_COLOR : TRACK_COLOR;
         const stride = i * 3;
         data[stride] = color.r;
         data[stride + 1] = color.g;
         data[stride + 2] = color.b;
     }
-    const texture = new DataTexture(data, TRACK_STEPS_COUNT, 1, RGBFormat);
+    const texture = new DataTexture(data, STEPS_IN_WHOLE_TRACK_COUNT, 1, RGBFormat);
     texture.needsUpdate = true;
     return texture;
 }
