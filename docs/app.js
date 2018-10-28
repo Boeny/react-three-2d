@@ -97557,19 +97557,6 @@ function createArray(count) {
         .from({ length: count }).map(function (_, i) { return i; });
 }
 exports.createArray = createArray;
-function clamp(v, min, max) {
-    if (v < -max) {
-        return -max;
-    }
-    if (v > max) {
-        return max;
-    }
-    if (v > -min && v < min) {
-        return 0;
-    }
-    return v;
-}
-exports.clamp = clamp;
 function clampByMin(n, min) {
     return n < min ? min : n;
 }
@@ -97582,11 +97569,6 @@ function isBordered(n, border) {
     return n > -border && n < border;
 }
 exports.isBordered = isBordered;
-/*
-export function clampedVector(v: Vector2, border: number): boolean {
-    return clamped(v.x, border) && clamped(v.y, border);
-}
-*/
 function boolColor(v) {
     return v ? constants_1.COLORS.TRUE : constants_1.COLORS.FALSE;
 }
@@ -127438,7 +127420,7 @@ function App() {
         React.createElement(React3, tslib_1.__assign({ shadowMapEnabled: false, shadowMapType: three_1.BasicShadowMap, mainCamera: 'camera', width: windowWidth, height: windowHeight, canvasRef: function (el) { return store_1.Store.setCanvas(el); } }, events),
             React.createElement("scene", null,
                 React.createElement(components_1.AudioSource, null),
-                React.createElement("directionalLight", { color: '#ffffff', intensity: 1, position: new three_1.Vector3(0, 0, 10), lookAt: new three_1.Vector3(10, -10, 6), castShadow: true }),
+                React.createElement("directionalLight", { color: '#ffffff', intensity: 1, position: new three_1.Vector3(0, 0, 10), lookAt: new three_1.Vector3(10, -10, 5), castShadow: true }),
                 React.createElement("ambientLight", { color: '#ffffff', intensity: 0.5 }),
                 React.createElement(components_1.Player, tslib_1.__assign({}, camera)),
                 React.createElement(components_1.Map, null)))));
@@ -142477,14 +142459,14 @@ var tank_1 = __webpack_require__(284);
 var constants_1 = __webpack_require__(32);
 var BORDER_PERCENT = 0.5;
 var MAX_MOVE_SPEED = constants_1.MAX_SPEED / 2;
-var MIN_MOVE_SPEED = constants_1.MIN_SPEED;
-var ACCELERATION = constants_1.MIN_SPEED * 2;
-var DECELERATION = constants_1.MIN_SPEED * 1.1;
+var MIN_MOVE_SPEED = 0;
+var ACCELERATION = constants_1.MIN_SPEED * 1.25;
+var DECELERATION = constants_1.MIN_SPEED * 1.05;
 var DEGREE = Math.PI / 180;
-var MAX_ROT_SPEED = 10 * DEGREE;
-var MIN_ROT_SPEED = DEGREE * 0;
-var ROT_SPEED_ACC = DEGREE * 2;
-var ROT_SPEED_DEC = DEGREE * 1.1;
+var MAX_ROT_SPEED = DEGREE * 5;
+var MIN_ROT_SPEED = 0;
+var ROT_SPEED_ACC = DEGREE * 1.25;
+var ROT_SPEED_DEC = DEGREE * 1.05;
 var Component = mobx_react_1.observer(function () {
     return (React.createElement(tank_1.Tank, { position: store_4.Store.state.position, rotation: store_4.Store.state.rotation }));
 });
@@ -142505,7 +142487,7 @@ function onEveryTick(deltaTime) {
         store_4.Store.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
     }
     else if (length < MIN_MOVE_SPEED) {
-        store_4.Store.velocity.normalize().multiplyScalar(MIN_MOVE_SPEED);
+        store_4.Store.velocity = new three_1.Vector2();
     }
     store_4.Store.setPosition({
         x: store_4.Store.state.position.x + store_4.Store.velocity.x,
@@ -142524,9 +142506,8 @@ function onEveryTick(deltaTime) {
         store_4.Store.rotSpeed = MAX_ROT_SPEED * sign;
     }
     else if (length < MIN_ROT_SPEED) {
-        store_4.Store.rotSpeed = MIN_ROT_SPEED * sign;
+        store_4.Store.rotSpeed = 0;
     }
-    console.log();
     store_4.Store.setRotation(store_4.Store.state.rotation + store_4.Store.rotSpeed);
 }
 function decreaseSpeed(vel, acc) {
@@ -142575,9 +142556,17 @@ var three_1 = __webpack_require__(12);
 var cube_1 = __webpack_require__(285);
 function Tank(props) {
     var position = props.position, rotation = props.rotation;
-    return (React.createElement(cube_1.Cube, { position: new three_1.Vector3(position.x, position.y, 0), rotation: { x: 0, y: 0, z: rotation }, width: 2, height: 1, depth: 0.5, receiveLight: true }));
+    return (React.createElement("group", null,
+        React.createElement(cube_1.Cube, { position: new three_1.Vector3(position.x, position.y, 0), rotation: { x: 0, y: 0, z: rotation }, width: 3, height: 2, depth: 0.5, color: '#dddddd' }),
+        React.createElement(Tower, { position: position, rotation: rotation })));
 }
 exports.Tank = Tank;
+function Tower(props) {
+    var position = props.position, rotation = props.rotation;
+    return (React.createElement("group", { position: new three_1.Vector3(position.x, position.y, 0.5), rotation: new three_1.Euler(0, 0, rotation) },
+        React.createElement(cube_1.Cube, { position: new three_1.Vector3(), rotation: { x: 0, y: 0, z: 0 }, width: 1, height: 1, depth: 0.5, color: '#cccccc' }),
+        React.createElement(cube_1.Cube, { position: new three_1.Vector3(1, 0, 0.0625), rotation: { x: 0, y: 0, z: 0 }, width: 2, height: 0.25, depth: 0.25, color: '#aaaaaa' })));
+}
 
 
 /***/ }),
@@ -142596,7 +142585,7 @@ function Cube(props) {
     var matParams = utils_1.getMaterialParams(color, texture);
     return (React.createElement("mesh", { position: position, rotation: rotation ? new three_1.Euler(rotation.x, rotation.y, rotation.z) : undefined, name: name, ref: onRef },
         React.createElement("boxGeometry", { width: width, height: height, depth: depth, widthSegments: 1, heightSegments: 1, depthSegments: 1 }),
-        receiveLight ?
+        receiveLight !== false ?
             React.createElement("meshLambertMaterial", tslib_1.__assign({}, matParams)) :
             React.createElement("meshBasicMaterial", tslib_1.__assign({}, matParams))));
 }

@@ -54,19 +54,6 @@ export function createArray(count: number): number[] {
         .from({ length: count }).map((_, i) => i);
 }
 
-export function clamp(v: number, min: number, max: number) {
-    if (v < -max) {
-        return -max;
-    }
-    if (v > max) {
-        return max;
-    }
-    if (v > -min && v < min) {
-        return 0;
-    }
-    return v;
-}
-
 export function clampByMin(n: number, min: number): number {
     return n < min ? min : n;
 }
@@ -79,11 +66,6 @@ export function isBordered(n: number, border: number): boolean {
     return n > -border && n < border;
 }
 
-/*
-export function clampedVector(v: Vector2, border: number): boolean {
-    return clamped(v.x, border) && clamped(v.y, border);
-}
-*/
 export function boolColor(v: boolean): string {
     return v ? COLORS.TRUE : COLORS.FALSE;
 }

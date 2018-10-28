@@ -15,15 +15,15 @@ import { MAX_SPEED, MIN_SPEED } from '../../constants';
 
 const BORDER_PERCENT = 0.5;
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
-const MIN_MOVE_SPEED = MIN_SPEED;
-const ACCELERATION = MIN_SPEED * 2;
-const DECELERATION = MIN_SPEED * 1.1;
+const MIN_MOVE_SPEED = 0;
+const ACCELERATION = MIN_SPEED * 1.25;
+const DECELERATION = MIN_SPEED * 1.05;
 
 const DEGREE = Math.PI / 180;
-const MAX_ROT_SPEED = 10 * DEGREE;
-const MIN_ROT_SPEED = DEGREE * 0;
-const ROT_SPEED_ACC = DEGREE * 2;
-const ROT_SPEED_DEC = DEGREE * 1.1;
+const MAX_ROT_SPEED = DEGREE * 5;
+const MIN_ROT_SPEED = 0;
+const ROT_SPEED_ACC = DEGREE * 1.25;
+const ROT_SPEED_DEC = DEGREE * 1.05;
 
 const Component = observer(() => {
     return (
@@ -56,7 +56,7 @@ function onEveryTick(deltaTime: number) {
     if (length > MAX_MOVE_SPEED) {
         player.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
     } else if (length < MIN_MOVE_SPEED) {
-        player.velocity.normalize().multiplyScalar(MIN_MOVE_SPEED);
+        player.velocity = new Vector2();
     }
     player.setPosition(
         {
@@ -78,7 +78,7 @@ function onEveryTick(deltaTime: number) {
     if (length > MAX_ROT_SPEED) {
         player.rotSpeed = MAX_ROT_SPEED * sign;
     } else if (length < MIN_ROT_SPEED) {
-        player.rotSpeed = MIN_ROT_SPEED * sign;
+        player.rotSpeed = 0;
     }
     player.setRotation(player.state.rotation + player.rotSpeed);
 }

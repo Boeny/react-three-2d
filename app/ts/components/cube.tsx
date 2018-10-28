@@ -37,7 +37,7 @@ export function Cube(props: Props) {
                 heightSegments={1}
                 depthSegments={1}
             />
-            {receiveLight ?
+            {receiveLight !== false ?
                 <meshLambertMaterial {...matParams} /> :
                 <meshBasicMaterial {...matParams} />
             }
