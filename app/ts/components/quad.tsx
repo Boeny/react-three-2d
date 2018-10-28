@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Vector3, Color, VertexColors, Texture } from 'three';
-import { SHOW_AS_WIREFRAME } from '~/constants';
+import { Vector3, Texture, Euler } from 'three';
+import { getMaterialParams } from '~/utils';
+import { Position3 } from '~/types';
 
 
 interface Props {
@@ -9,26 +10,30 @@ interface Props {
     height: number;
     color?: string;
     texture?: Texture;
-    transparent?: boolean;
+    receiveLight?: boolean;
+    name?: string;
+    rotation?: Position3;
 }
 
 export function Quad(props: Props) {
-    const { position, width, height, color, texture, transparent } = props;
+    const { position, width, height, color, texture, receiveLight, rotation, name } = props;
+    const matParams = getMaterialParams(color, texture);
     return (
-        <mesh position={position}>
+        <mesh
+            position={position}
+            rotation={rotation ? new Euler(rotation.x, rotation.y, rotation.z) : undefined}
+            name={name}
+        >
             <planeGeometry
                 width={width}
                 height={height}
                 widthSegments={1}
                 heightSegments={1}
             />
-            <meshBasicMaterial
-                wireframe={SHOW_AS_WIREFRAME}
-                color={new Color(color) || '#000000'}
-                vertexColors={VertexColors}
-                map={texture}
-                transparent={transparent}
-            />
+            {receiveLight !== false ?
+                <meshLambertMaterial {...matParams} /> :
+                <meshBasicMaterial {...matParams} />
+            }
         </mesh>
     );
 }

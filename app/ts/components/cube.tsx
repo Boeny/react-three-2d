@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector3, Texture, Mesh, BoxGeometry, MeshBasicMaterial, MeshLambertMaterial, Euler } from 'three';
-import { Position3 } from '~/types';
 import { getMaterialParams } from '~/utils';
+import { Position3 } from '~/types';
 
 
 interface Props {

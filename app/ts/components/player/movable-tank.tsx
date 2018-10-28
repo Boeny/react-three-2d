@@ -9,7 +9,7 @@ import { getSign } from '~/utils';
 import { Position } from '~/types';
 import { VertDirection, HorDirection } from './types';
 import { MountAndInit } from '../mount-and-init';
-import { Tank } from '../tank';
+import { Tank, STEPS_IN_UNIT, TRACK_LENGTH } from '../tank';
 import { MAX_SPEED, MIN_SPEED } from '../../constants';
 
 
@@ -25,11 +25,14 @@ const MIN_ROT_SPEED = 0;
 const ROT_SPEED_ACC = DEGREE * 1.25;
 const ROT_SPEED_DEC = DEGREE * 1.05;
 
+let offset = 0;
+
 const Component = observer(() => {
     return (
         <Tank
             position={player.state.position}
             rotation={player.state.rotation}
+            offset={offset}
         />
     );
 });
@@ -55,8 +58,10 @@ function onEveryTick(deltaTime: number) {
     }
     if (length > MAX_MOVE_SPEED) {
         player.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
+        length = MAX_MOVE_SPEED;
     } else if (length < MIN_MOVE_SPEED) {
         player.velocity = new Vector2();
+        length = 0;
     }
     player.setPosition(
         {
@@ -65,6 +70,13 @@ function onEveryTick(deltaTime: number) {
         },
         onPlayerPositionUpdate
     );
+    let deltaOffset = Math.round(length * STEPS_IN_UNIT);
+    if (length > 0) {
+        if (player.moving.down) {
+            deltaOffset = TRACK_LENGTH - deltaOffset % TRACK_LENGTH;
+        }
+        offset = (offset + deltaOffset) % TRACK_LENGTH;
+    }
 
     if (player.isRotating()) {
         player.rotSpeed += getRotationAcceleration(player.rotating);
