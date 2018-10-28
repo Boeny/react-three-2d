@@ -17,8 +17,8 @@ const POSITION = new Vector3();
 const TRACK_COLOR = { r: 5, g: 5, b: 5 };
 const GAP_COLOR = { r: 200, g: 200, b: 200 };
 
-const LEFT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
-const RIGHT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
+const LEFT_TRACK_TEX = getDefaultData();
+const RIGHT_TRACK_TEX = getDefaultData();
 
 interface Props extends TowerProps {
     trackOffsetLeft: number;
@@ -36,6 +36,10 @@ export function Tank(props: Props) {
 
 function Basement(props: Props) {
     const { position, rotation, trackOffsetLeft, trackOffsetRight } = props;
+    RIGHT_TRACK_TEX.needsUpdate = true;
+    RIGHT_TRACK_TEX.offset.x = trackOffsetRight / STEPS_IN_WHOLE_TRACK_COUNT;
+    LEFT_TRACK_TEX.needsUpdate = true;
+    LEFT_TRACK_TEX.offset.x = trackOffsetLeft / STEPS_IN_WHOLE_TRACK_COUNT;
     return (
         <group
             position={new Vector3(position.x, position.y, 0)}
@@ -52,32 +56,31 @@ function Basement(props: Props) {
                 width={BASEMENT_LENGTH}
                 height={TRACK_WIDTH}
                 position={new Vector3(0, TRACK_DISTANCE, 0.5)}
-                texture={getTextureData(RIGHT_TRACK_TEX, trackOffsetLeft || 0)}
+                texture={RIGHT_TRACK_TEX}
             />
             <Quad
                 width={BASEMENT_LENGTH}
                 height={TRACK_WIDTH}
                 position={new Vector3(0, -TRACK_DISTANCE, 0.5)}
-                texture={getTextureData(LEFT_TRACK_TEX, trackOffsetRight || 0)}
+                texture={LEFT_TRACK_TEX}
             />
         </group>
     );
 }
 
-function getTextureData(data: Uint32Array, offset: number): DataTexture {
+function getDefaultData(): DataTexture {
+    const data = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
     for (let i = 0; i < STEPS_IN_WHOLE_TRACK_COUNT; i += 1) {
         const x = i % STEPS_IN_WHOLE_TRACK_COUNT;
-        const color = x % STEPS_IN_SINGLE_TRACK === offset || (x + 1) % STEPS_IN_SINGLE_TRACK === offset
-            || (x + 2) % STEPS_IN_SINGLE_TRACK === offset ?
-                GAP_COLOR : TRACK_COLOR;
+        const color = x % STEPS_IN_SINGLE_TRACK === 0 || (x + 1) % STEPS_IN_SINGLE_TRACK === 0
+            || (x + 2) % STEPS_IN_SINGLE_TRACK === 0 ?
+            GAP_COLOR : TRACK_COLOR;
         const stride = i * 3;
         data[stride] = color.r;
         data[stride + 1] = color.g;
         data[stride + 2] = color.b;
     }
-    const texture = new DataTexture(data, STEPS_IN_WHOLE_TRACK_COUNT, 1, RGBFormat);
-    texture.needsUpdate = true;
-    return texture;
+    return new DataTexture(data, STEPS_IN_WHOLE_TRACK_COUNT, 1, RGBFormat);
 }
 
 
@@ -99,7 +102,7 @@ function Tower(props: Props) {
                 width={1}
                 height={0.9}
                 depth={0.5}
-                color={'#cccccc'}
+                color={'#888888'}
             />
             <Cube
                 position={new Vector3(1, 0, 0.0625)}
@@ -107,7 +110,7 @@ function Tower(props: Props) {
                 width={2}
                 height={0.25}
                 depth={0.25}
-                color={'#aaaaaa'}
+                color={'#777777'}
             />
         </group>
     );

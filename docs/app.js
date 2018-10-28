@@ -110141,8 +110141,8 @@ exports.TRACK_DISTANCE = 0.75;
 var POSITION = new three_1.Vector3();
 var TRACK_COLOR = { r: 5, g: 5, b: 5 };
 var GAP_COLOR = { r: 200, g: 200, b: 200 };
-var LEFT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
-var RIGHT_TRACK_TEX = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
+var LEFT_TRACK_TEX = getDefaultData();
+var RIGHT_TRACK_TEX = getDefaultData();
 function Tank(props) {
     return (React.createElement("group", null,
         React.createElement(Basement, tslib_1.__assign({}, props)),
@@ -110151,31 +110151,34 @@ function Tank(props) {
 exports.Tank = Tank;
 function Basement(props) {
     var position = props.position, rotation = props.rotation, trackOffsetLeft = props.trackOffsetLeft, trackOffsetRight = props.trackOffsetRight;
+    RIGHT_TRACK_TEX.needsUpdate = true;
+    RIGHT_TRACK_TEX.offset.x = trackOffsetRight / STEPS_IN_WHOLE_TRACK_COUNT;
+    LEFT_TRACK_TEX.needsUpdate = true;
+    LEFT_TRACK_TEX.offset.x = trackOffsetLeft / STEPS_IN_WHOLE_TRACK_COUNT;
     return (React.createElement("group", { position: new three_1.Vector3(position.x, position.y, 0), rotation: new three_1.Euler(0, 0, rotation) },
         React.createElement(cube_1.Cube, { position: POSITION, width: BASEMENT_LENGTH, height: 2, depth: 0.75, color: '#dddddd' }),
-        React.createElement(quad_1.Quad, { width: BASEMENT_LENGTH, height: TRACK_WIDTH, position: new three_1.Vector3(0, exports.TRACK_DISTANCE, 0.5), texture: getTextureData(RIGHT_TRACK_TEX, trackOffsetLeft || 0) }),
-        React.createElement(quad_1.Quad, { width: BASEMENT_LENGTH, height: TRACK_WIDTH, position: new three_1.Vector3(0, -exports.TRACK_DISTANCE, 0.5), texture: getTextureData(LEFT_TRACK_TEX, trackOffsetRight || 0) })));
+        React.createElement(quad_1.Quad, { width: BASEMENT_LENGTH, height: TRACK_WIDTH, position: new three_1.Vector3(0, exports.TRACK_DISTANCE, 0.5), texture: RIGHT_TRACK_TEX }),
+        React.createElement(quad_1.Quad, { width: BASEMENT_LENGTH, height: TRACK_WIDTH, position: new three_1.Vector3(0, -exports.TRACK_DISTANCE, 0.5), texture: LEFT_TRACK_TEX })));
 }
-function getTextureData(data, offset) {
+function getDefaultData() {
+    var data = new Uint8Array(3 * STEPS_IN_WHOLE_TRACK_COUNT);
     for (var i = 0; i < STEPS_IN_WHOLE_TRACK_COUNT; i += 1) {
         var x = i % STEPS_IN_WHOLE_TRACK_COUNT;
-        var color = x % exports.STEPS_IN_SINGLE_TRACK === offset || (x + 1) % exports.STEPS_IN_SINGLE_TRACK === offset
-            || (x + 2) % exports.STEPS_IN_SINGLE_TRACK === offset ?
+        var color = x % exports.STEPS_IN_SINGLE_TRACK === 0 || (x + 1) % exports.STEPS_IN_SINGLE_TRACK === 0
+            || (x + 2) % exports.STEPS_IN_SINGLE_TRACK === 0 ?
             GAP_COLOR : TRACK_COLOR;
         var stride = i * 3;
         data[stride] = color.r;
         data[stride + 1] = color.g;
         data[stride + 2] = color.b;
     }
-    var texture = new three_1.DataTexture(data, STEPS_IN_WHOLE_TRACK_COUNT, 1, three_1.RGBFormat);
-    texture.needsUpdate = true;
-    return texture;
+    return new three_1.DataTexture(data, STEPS_IN_WHOLE_TRACK_COUNT, 1, three_1.RGBFormat);
 }
 function Tower(props) {
     var position = props.position, rotation = props.rotation;
     return (React.createElement("group", { position: new three_1.Vector3(position.x, position.y, 0.75), rotation: new three_1.Euler(0, 0, rotation) },
-        React.createElement(cube_1.Cube, { position: POSITION, rotation: { x: 0, y: 0, z: 0 }, width: 1, height: 0.9, depth: 0.5, color: '#cccccc' }),
-        React.createElement(cube_1.Cube, { position: new three_1.Vector3(1, 0, 0.0625), rotation: { x: 0, y: 0, z: 0 }, width: 2, height: 0.25, depth: 0.25, color: '#aaaaaa' })));
+        React.createElement(cube_1.Cube, { position: POSITION, rotation: { x: 0, y: 0, z: 0 }, width: 1, height: 0.9, depth: 0.5, color: '#888888' }),
+        React.createElement(cube_1.Cube, { position: new three_1.Vector3(1, 0, 0.0625), rotation: { x: 0, y: 0, z: 0 }, width: 2, height: 0.25, depth: 0.25, color: '#777777' })));
 }
 
 
@@ -142582,7 +142585,7 @@ function onEveryTick(deltaTime) {
     }, onPlayerPositionUpdate);
     var deltaOffset = Math.round(length * tank_1.STEPS_IN_UNIT);
     if (length > 0) {
-        if (store_4.Store.moving.down) {
+        if (store_4.Store.moving.up) {
             deltaOffset = tank_1.STEPS_IN_SINGLE_TRACK - deltaOffset % tank_1.STEPS_IN_SINGLE_TRACK;
         }
         offsetLeft = offsetRight = (offsetLeft + deltaOffset) % tank_1.STEPS_IN_SINGLE_TRACK;
@@ -142607,12 +142610,13 @@ function onEveryTick(deltaTime) {
     store_4.Store.setRotation(store_4.Store.state.rotation + store_4.Store.rotSpeed);
     deltaOffset = Math.round(Math.tan(length) * tank_1.TRACK_DISTANCE * tank_1.STEPS_IN_UNIT);
     if (length > 0) {
-        offsetLeft = (offsetLeft + (tank_1.STEPS_IN_SINGLE_TRACK - deltaOffset % tank_1.STEPS_IN_SINGLE_TRACK)) % tank_1.STEPS_IN_SINGLE_TRACK;
-        offsetRight = (offsetRight + deltaOffset) % tank_1.STEPS_IN_SINGLE_TRACK;
-        if (store_4.Store.rotating.right) {
-            var temp = offsetLeft;
-            offsetLeft = offsetRight;
-            offsetRight = temp;
+        if (store_4.Store.rotating.left) {
+            offsetLeft = (offsetLeft + (tank_1.STEPS_IN_SINGLE_TRACK - deltaOffset % tank_1.STEPS_IN_SINGLE_TRACK)) % tank_1.STEPS_IN_SINGLE_TRACK;
+            offsetRight = (offsetRight + deltaOffset) % tank_1.STEPS_IN_SINGLE_TRACK;
+        }
+        else {
+            offsetRight = (offsetRight + (tank_1.STEPS_IN_SINGLE_TRACK - deltaOffset % tank_1.STEPS_IN_SINGLE_TRACK)) % tank_1.STEPS_IN_SINGLE_TRACK;
+            offsetLeft = (offsetLeft + deltaOffset) % tank_1.STEPS_IN_SINGLE_TRACK;
         }
     }
 }

@@ -75,7 +75,7 @@ function onEveryTick(deltaTime: number) {
 
     let deltaOffset = Math.round(length * STEPS_IN_UNIT);
     if (length > 0) {
-        if (player.moving.down) {
+        if (player.moving.up) {
             deltaOffset = STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK;
         }
         offsetLeft = offsetRight = (offsetLeft + deltaOffset) % STEPS_IN_SINGLE_TRACK;
@@ -101,12 +101,12 @@ function onEveryTick(deltaTime: number) {
 
     deltaOffset = Math.round(Math.tan(length) * TRACK_DISTANCE * STEPS_IN_UNIT);
     if (length > 0) {
-        offsetLeft = (offsetLeft + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
-        offsetRight = (offsetRight + deltaOffset) % STEPS_IN_SINGLE_TRACK;
-        if (player.rotating.right) {
-            const temp = offsetLeft;
-            offsetLeft = offsetRight;
-            offsetRight = temp;
+        if (player.rotating.left) {
+            offsetLeft = (offsetLeft + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
+            offsetRight = (offsetRight + deltaOffset) % STEPS_IN_SINGLE_TRACK;
+        } else {
+            offsetRight = (offsetRight + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
+            offsetLeft = (offsetLeft + deltaOffset) % STEPS_IN_SINGLE_TRACK;
         }
     }
 }
