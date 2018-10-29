@@ -46,7 +46,7 @@ function getTextureData(data: Uint32Array): DataTexture {
     texture.needsUpdate = true;
     return texture;
 }
-
+/*
 export const updateMap = action((data: Position[]) => { // positions in units
     data.map(position => {
         const stride = (position.y * STEPS + position.x) * 3 * STEPS_IN_UNIT;
@@ -55,3 +55,4 @@ export const updateMap = action((data: Position[]) => { // positions in units
         Store.data[stride + 2] = TRAIL_COLOR.b;
     });
 });
+*/
