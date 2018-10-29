@@ -4,13 +4,15 @@ import { observer } from 'mobx-react';
 import { Store as html } from '~/views/html/store';
 import { Store as movable } from '../movable/store';
 import { Store as camera } from '../camera/store';
+import { Store as bullets } from '../tank/bullet';
 import { Store as player } from './store';
 import { getSign } from '~/utils';
 import { Position } from '~/types';
 import { VertDirection, HorDirection } from './types';
 import { MountAndInit } from '../mount-and-init';
-import { Tank, STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from '../tank';
+import { Tank } from '../tank';
 import { MAX_SPEED, MIN_SPEED } from '../../constants';
+import { STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from '../tank/constants';
 
 
 const BORDER_PERCENT = 0.5;
@@ -54,6 +56,12 @@ export function MovableTank() {
 }
 
 function onEveryTick(deltaTime: number) {
+    // shooting
+    if (player.canShoot && player.isShooting) {
+        bullets.add();
+        player.canShoot = false;
+        setTimeout(() => player.canShoot = true, 200);
+    }
     // change position by velocity
     if (player.isMoving()) {
         player.velocity.add(getMovingAcceleration(player.moving, player.state.rotation));
@@ -70,13 +78,15 @@ function onEveryTick(deltaTime: number) {
         player.velocity = new Vector2();
         length = 0;
     }
-    player.setPosition(
-        {
-            x: player.state.position.x + player.velocity.x * deltaTime,
-            y: player.state.position.y + player.velocity.y * deltaTime
-        },
-        onPlayerPositionUpdate
-    );
+    if (length > 0) {
+        player.setPosition(
+            {
+                x: player.state.position.x + player.velocity.x * deltaTime,
+                y: player.state.position.y + player.velocity.y * deltaTime
+            },
+            onPlayerPositionUpdate
+        );
+    }
     // calc track offset if we're moving
     let deltaOffset = Math.round(length * STEPS_IN_UNIT * deltaTime);
     if (length > 0) {
@@ -102,7 +112,9 @@ function onEveryTick(deltaTime: number) {
         player.rotSpeed = 0;
         length = 0;
     }
-    player.setRotation(player.state.rotation + player.rotSpeed * deltaTime);
+    if (length > 0) {
+        player.setRotation(player.state.rotation + player.rotSpeed * deltaTime);
+    }
     // calc track offset if we're rotating
     deltaOffset = Math.round(Math.tan(length * deltaTime) * TRACK_DISTANCE * STEPS_IN_UNIT);
     if (length > 0) {

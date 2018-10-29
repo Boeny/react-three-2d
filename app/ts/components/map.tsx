@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 import { observable } from 'mobx';
 // import { Position } from '~/types';
 import { Quad } from './quad';
-import { STEPS_IN_UNIT } from './tank';
+import { STEPS_IN_UNIT } from './tank/constants';
 
 
 const WIDTH = 10;

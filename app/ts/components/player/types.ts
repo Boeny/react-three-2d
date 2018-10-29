@@ -19,6 +19,8 @@ export interface IStore {
     rotating: HorDirection;
     velocity: Vector2;
     rotSpeed: number;
+    isShooting: boolean;
+    canShoot: boolean;
     state: {
         position: Position;
         rotation: number;

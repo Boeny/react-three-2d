@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { observable, runInAction } from 'mobx';
-import { Store as movable } from './movable/store';
-import { getSelectedObject } from '~/utils';
-import { MountAndInit } from './mount-and-init';
-import { Cube } from './cube';
+import { Store as movable } from '../movable/store';
+// import { getSelectedObject } from '~/utils';
+import { MountAndInit } from '../mount-and-init';
+import { Cube } from '../cube';
 
 
 const INITIAL_BULLET_SPEED = 1;
@@ -25,9 +25,11 @@ interface IStore {
     initPosition: Vector3;
     parentVelocity: Vector3;
     direction: Vector3;
+    rotation: Vector3;
     init: (props: Props) => void;
     add: () => void;
     removeExploded: () => void;
+    updatePosition: (deltaTime: number) => void;
 }
 
 export const Store: IStore = {
@@ -37,18 +39,19 @@ export const Store: IStore = {
     initPosition: new Vector3(),
     parentVelocity: new Vector3(),
     direction: new Vector3(),
-    init({ position, velocity, direction }: Props) {
+    rotation: new Vector3(),
+    init({ position, velocity, direction, rotation }: Props) {
         this.initPosition = position.clone();
         this.parentVelocity = velocity.clone();
-        this.direction = direction.clone();
+        this.direction = direction.clone().normalize();
+        this.rotation = rotation.clone();
     },
     add() {
         runInAction(() => {
             this.state.data.push({
                 position: this.initPosition.clone(),
-                velocity: this.direction.clone().multiplyScalar(INITIAL_BULLET_SPEED)
-                    .add(this.parentVelocity),
-                rotation: new Vector3(),
+                velocity: this.direction.clone().multiplyScalar(INITIAL_BULLET_SPEED).add(this.parentVelocity),
+                rotation: this.rotation,
                 rotVelocity: new Vector3()
             });
         });
@@ -56,8 +59,21 @@ export const Store: IStore = {
     removeExploded() {
         runInAction(() => {
             this.state.data = this.state.data.filter(
-                item => getSelectedObject(item.position, item.velocity) !== null
+                // item => getSelectedObject(item.position, item.velocity) !== null
+                item => item.position.length() > 50
             );
+        });
+    },
+    updatePosition(deltaTime: number) {
+        runInAction(() => {
+            this.state.data = this.state.data.map(item => ({
+                ...item,
+                position: new Vector3(
+                    item.position.x + item.velocity.x * deltaTime,
+                    item.position.y + item.velocity.y * deltaTime,
+                    item.position.z
+                )
+            }));
         });
     }
 };
@@ -66,8 +82,8 @@ export const Store: IStore = {
 const BulletsComponent = observer(() => {
     return (
         <group>
-            {Store.state.data.map(item => (
-                <Bullet bullet={item} />
+            {Store.state.data.map((item, i) => (
+                <Bullet key={i} bullet={item} />
             ))}
         </group>
     );
@@ -78,6 +94,7 @@ interface Props {
     position: Vector3;
     velocity: Vector3;
     direction: Vector3;
+    rotation: Vector3;
 }
 
 export class Bullets extends React.Component<Props> {
@@ -99,11 +116,11 @@ export class Bullets extends React.Component<Props> {
     }
 }
 
-function onEveryTick() {
+function onEveryTick(deltaTime: number) {
     // check for explosion in the next frame
     // Store.removeExploded();
     // change position by velocity
-
+    Store.updatePosition(deltaTime);
     // change rotation by rotation velocity
 
 }

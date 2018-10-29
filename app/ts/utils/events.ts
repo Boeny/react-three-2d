@@ -3,7 +3,6 @@ import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
-import { Store as bullets } from '~/components/bullet';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector, toWorldVector, save } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
@@ -90,7 +89,9 @@ export function onMouseMove(e: MouseEvent) {
 export function onKeyDown(e: KeyboardEvent) {
     e.preventDefault();
     if (e.shiftKey) {
-        events.setStepMode(false);
+        if (player.canShoot) {
+            player.isShooting = true;
+        }
     }
     switch (e.key) {
         case KEY.LEFT:
@@ -123,7 +124,9 @@ export function onKeyDown(e: KeyboardEvent) {
             }
             break;
         case KEY.SPACE:
-            bullets.add();
+            if (player.canShoot) {
+                player.isShooting = true;
+            }
             break;
     }
 }
@@ -149,6 +152,9 @@ export function onKeyUp(e: KeyboardEvent) {
         case 's':
         case 'ы':
             player.moveBack(false);
+            break;
+        case KEY.SPACE:
+            player.isShooting = false;
             break;
     }
 }

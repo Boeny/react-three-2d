@@ -14,10 +14,12 @@ export const Store: IStore = {
     }),
     state: observable({
         position: { x: 0, y: 0 },
-        rotation: Math.PI
+        rotation: Math.PI / 2
     }),
     velocity: new Vector2(),
     rotSpeed: 0,
+    isShooting: false,
+    canShoot: true,
     setPosition(p: Position, after?: (p: Position) => void) {
         runInAction(() => {
             this.state.position = p;
