@@ -53,6 +53,7 @@ function getDefaultData(): Uint8Array {
 export const Map = observer(() => {
     return (
         <Quad
+            name={'map'}
             position={POSITION}
             width={100}
             height={100}

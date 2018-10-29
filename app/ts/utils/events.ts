@@ -1,11 +1,11 @@
-import { Vector2, Intersection, Scene } from 'three';
+import { Vector2 } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
-import { Store as entities } from '~/components/entities/store';
+import { Store as bullets } from '~/components/bullet';
 import { Store as html } from '~/views/html/store';
-import { getMouseVector, toWorldVector, getSelectedObject } from '~/utils';
+import { getMouseVector, toWorldVector, save } from '~/utils';
 import { getCollider } from '~/components/colliders/utils';
 import { IStore as IBodyStore } from '~/components/body/types';
 import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
@@ -13,7 +13,7 @@ import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 
 let dragStartScreenVector: Vector2 | null = null;
 let dragStartPoint: Vector2 | null = null;
-let dragStartObject: Intersection | null = null;
+// let dragStartObject: Intersection | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
     e.preventDefault();
@@ -23,17 +23,14 @@ export function onWheel(e: MouseWheelEvent) {
 export function onMouseDown(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            const { mode } = entities.state;
-            if (camera.instance && mode > 0) {
+            if (camera.instance) {
                 html.setCursor('pointer');
                 dragStartScreenVector = getMouseVector(e);
-                if (mode === 1) {
-                    dragStartPoint = toWorldVector(dragStartScreenVector, camera.instance);
+                /*if (mode === 1) {
+                    dragStartPoint = toWorldVector(dragStartScreenVector);
                 } else {
-                    dragStartObject = getSelectedObject(
-                        dragStartScreenVector, camera.instance, camera.instance.parent as Scene
-                    );
-                }
+                    dragStartObject = getSelectedObjectFromCamera(dragStartScreenVector);
+                }*/
             }
             break;
         case MOUSE.right:
@@ -49,18 +46,18 @@ export function onMouseUp(e: MouseEvent) {
             if (events.mouseDragMode) {
                 events.setMouseDragMode(false);
             } else {
-                if (dragStartPoint) {
+                /*if (dragStartPoint) {
                     entities.select(dragStartPoint.clone());
                 }
                 if (dragStartObject) {
                     entities.selectObject(dragStartObject.object);
                 } else if (entities.state.selectedObjectPosition !== null) {
                     entities.selectObject(null);
-                }
+                }*/
             }
             html.setCursor('default');
             dragStartPoint = null;
-            dragStartObject = null;
+            // dragStartObject = null;
             dragStartScreenVector = null;
             break;
         case MOUSE.right:
@@ -83,7 +80,7 @@ export function onMouseMove(e: MouseEvent) {
         return;
     }
     events.setMouseDragMode(true);
-    const v = toWorldVector(screenVector, camera.instance);
+    const v = toWorldVector(screenVector);
     const diff = dragStartPoint.clone().sub(v);
     camera.updatePositionBy({ x: diff.x, y: diff.y, z: 0 });
     dragStartPoint = v;
@@ -120,10 +117,13 @@ export function onKeyDown(e: KeyboardEvent) {
         case 'ы':
             if (e.ctrlKey) {
                 e.preventDefault();
-                entities.save();
+                save();
             } else {
                 player.moveBack(true);
             }
+            break;
+        case KEY.SPACE:
+            bullets.add();
             break;
     }
 }

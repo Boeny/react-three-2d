@@ -1,5 +1,4 @@
-import { Store as camera } from '~/components/camera/store';
-import { createArray, getSign, getRandomArrayElement, getRandomArrayIndex } from '~/utils';
+import { createArray, getSign, getRandomArrayElement, getRandomArrayIndex, save } from '~/utils';
 import { Position } from '~/types';
 import { Data, State, BaseState } from './types';
 import { INITIAL_VALUE, MAX_PRESSURE_PER_FRAME } from './constants';
@@ -261,13 +260,13 @@ function decreaseValues(sortedValues: number[], valueToDecrease: number): Childr
 
 export function showDataAndStack(state: State, nextState: BaseState) {
     const { data, local, ...rest } = state;
+    save();
     console.log(JSON.stringify({
         local,
         stack,
         data,
         nextState,
-        state: rest,
-        camera: camera.state
+        state: rest
     }));
 }
 

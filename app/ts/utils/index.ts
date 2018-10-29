@@ -1,7 +1,8 @@
 import {
-    Vector2, Vector3, Camera, Raycaster, Scene, Intersection, VertexColors, Color, Texture
+    Vector2, Vector3, Raycaster, Intersection, VertexColors, Color, Texture
 } from 'three';
 import { Store as html } from '~/views/html/store';
+import { Store as camera } from '~/components/camera/store';
 import { Position } from '~/types';
 import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constants';
 
@@ -17,32 +18,54 @@ export function getMaterialParams(color?: string, texture?: Texture) {
 
 const raycaster = new Raycaster();
 
-export function getSelectedObject(screenVector: Vector2, camera: Camera, scene: Scene): Intersection | null {
+export function getSelectedObject(obj: Vector3, direction: Vector3): Intersection | null {
+    if (camera.instance === null) {
+        return null;
+    }
+    raycaster.set(obj, direction);
+    const scene = camera.instance.parent;
+    return raycaster.intersectObjects([
+        scene.getObjectByName('map'),
+        scene.getObjectByName('player'),
+        ...scene.getObjectByName('enemies').children
+    ])[0] || null;
+}
+
+export function getSelectedObjectFromCamera(screenVector: Vector2): Intersection | null {
+    if (camera.instance === null) {
+        return null;
+    }
     raycaster.setFromCamera(
         {
             x: screenVector.x * 2 / html.state.windowWidth - 1,
             y: -screenVector.y * 2 / html.state.windowHeight + 1
         },
-        camera
+        camera.instance
     );
-    return raycaster.intersectObjects(scene.getObjectByName('local-map').children)[0] || null;
+    return raycaster.intersectObjects(camera.instance.parent.getObjectByName('local-map').children)[0] || null;
 }
 
 export function getMouseVector(e: any): Vector2 {
     return new Vector2(e.clientX, e.clientY);
 }
 
-export function toWorldVector(screenVector: Vector2, camera: Camera): Vector2 {
+export function toWorldVector(screenVector: Vector2): Vector2 {
+    if (camera.instance === null) {
+        return new Vector2();
+    }
     const worldVector = new Vector3(
         screenVector.x * 2 / html.state.windowWidth - 1,
         -screenVector.y * 2 / html.state.windowHeight + 1,
         0.5
-    ).unproject(camera);
+    ).unproject(camera.instance);
     return new Vector2(worldVector.x, worldVector.y).multiplyScalar(100);
 }
 
-export function toScreenVector(worldVector: Vector2, camera: Camera): Vector2 {
-    const screenVector = new Vector3(worldVector.x, worldVector.y, 0).unproject(camera);
+export function toScreenVector(worldVector: Vector2): Vector2 {
+    if (camera.instance === null) {
+        return new Vector2();
+    }
+    const screenVector = new Vector3(worldVector.x, worldVector.y, 0).unproject(camera.instance);
     return new Vector2(
         (screenVector.x + 1) * html.state.windowWidth / 2,
         -(screenVector.y - 1) * html.state.windowHeight / 2
@@ -89,4 +112,11 @@ export function vectorsAreEqual(v1: Position, v2: Position, accuracy?: number): 
 function floatEquals(v1: number, v2: number, accuracy?: number): boolean {
     const diff = Math.abs(v1 - v2);
     return accuracy ? diff < accuracy : diff < FLOAT_MIN_DIFF_TO_BE_EQUAL;
+}
+
+export function save() {
+    console.log('saving...');
+    console.log(JSON.stringify({
+        camera: camera.state
+    }));
 }

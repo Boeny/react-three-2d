@@ -3,9 +3,11 @@ import { Vector3, Euler, DataTexture, RGBFormat } from 'three';
 import { Position } from '~/types';
 import { Cube } from './cube';
 import { Quad } from './quad';
+import { Bullets } from './bullet';
 
 
 const BASEMENT_LENGTH = 3;
+const BASEMENT_DEPTH = 0.75;
 const TRACK_WIDTH = 0.5;
 export const STEPS_IN_SINGLE_TRACK = 24;
 const STEPS_IN_WHOLE_TRACK_COUNT = 256;
@@ -20,19 +22,43 @@ const GAP_COLOR = { r: 200, g: 200, b: 200 };
 const LEFT_TRACK_TEX = getDefaultData();
 const RIGHT_TRACK_TEX = getDefaultData();
 
+const BARREL_OFFSET = new Vector3(1, 0, 0.0625);
+const BARREL_LENGTH = 2;
+
+
 interface Props extends TowerProps {
     trackOffsetLeft: number;
     trackOffsetRight: number;
+    velocity: Vector3;
 }
 
 export function Tank(props: Props) {
+    const { position, rotation, velocity } = props;
+    const barrelPosition = rotateVectorBy(
+        rotation,
+        (new Vector3(position.x, position.y, BASEMENT_DEPTH)).add(BARREL_OFFSET)
+    );
+    barrelPosition.x += BARREL_LENGTH / 2;
+    console.log(barrelPosition, position);
     return (
         <group>
             <Basement {...props} />
             <Tower {...props} />
+            <Bullets
+                position={barrelPosition}
+                velocity={velocity}
+                direction={rotateVectorBy(rotation, new Vector3(1, 0, 0))}
+            />
         </group>
     );
 }
+
+function rotateVectorBy(ang: number, p: Vector3): Vector3 {
+    p.x = p.x * Math.cos(ang);
+    p.y = p.y * Math.sin(ang);
+    return p;
+}
+
 
 function Basement(props: Props) {
     const { position, rotation, trackOffsetLeft, trackOffsetRight } = props;
@@ -49,7 +75,7 @@ function Basement(props: Props) {
                 position={POSITION}
                 width={BASEMENT_LENGTH}
                 height={2}
-                depth={0.75}
+                depth={BASEMENT_DEPTH}
                 color={'#dddddd'}
             />
             <Quad
@@ -93,7 +119,7 @@ function Tower(props: Props) {
     const { position, rotation } = props;
     return (
         <group
-            position={new Vector3(position.x, position.y, 0.75)}
+            position={new Vector3(position.x, position.y, BASEMENT_DEPTH)}
             rotation={new Euler(0, 0, rotation)}
         >
             <Cube
@@ -104,15 +130,15 @@ function Tower(props: Props) {
                 depth={0.5}
                 color={'#888888'}
             />
-            <Cube
-                position={new Vector3(1, 0, 0.0625)}
+            <Cube // barrel
+                position={BARREL_OFFSET}
                 rotation={{ x: 0, y: 0, z: 0 }}
-                width={2}
+                width={BARREL_LENGTH}
                 height={0.25}
                 depth={0.25}
                 color={'#777777'}
             />
-            <Cube
+            <Cube // hatch
                 position={new Vector3(-0.16, 0.16, 0.25)}
                 rotation={{ x: 0, y: 0, z: 0 }}
                 width={0.375}

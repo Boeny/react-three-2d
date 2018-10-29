@@ -116,7 +116,6 @@ export const Store: IStore = {
         console.log('show stack =', this.state.showStack);
     },
     save() {
-        console.log('saving...');
         showDataAndStack(this.state, this.nextState);
     },
     getZoomNear(): Zoom | undefined {
