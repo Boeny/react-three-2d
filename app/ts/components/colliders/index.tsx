@@ -1,6 +1,5 @@
-import { observer } from 'mobx-react';
 
 
-export const Colliders = observer(() => {
+export const Colliders = (() => {
     return null;
 });

@@ -112,6 +112,14 @@ function Tower(props: Props) {
                 depth={0.25}
                 color={'#777777'}
             />
+            <Cube
+                position={new Vector3(-0.16, 0.16, 0.25)}
+                rotation={{ x: 0, y: 0, z: 0 }}
+                width={0.375}
+                height={0.375}
+                depth={0.0625}
+                color={'#555555'}
+            />
         </group>
     );
 }
