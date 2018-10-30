@@ -3,13 +3,13 @@ import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { observable, runInAction } from 'mobx';
 import { Store as movable } from '../movable/store';
-// import { getSelectedObject } from '~/utils';
+import { getSelectedObject } from '~/utils';
 import { MountAndInit } from '../mount-and-init';
 import { Cube } from '../cube';
 
 
 const INITIAL_BULLET_SPEED = 1;
-const GRAVITY_FORCE = 0.001;
+const GRAVITY_FORCE = 0.01;
 
 interface BulletType {
     position: Vector3;
@@ -60,9 +60,8 @@ function getStore(): IStore {
         removeExploded() {
             runInAction(() => {
                 this.state.data = this.state.data.filter(
-                    // item => getSelectedObject(item.position, item.velocity) !== null
-                    item => item.position.z > 0
-                        || item.position.clone().sub(this.initPosition).length() < 50
+                    item => item.position.clone().sub(this.initPosition).length() < 50
+                        && getSelectedObject(item.position, item.velocity) === null // .multiplyScalar(deltaTime)
                 );
             });
         },

@@ -4,6 +4,8 @@ import { SmallTank } from './small-tank';
 
 export function Enemies() {
     return (
-        <SmallTank />
+        <group name={'enemies'}>
+            <SmallTank />
+        </group>
     );
 }

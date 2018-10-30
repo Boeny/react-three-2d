@@ -1,5 +1,5 @@
 import {
-    Vector2, Vector3, Raycaster, Intersection, VertexColors, Color, Texture
+    Vector2, Vector3, Raycaster, Intersection, VertexColors, Color, Texture, Object3D
 } from 'three';
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '~/components/camera/store';
@@ -21,17 +21,22 @@ export function getMaterialParams(color?: string, texture?: Texture) {
 
 const raycaster = new Raycaster();
 
-export function getSelectedObject(obj: Vector3, direction: Vector3): Intersection | null {
+export function getSelectedObject(position: Vector3, direction: Vector3): Intersection | null {
     if (camera.instance === null) {
         return null;
     }
-    raycaster.set(obj, direction);
+    raycaster.far = direction.length();
+    raycaster.set(position.clone(), direction.clone().normalize());
     const scene = camera.instance.parent;
-    return raycaster.intersectObjects([
-        scene.getObjectByName('map'),
-        scene.getObjectByName('player'),
-        ...scene.getObjectByName('enemies').children
-    ])[0] || null;
+    const enemies = scene.getObjectByName('enemies') as Object3D | undefined;
+    const map = scene.getObjectByName('map');
+    const player = scene.getObjectByName('player');
+    const result = raycaster.intersectObjects([
+        ...(map ? [map] : []),
+        ...(player ? [player] : []),
+        ...(enemies ? enemies.children : [])
+    ]);
+    return result && result[0] || null;
 }
 
 export function getSelectedObjectFromCamera(screenVector: Vector2): Intersection | null {
