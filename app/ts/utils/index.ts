@@ -8,12 +8,15 @@ import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constan
 
 
 export function getMaterialParams(color?: string, texture?: Texture) {
-    return {
+    const result: any = {
         wireframe: SHOW_AS_WIREFRAME,
         color: color ? new Color(color) : '#ffffff',
-        vertexColors: VertexColors,
-        map: texture
+        vertexColors: VertexColors
     };
+    if (texture) {
+        result.map = texture;
+    }
+    return result;
 }
 
 const raycaster = new Raycaster();

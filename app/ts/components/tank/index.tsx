@@ -3,7 +3,7 @@ import { Vector3, Euler } from 'three';
 import { Position } from '~/types';
 import { Cube } from '../cube';
 import { Track } from './track';
-import { Bullets } from './bullet';
+import { Bullets, IStore as BulletsStore } from './bullet';
 import { BASEMENT_LENGTH, TRACK_DISTANCE, EMPTY_VECTOR3 } from './constants';
 
 
@@ -19,10 +19,11 @@ interface Props {
     velocity: Vector3;
     trackOffsetLeft: number;
     trackOffsetRight: number;
+    onBulletsRef: (b: BulletsStore | null) => void;
 }
 
 export function Tank(props: Props) {
-    const { velocity, trackOffsetLeft, trackOffsetRight } = props;
+    const { velocity, trackOffsetLeft, trackOffsetRight, onBulletsRef } = props;
     const position = new Vector3(props.position.x, props.position.y, 0);
     const towerPosition = position.clone().add(TOWER_OFFSET);
     const rotation = new Euler(0, 0, props.rotation);
@@ -50,6 +51,7 @@ export function Tank(props: Props) {
                 velocity={velocity}
                 direction={barrelRelativePosition.clone()}
                 rotation={new Vector3(0, 0, props.rotation)}
+                onRef={onBulletsRef}
             />
         </group>
     );

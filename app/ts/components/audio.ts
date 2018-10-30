@@ -51,7 +51,6 @@ export class AudioSource extends React.Component {
         analyser.getByteTimeDomainData(bTimeData);
 
         Store.source.frequency.value = 0;
-        Store.source.start(0);
     }
 
     render() {

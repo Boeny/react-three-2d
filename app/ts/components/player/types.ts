@@ -14,6 +14,11 @@ export interface VertDirection {
     down: boolean;
 }
 
+export interface State {
+    position: Position;
+    rotation: number;
+}
+
 export interface IStore {
     moving: VertDirection;
     rotating: HorDirection;
@@ -21,10 +26,7 @@ export interface IStore {
     rotSpeed: number;
     isShooting: boolean;
     canShoot: boolean;
-    state: {
-        position: Position;
-        rotation: number;
-    };
+    state: State;
     setPosition: (p: Position, after?: (p: Position) => void) => void;
     setRotation: (v: number) => void;
     rotateLeft: (v: boolean) => void;

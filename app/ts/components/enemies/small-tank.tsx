@@ -1,21 +1,22 @@
 import * as React from 'react';
 import { Vector2, Vector3 } from 'three';
 import { observer } from 'mobx-react';
-import { Store as html } from '~/views/html/store';
 import { Store as movable } from '../movable/store';
-import { Store as camera } from '../camera/store';
-import { Store as player } from './store';
+import { getPlayerStore } from '../player/store';
 import { getSign } from '~/utils';
-import { Position } from '~/types';
 import { IStore as BulletsStore } from '../tank/bullet';
-import { VertDirection, HorDirection } from './types';
+import { VertDirection, HorDirection } from '../player/types';
 import { MountAndInit } from '../mount-and-init';
 import { Tank } from '../tank';
 import { MAX_SPEED, MIN_SPEED } from '../../constants';
 import { STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from '../tank/constants';
 
 
-const BORDER_PERCENT = 0.5;
+const Store = getPlayerStore({
+    position: { x: 0, y: 10 },
+    rotation: -Math.PI / 2
+});
+
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
@@ -27,28 +28,26 @@ const MIN_ROT_SPEED = 0;
 const ROT_SPEED_ACC = DEGREE * 1.25;
 const ROT_SPEED_DEC = DEGREE * 1.05;
 
-let offsetLeft = 3;
+let offsetLeft = 1;
 let offsetRight = 2;
 let bullets: BulletsStore | null = null;
 
 const Component = observer(() => {
-    const { state, velocity } = player;
+    const { state, velocity } = Store;
     return (
-        <group name={'player'}>
-            <Tank
-                position={state.position}
-                rotation={state.rotation}
-                trackOffsetLeft={offsetLeft}
-                trackOffsetRight={offsetRight}
-                velocity={new Vector3(velocity.x, velocity.y, 0)}
-                onBulletsRef={b => bullets = b}
-            />
-        </group>
+        <Tank
+            position={state.position}
+            rotation={state.rotation}
+            trackOffsetLeft={offsetLeft}
+            trackOffsetRight={offsetRight}
+            velocity={new Vector3(velocity.x, velocity.y, 0)}
+            onBulletsRef={b => bullets = b}
+        />
     );
 });
 
 
-export function MovableTank() {
+export function SmallTank() {
     return (
         <MountAndInit
             component={<Component />}
@@ -59,68 +58,65 @@ export function MovableTank() {
 
 function onEveryTick(deltaTime: number) {
     // shooting
-    if (bullets && player.canShoot && player.isShooting) {
+    if (bullets && Store.canShoot) {
         bullets.add();
-        player.canShoot = false;
-        setTimeout(() => player.canShoot = true, 200);
+        Store.canShoot = false;
+        setTimeout(() => Store.canShoot = true, 200);
     }
     // change position by velocity
-    if (player.isMoving()) {
-        player.velocity.add(getMovingAcceleration(player.moving, player.state.rotation));
+    if (Store.isMoving()) {
+        Store.velocity.add(getMovingAcceleration(Store.moving, Store.state.rotation));
     }
-    let length = player.velocity.length();
-    if (player.velocity.x !== 0 || player.velocity.y !== 0) {
+    let length = Store.velocity.length();
+    if (Store.velocity.x !== 0 || Store.velocity.y !== 0) {
         length = decreaseSpeed(length, DECELERATION);
-        player.velocity.normalize().multiplyScalar(length);
+        Store.velocity.normalize().multiplyScalar(length);
     }
     if (length > MAX_MOVE_SPEED) {
-        player.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
+        Store.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
         length = MAX_MOVE_SPEED;
     } else if (length < MIN_MOVE_SPEED) {
-        player.velocity = new Vector2();
+        Store.velocity = new Vector2();
         length = 0;
     }
     if (length > 0) {
-        player.setPosition(
-            {
-                x: player.state.position.x + player.velocity.x * deltaTime,
-                y: player.state.position.y + player.velocity.y * deltaTime
-            },
-            onPlayerPositionUpdate
-        );
+        Store.setPosition({
+            x: Store.state.position.x + Store.velocity.x * deltaTime,
+            y: Store.state.position.y + Store.velocity.y * deltaTime
+        });
     }
     // calc track offset if we're moving
     let deltaOffset = Math.round(length * STEPS_IN_UNIT * deltaTime);
     if (length > 0) {
-        if (player.moving.up) {
+        if (Store.moving.up) {
             deltaOffset = STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK;
         }
         offsetLeft = offsetRight = (offsetLeft + deltaOffset) % STEPS_IN_SINGLE_TRACK;
     }
     // change rotation by rotation speed
-    if (player.isRotating()) {
-        player.rotSpeed += getRotationAcceleration(player.rotating);
+    if (Store.isRotating()) {
+        Store.rotSpeed += getRotationAcceleration(Store.rotating);
     }
-    const sign = getSign(player.rotSpeed);
-    length = Math.abs(player.rotSpeed);
-    if (player.rotSpeed !== 0) {
+    const sign = getSign(Store.rotSpeed);
+    length = Math.abs(Store.rotSpeed);
+    if (Store.rotSpeed !== 0) {
         length = decreaseSpeed(length, ROT_SPEED_DEC);
-        player.rotSpeed = sign * length;
+        Store.rotSpeed = sign * length;
     }
     if (length > MAX_ROT_SPEED) {
-        player.rotSpeed = MAX_ROT_SPEED * sign;
+        Store.rotSpeed = MAX_ROT_SPEED * sign;
         length = MAX_ROT_SPEED;
     } else if (length < MIN_ROT_SPEED) {
-        player.rotSpeed = 0;
+        Store.rotSpeed = 0;
         length = 0;
     }
     if (length > 0) {
-        player.setRotation(player.state.rotation + player.rotSpeed * deltaTime);
+        Store.setRotation(Store.state.rotation + Store.rotSpeed * deltaTime);
     }
     // calc track offset if we're rotating
     deltaOffset = Math.round(Math.tan(length * deltaTime) * TRACK_DISTANCE * STEPS_IN_UNIT);
     if (length > 0) {
-        if (player.rotating.left) {
+        if (Store.rotating.left) {
             offsetLeft = (offsetLeft + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
             offsetRight = (offsetRight + deltaOffset) % STEPS_IN_SINGLE_TRACK;
         } else {
@@ -141,25 +137,4 @@ function getMovingAcceleration({ up, down }: VertDirection, rot: number): Vector
 
 function getRotationAcceleration({ left, right }: HorDirection): number {
     return right ? -ROT_SPEED_ACC : (left ? ROT_SPEED_ACC : 0);
-}
-
-function onPlayerPositionUpdate(p: Position) {
-    const { position } = camera.state;
-    const { windowWidth, windowHeight } = html.state;
-    const xBorder = camera.state.zoom * BORDER_PERCENT;
-    const yBorder = xBorder * windowHeight / windowWidth;
-    const dx = p.x - position.x;
-    const dy = p.y - position.y;
-    const diff = {
-        x: Math.abs(dx) > xBorder ? (dx > 0 ? dx - xBorder : dx + xBorder) : 0,
-        y: Math.abs(dy) > yBorder ? (dy > 0 ? dy - yBorder : dy + yBorder) : 0
-    };
-    if (diff.x === 0 && diff.y === 0) {
-        return;
-    }
-    camera.updatePositionBy({
-        x: diff.x,
-        y: diff.y,
-        z: 0
-    });
 }

@@ -9,7 +9,7 @@ import { Cube } from '../cube';
 
 
 const INITIAL_BULLET_SPEED = 1;
-
+const GRAVITY_FORCE = 0.001;
 
 interface BulletType {
     position: Vector3;
@@ -18,7 +18,7 @@ interface BulletType {
     rotVelocity: Vector3;
 }
 
-interface IStore {
+export interface IStore {
     state: {
         data: BulletType[];
     };
@@ -32,57 +32,60 @@ interface IStore {
     updatePosition: (deltaTime: number) => void;
 }
 
-export const Store: IStore = {
-    state: observable({
-        data: []
-    }),
-    initPosition: new Vector3(),
-    parentVelocity: new Vector3(),
-    direction: new Vector3(),
-    rotation: new Vector3(),
-    init({ position, velocity, direction, rotation }: Props) {
-        this.initPosition = position.clone();
-        this.parentVelocity = velocity.clone();
-        this.direction = direction.clone().normalize();
-        this.rotation = rotation.clone();
-    },
-    add() {
-        runInAction(() => {
-            this.state.data.push({
-                position: this.initPosition.clone(),
-                velocity: this.direction.clone().multiplyScalar(INITIAL_BULLET_SPEED).add(this.parentVelocity),
-                rotation: this.rotation,
-                rotVelocity: new Vector3()
+function getStore(): IStore {
+    return {
+        state: observable({
+            data: []
+        }),
+        initPosition: new Vector3(),
+        parentVelocity: new Vector3(),
+        direction: new Vector3(),
+        rotation: new Vector3(),
+        init({ position, velocity, direction, rotation }: Props) {
+            this.initPosition = position.clone();
+            this.parentVelocity = velocity.clone();
+            this.direction = direction.clone().normalize();
+            this.rotation = rotation.clone();
+        },
+        add() {
+            runInAction(() => {
+                this.state.data.push({
+                    position: this.initPosition.clone(),
+                    velocity: this.direction.clone().multiplyScalar(INITIAL_BULLET_SPEED).add(this.parentVelocity),
+                    rotation: this.rotation,
+                    rotVelocity: new Vector3()
+                });
             });
-        });
-    },
-    removeExploded() {
-        runInAction(() => {
-            this.state.data = this.state.data.filter(
-                // item => getSelectedObject(item.position, item.velocity) !== null
-                item => item.position.length() > 50
-            );
-        });
-    },
-    updatePosition(deltaTime: number) {
-        runInAction(() => {
-            this.state.data = this.state.data.map(item => ({
-                ...item,
-                position: new Vector3(
-                    item.position.x + item.velocity.x * deltaTime,
-                    item.position.y + item.velocity.y * deltaTime,
-                    item.position.z
-                )
-            }));
-        });
-    }
-};
+        },
+        removeExploded() {
+            runInAction(() => {
+                this.state.data = this.state.data.filter(
+                    // item => getSelectedObject(item.position, item.velocity) !== null
+                    item => item.position.z > 0
+                        || item.position.clone().sub(this.initPosition).length() < 50
+                );
+            });
+        },
+        updatePosition(deltaTime: number) {
+            runInAction(() => {
+                this.state.data = this.state.data.map(item => ({
+                    ...item,
+                    position: new Vector3(
+                        item.position.x + item.velocity.x * deltaTime,
+                        item.position.y + item.velocity.y * deltaTime,
+                        item.position.z - GRAVITY_FORCE * deltaTime
+                    )
+                }));
+            });
+        }
+    };
+}
 
 
-const BulletsComponent = observer(() => {
+const BulletsComponent = observer(({ store }: { store: IStore }) => {
     return (
         <group>
-            {Store.state.data.map((item, i) => (
+            {store.state.data.map((item, i) => (
                 <Bullet key={i} bullet={item} />
             ))}
         </group>
@@ -95,43 +98,45 @@ interface Props {
     velocity: Vector3;
     direction: Vector3;
     rotation: Vector3;
+    onRef: (store: IStore) => void;
 }
 
 export class Bullets extends React.Component<Props> {
 
+    store = getStore();
+
     componentDidUpdate() {
-        Store.init(this.props);
+        this.store.init(this.props);
     }
 
     render() {
         return (
             <MountAndInit
-                component={<BulletsComponent />}
+                component={<BulletsComponent store={this.store} />}
                 onMount={() => {
-                    Store.init(this.props);
-                    movable.add({ onEveryTick });
+                    this.store.init(this.props);
+                    this.props.onRef(this.store);
+                    movable.add({ onEveryTick: onEveryTick(this.store) });
                 }}
             />
         );
     }
 }
 
-function onEveryTick(deltaTime: number) {
+const onEveryTick = (store: IStore) => (deltaTime: number) => {
     // check for explosion in the next frame
-    // Store.removeExploded();
+    store.removeExploded();
     // change position by velocity
-    Store.updatePosition(deltaTime);
+    store.updatePosition(deltaTime);
     // change rotation by rotation velocity
-
-}
+};
 
 
 interface BulletProps {
     bullet: BulletType;
 }
 
-const Bullet = observer((props: BulletProps) => {
-    const { bullet } = props;
+const Bullet = observer(({ bullet }: BulletProps) => {
     return (
         <Cube
             position={bullet.position}
