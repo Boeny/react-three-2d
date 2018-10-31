@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { Vector3, Euler } from 'three';
 import { Position } from '~/types';
+import { IStore as BulletsStore } from './bullet/types';
 import { Cube } from '../cube';
 import { Track } from './track';
-import { Bullets, IStore as BulletsStore } from './bullet';
+import { Bullets } from './bullet';
 import { BASEMENT_LENGTH, TRACK_DISTANCE, EMPTY_VECTOR3 } from './constants';
 
 
@@ -13,17 +14,19 @@ const BARREL_OFFSET = new Vector3(1, 0, 0.0625);
 const BARREL_LENGTH = 2;
 
 
+type Offset = { left: number, right: number };
+
 interface Props {
+    name: string;
     position: Position;
     rotation: number;
     velocity: Vector3;
-    trackOffsetLeft: number;
-    trackOffsetRight: number;
+    trackOffset: Offset;
     onBulletsRef: (b: BulletsStore | null) => void;
 }
 
 export function Tank(props: Props) {
-    const { velocity, trackOffsetLeft, trackOffsetRight, onBulletsRef } = props;
+    const { name, velocity, trackOffset, onBulletsRef } = props;
     const position = new Vector3(props.position.x, props.position.y, 0);
     const towerPosition = position.clone().add(TOWER_OFFSET);
     const rotation = new Euler(0, 0, props.rotation);
@@ -35,12 +38,11 @@ export function Tank(props: Props) {
         0
     );
     return (
-        <group>
+        <group name={name}>
             <Basement
                 position={position}
                 rotation={rotation}
-                trackOffsetLeft={trackOffsetLeft}
-                trackOffsetRight={trackOffsetRight}
+                trackOffset={trackOffset}
             />
             <Tower
                 position={towerPosition}
@@ -59,15 +61,14 @@ export function Tank(props: Props) {
 
 
 interface BaseProps extends TowerProps {
-    trackOffsetLeft: number;
-    trackOffsetRight: number;
+    trackOffset: Offset;
 }
 
 const RIGTH_TRACK_POSITION = new Vector3(0, TRACK_DISTANCE, 0.5);
 const LEFT_TRACK_POSITION = new Vector3(0, -TRACK_DISTANCE, 0.5);
 
 function Basement(props: BaseProps) {
-    const { position, rotation, trackOffsetLeft, trackOffsetRight } = props;
+    const { position, rotation, trackOffset } = props;
     return (
         <group
             position={position}
@@ -82,11 +83,11 @@ function Basement(props: BaseProps) {
             />
             <Track
                 position={RIGTH_TRACK_POSITION}
-                offset={trackOffsetRight}
+                offset={trackOffset.right}
             />
             <Track
                 position={LEFT_TRACK_POSITION}
-                offset={trackOffsetLeft}
+                offset={trackOffset.left}
             />
         </group>
     );
