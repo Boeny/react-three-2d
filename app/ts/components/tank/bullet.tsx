@@ -9,7 +9,7 @@ import { Cube } from '../cube';
 
 
 const INITIAL_BULLET_SPEED = 1;
-const GRAVITY_FORCE = 0.01;
+const GRAVITY_FORCE = 0.002;
 
 interface BulletType {
     position: Vector3;

@@ -88,11 +88,6 @@ export function onMouseMove(e: MouseEvent) {
 
 export function onKeyDown(e: KeyboardEvent) {
     e.preventDefault();
-    if (e.shiftKey) {
-        if (player.canShoot) {
-            player.isShooting = true;
-        }
-    }
     switch (e.key) {
         case KEY.LEFT:
         case 'a':
