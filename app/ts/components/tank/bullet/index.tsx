@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import { Store as movable } from '../../movable/store';
 import { getStore } from './store';
 import { IStore, InitialParams, BulletType } from './types';
-import { Quad } from '../../quad';
+import { Cube } from '../../cube';
 
 
 interface BulletProps {
@@ -12,11 +12,12 @@ interface BulletProps {
 
 const Bullet = observer(({ bullet }: BulletProps) => {
     return (
-        <Quad
+        <Cube
             position={bullet.position}
             rotation={bullet.rotation}
-            width={0.4}
-            height={0.25}
+            width={1.8}
+            height={0.15}
+            depth={0.15}
             color={'#aaaaaa'}
         />
     );

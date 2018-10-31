@@ -4,8 +4,8 @@ import { getSelectedObject } from '~/utils';
 import { IStore, InitialParams } from './types';
 
 
-const INITIAL_BULLET_SPEED = 1;
-const GRAVITY_FORCE = 0.002;
+const INITIAL_BULLET_SPEED = 0.9;
+const GRAVITY_FORCE = 0;
 
 
 export function getStore(): IStore {
