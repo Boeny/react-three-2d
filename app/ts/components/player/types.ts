@@ -31,6 +31,7 @@ export interface IStore {
     setRotation: (v: number) => void;
     rotateLeft: (v: boolean) => void;
     rotateRight: (v: boolean) => void;
+    rotate: (v: 'left' | 'right' | 'none') => void;
     moveForward: (v: boolean) => void;
     moveBack: (v: boolean) => void;
     shoot: (v: boolean) => void;

@@ -101431,6 +101431,13 @@ function getPlayerStore(state, scenario) {
                 _this.rotating.left = v;
             });
         },
+        rotate: function (v) {
+            var _this = this;
+            mobx_1.runInAction(function () {
+                _this.rotating.left = v === 'left';
+                _this.rotating.right = v === 'right';
+            });
+        },
         moveForward: function (v) {
             var _this = this;
             if (this.moving.up === v) {
@@ -110050,14 +110057,11 @@ var tslib_1 = __webpack_require__(12);
 var React = __webpack_require__(6);
 var three_1 = __webpack_require__(9);
 var mobx_react_1 = __webpack_require__(34);
-var store_1 = __webpack_require__(21);
-var store_2 = __webpack_require__(40);
-var store_3 = __webpack_require__(38);
+var store_1 = __webpack_require__(40);
 var utils_1 = __webpack_require__(22);
 var tank_1 = __webpack_require__(280);
 var constants_1 = __webpack_require__(39);
 var constants_2 = __webpack_require__(35);
-var BORDER_PERCENT = 0.5;
 var MAX_MOVE_SPEED = constants_1.MAX_SPEED / 2;
 var MIN_MOVE_SPEED = 0;
 var ACCELERATION = constants_1.MIN_SPEED * 1.5;
@@ -110086,8 +110090,8 @@ var MovableTank = /** @class */ (function (_super) {
     MovableTank.prototype.componentDidMount = function () {
         var _this = this;
         var store = this.props.store;
-        var onEveryTick = getOnEveryTick(this.props.store);
-        store_2.Store.add({
+        var onEveryTick = getOnEveryTick(this.props.store, this.props.onPositionUpdate);
+        store_1.Store.add({
             onEveryTick: function (deltaTime) {
                 if (_this.bullets && store.canShoot && store.isShooting()) {
                     _this.bullets.add();
@@ -110109,7 +110113,7 @@ var MovableTank = /** @class */ (function (_super) {
     return MovableTank;
 }(React.Component));
 exports.MovableTank = MovableTank;
-var getOnEveryTick = function (store) { return function (deltaTime, offset) {
+var getOnEveryTick = function (store, onPositionUpdate) { return function (deltaTime, offset) {
     // change position by velocity
     if (store.isMoving()) {
         store.velocity.add(getMovingAcceleration(store.moving, store.state.rotation));
@@ -110131,7 +110135,7 @@ var getOnEveryTick = function (store) { return function (deltaTime, offset) {
         store.setPosition({
             x: store.state.position.x + store.velocity.x * deltaTime,
             y: store.state.position.y + store.velocity.y * deltaTime
-        }, onPlayerPositionUpdate);
+        }, onPositionUpdate);
     }
     // calc track offset if we're moving
     var deltaOffset = Math.round(length * constants_2.STEPS_IN_UNIT * deltaTime);
@@ -110186,26 +110190,6 @@ function getMovingAcceleration(_a, rot) {
 function getRotationAcceleration(_a) {
     var left = _a.left, right = _a.right;
     return right ? -ROT_SPEED_ACC : (left ? ROT_SPEED_ACC : 0);
-}
-function onPlayerPositionUpdate(p) {
-    var position = store_3.Store.state.position;
-    var _a = store_1.Store.state, windowWidth = _a.windowWidth, windowHeight = _a.windowHeight;
-    var xBorder = store_3.Store.state.zoom * BORDER_PERCENT;
-    var yBorder = xBorder * windowHeight / windowWidth;
-    var dx = p.x - position.x;
-    var dy = p.y - position.y;
-    var diff = {
-        x: Math.abs(dx) > xBorder ? (dx > 0 ? dx - xBorder : dx + xBorder) : 0,
-        y: Math.abs(dy) > yBorder ? (dy > 0 ? dy - yBorder : dy + yBorder) : 0
-    };
-    if (diff.x === 0 && diff.y === 0) {
-        return;
-    }
-    store_3.Store.updatePositionBy({
-        x: diff.x,
-        y: diff.y,
-        z: 0
-    });
 }
 
 
@@ -142064,15 +142048,38 @@ exports.MountAndInit = MountAndInit;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(12);
 var React = __webpack_require__(6);
+var store_1 = __webpack_require__(21);
+var store_2 = __webpack_require__(38);
+var store_3 = __webpack_require__(50);
 var camera_1 = __webpack_require__(112);
-var store_1 = __webpack_require__(50);
 var movable_tank_1 = __webpack_require__(113);
+var BORDER_PERCENT = 0.5;
 function Player(props) {
     return (React.createElement("group", null,
         React.createElement(camera_1.Camera, tslib_1.__assign({}, props)),
-        React.createElement(movable_tank_1.MovableTank, { name: 'player', store: store_1.Store })));
+        React.createElement(movable_tank_1.MovableTank, { name: 'player', store: store_3.Store, onPositionUpdate: onPositionUpdate })));
 }
 exports.Player = Player;
+function onPositionUpdate(p) {
+    var position = store_2.Store.state.position;
+    var _a = store_1.Store.state, windowWidth = _a.windowWidth, windowHeight = _a.windowHeight;
+    var xBorder = store_2.Store.state.zoom * BORDER_PERCENT;
+    var yBorder = xBorder * windowHeight / windowWidth;
+    var dx = p.x - position.x;
+    var dy = p.y - position.y;
+    var diff = {
+        x: Math.abs(dx) > xBorder ? (dx > 0 ? dx - xBorder : dx + xBorder) : 0,
+        y: Math.abs(dy) > yBorder ? (dy > 0 ? dy - yBorder : dy + yBorder) : 0
+    };
+    if (diff.x === 0 && diff.y === 0) {
+        return;
+    }
+    store_2.Store.updatePositionBy({
+        x: diff.x,
+        y: diff.y,
+        z: 0
+    });
+}
 
 
 /***/ }),
@@ -142332,14 +142339,39 @@ function getVeryEasySimpleTankScenario() {
     var distance = distanceToPlayer.length();
     var shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * constants_1.BASEMENT_WIDTH / distance;
     if (shouldRotate) {
-        console.log('rotating!');
+        var normal = new three_1.Vector2(directionToPlayer.y, -directionToPlayer.x);
+        Store.rotate(direction.clone().dot(normal) > 0 ? 'left' : 'right');
+    }
+    else {
+        Store.rotate('none');
+    }
+    // if distance is not in range - moving
+    Store.moveForward(distance > 25);
+    // if angle equals 0 - shooting
+    Store.shoot(!shouldRotate);
+}
+function getEasySimpleTankScenario() {
+    // get directions
+    var distanceToPlayer = new three_1.Vector2(store_1.Store.state.position.x - Store.state.position.x, store_1.Store.state.position.y - Store.state.position.y);
+    var directionToPlayer = distanceToPlayer.clone().normalize();
+    var direction = new three_1.Vector2(Math.cos(Store.state.rotation), Math.sin(Store.state.rotation));
+    // if diff between directions is bigger some radius - rotating
+    var distance = distanceToPlayer.length();
+    var shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * constants_1.BASEMENT_WIDTH / distance;
+    if (shouldRotate) {
+        var normal = new three_1.Vector2(directionToPlayer.y, -directionToPlayer.x);
+        Store.rotate(direction.clone().dot(normal) > 0 ? 'left' : 'right');
+    }
+    else {
+        Store.rotate('none');
     }
     // if distance is not in range - moving
     var shouldMove = distance > 50;
-    Store.moveForward(shouldMove && !shouldRotate);
+    Store.moveForward(shouldMove);
     // if angle equals 0 and we're in range - shooting
     Store.shoot(!shouldMove && !shouldRotate);
 }
+exports.getEasySimpleTankScenario = getEasySimpleTankScenario;
 
 
 /***/ }),

@@ -57,6 +57,12 @@ export function getPlayerStore(state: State, scenario?: (level: number) => void)
                 this.rotating.left = v;
             });
         },
+        rotate(v: 'left' | 'right' | 'none') {
+            runInAction(() => {
+                this.rotating.left = v === 'left';
+                this.rotating.right = v === 'right';
+            });
+        },
         moveForward(v: boolean) {
             if (this.moving.up === v) {
                 return;

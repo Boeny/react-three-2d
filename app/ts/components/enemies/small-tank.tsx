@@ -35,11 +35,37 @@ function getVeryEasySimpleTankScenario() {
     const distance = distanceToPlayer.length();
     const shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * BASEMENT_WIDTH / distance;
     if (shouldRotate) {
-        console.log('rotating!');
+        const normal = new Vector2(directionToPlayer.y, -directionToPlayer.x);
+        Store.rotate(direction.clone().dot(normal) > 0 ? 'left' : 'right');
+    } else {
+        Store.rotate('none');
+    }
+    // if distance is not in range - moving
+    Store.moveForward(distance > 25);
+    // if angle equals 0 - shooting
+    Store.shoot(!shouldRotate);
+}
+
+export function getEasySimpleTankScenario() {
+    // get directions
+    const distanceToPlayer = new Vector2(
+        player.state.position.x - Store.state.position.x,
+        player.state.position.y - Store.state.position.y
+    );
+    const directionToPlayer = distanceToPlayer.clone().normalize();
+    const direction = new Vector2(Math.cos(Store.state.rotation), Math.sin(Store.state.rotation));
+    // if diff between directions is bigger some radius - rotating
+    const distance = distanceToPlayer.length();
+    const shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * BASEMENT_WIDTH / distance;
+    if (shouldRotate) {
+        const normal = new Vector2(directionToPlayer.y, -directionToPlayer.x);
+        Store.rotate(direction.clone().dot(normal) > 0 ? 'left' : 'right');
+    } else {
+        Store.rotate('none');
     }
     // if distance is not in range - moving
     const shouldMove = distance > 50;
-    Store.moveForward(shouldMove && !shouldRotate);
+    Store.moveForward(shouldMove);
     // if angle equals 0 and we're in range - shooting
     Store.shoot(!shouldMove && !shouldRotate);
 }
