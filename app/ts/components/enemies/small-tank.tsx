@@ -3,17 +3,40 @@ import { Vector2 } from 'three';
 import { Store as movable } from '../movable/store';
 // import { getDifficultyLevel } from '~/utils';
 import { Store as player, PlayerStore } from '../player/store';
+import { Position } from '~/types';
 import { IStore } from '../player/types';
 import { MovableTank } from '../movable-tank';
 import { BASEMENT_WIDTH } from '../tank/constants';
 
 
-export class SmallTank extends React.Component {
+interface Props {
+    position: Position;
+}
 
-    store = new PlayerStore({
-        position: { x: 0, y: 10 },
-        rotation: -Math.PI / 2
-    });
+export class SmallTank extends React.Component<Props> {
+
+    store: PlayerStore;
+
+    constructor(props: Props) {
+        super(props);
+        const { position } = props;
+        this.store = new PlayerStore({
+            position,
+            rotation: this.rotateTo(player.state.position, position)
+        });
+    }
+
+    rotateTo(target: Position, position: Position): number {
+        const direction = new Vector2(
+            target.x - position.x,
+            target.y - position.y
+        ).normalize();
+        let rotation = Math.acos(direction.x);
+        if (direction.x < 0) {
+            rotation += Math.PI;
+        }
+        return direction.y > 0 ? rotation : -rotation;
+    }
 
     componentDidMount() {
         movable.add({ onEveryTick: getVeryEasySimpleTankScenario(this.store) });
