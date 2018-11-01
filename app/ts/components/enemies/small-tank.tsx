@@ -33,7 +33,7 @@ export class SmallTank extends React.Component<Props> {
         ).normalize();
         let rotation = Math.acos(direction.x);
         if (direction.x < 0) {
-            rotation += Math.PI;
+            rotation += Math.PI / 2;
         }
         return direction.y > 0 ? rotation : -rotation;
     }

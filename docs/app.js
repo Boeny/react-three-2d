@@ -142319,7 +142319,9 @@ var React = __webpack_require__(6);
 var small_tank_1 = __webpack_require__(285);
 function Enemies() {
     return (React.createElement("group", { name: 'enemies' },
-        React.createElement(small_tank_1.SmallTank, null)));
+        React.createElement(small_tank_1.SmallTank, { position: { x: -50, y: 25 } }),
+        React.createElement(small_tank_1.SmallTank, { position: { x: 50, y: 25 } }),
+        React.createElement(small_tank_1.SmallTank, { position: { x: 0, y: -50 } })));
 }
 exports.Enemies = Enemies;
 
@@ -142341,14 +142343,23 @@ var movable_tank_1 = __webpack_require__(113);
 var constants_1 = __webpack_require__(35);
 var SmallTank = /** @class */ (function (_super) {
     tslib_1.__extends(SmallTank, _super);
-    function SmallTank() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
+    function SmallTank(props) {
+        var _this = _super.call(this, props) || this;
+        var position = props.position;
         _this.store = new store_2.PlayerStore({
-            position: { x: 0, y: 10 },
-            rotation: -Math.PI / 2
+            position: position,
+            rotation: _this.rotateTo(store_2.Store.state.position, position)
         });
         return _this;
     }
+    SmallTank.prototype.rotateTo = function (target, position) {
+        var direction = new three_1.Vector2(target.x - position.x, target.y - position.y).normalize();
+        var rotation = Math.acos(direction.x);
+        if (direction.x < 0) {
+            rotation += Math.PI / 2;
+        }
+        return direction.y > 0 ? rotation : -rotation;
+    };
     SmallTank.prototype.componentDidMount = function () {
         store_1.Store.add({ onEveryTick: getVeryEasySimpleTankScenario(this.store) });
     };
@@ -142617,7 +142628,7 @@ module.exports = {"local":{},"stack":[],"data":{},"nextState":{"data":{}}}
 /* 292 */
 /***/ (function(module, exports) {
 
-module.exports = {"state":{"currentCoo":"","mode":0,"showNegative":false,"showStack":false,"selectedObjectPosition":null},"camera":{"zoom":24,"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"translation":{"x":0,"y":0,"z":0}}}
+module.exports = {"state":{"currentCoo":"","mode":0,"showNegative":false,"showStack":false,"selectedObjectPosition":null},"camera":{"zoom":28,"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"translation":{"x":0,"y":0,"z":0}}}
 
 /***/ }),
 /* 293 */
