@@ -7,8 +7,9 @@ import { Quad } from './quad';
 import { STEPS_IN_UNIT } from './tank/constants';
 
 
-const WIDTH = 10;
-const STEPS = WIDTH * STEPS_IN_UNIT;
+const MAP_WIDTH = 200;
+const TEX_WIDTH = 10;
+const STEPS = TEX_WIDTH * STEPS_IN_UNIT;
 const TEX_SIZE = STEPS * STEPS;
 const POSITION = new Vector3();
 
@@ -55,8 +56,8 @@ export const Map = observer(() => {
         <Quad
             name={'map'}
             position={POSITION}
-            width={100}
-            height={100}
+            width={MAP_WIDTH}
+            height={MAP_WIDTH}
             texture={getTextureData(Store.data)}
         />
     );

@@ -9,9 +9,7 @@ export interface BulletType {
 }
 
 export interface IStore {
-    state: {
-        data: BulletType[];
-    };
+    state: { data: BulletType[] };
     initPosition: Vector3;
     parentVelocity: Vector3;
     direction: Vector3;

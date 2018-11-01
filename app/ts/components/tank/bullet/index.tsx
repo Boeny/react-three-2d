@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store as movable } from '../../movable/store';
-import { getStore } from './store';
+import { Store } from './store';
 import { IStore, InitialParams, BulletType } from './types';
 import { Cube } from '../../cube';
 
@@ -41,7 +41,7 @@ interface Props extends InitialParams {
 
 export class Bullets extends React.Component<Props> {
 
-    store = getStore();
+    store = new Store();
 
     componentDidMount() {
         this.store.init(this.props);
