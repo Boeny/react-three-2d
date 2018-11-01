@@ -4,7 +4,7 @@ import {
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '~/components/camera/store';
 import { Position } from '~/types';
-import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constants';
+import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME, DIFFICULTY_LEVEL } from '~/constants';
 
 
 export function getMaterialParams(color?: string, texture?: Texture) {
@@ -127,4 +127,8 @@ export function save() {
     console.log(JSON.stringify({
         camera: camera.state
     }));
+}
+
+export function getDifficultyLevel(): number {
+    return DIFFICULTY_LEVEL.veryEasy;
 }

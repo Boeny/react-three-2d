@@ -46,3 +46,13 @@ export const MOUSE_DRAG_MODE_ENABLED: boolean = false;
 export const SHOW_COLLIDERS: boolean = false;
 
 export const FLOAT_MIN_DIFF_TO_BE_EQUAL = 0.0001;
+
+export enum DIFFICULTY_LEVEL {
+    demo,
+    veryEasy,
+    easy,
+    middle,
+    hard,
+    veryHard,
+    nightmare
+}

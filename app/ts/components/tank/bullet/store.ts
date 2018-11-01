@@ -43,14 +43,14 @@ export function getStore(): IStore {
         },
         updatePosition(deltaTime: number) {
             runInAction(() => {
-                this.state.data = this.state.data.map(item => ({
-                    ...item,
-                    position: new Vector3(
-                        item.position.x + item.velocity.x * deltaTime,
-                        item.position.y + item.velocity.y * deltaTime,
-                        item.position.z - GRAVITY_FORCE * deltaTime
-                    )
-                }));
+                this.state.data = this.state.data.map(item => {
+                    const velocity = item.velocity.clone();
+                    velocity.z -= GRAVITY_FORCE;
+                    return {
+                        ...item,
+                        position: velocity.multiplyScalar(deltaTime).add(item.position)
+                    };
+                });
             });
         }
     };

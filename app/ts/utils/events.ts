@@ -120,7 +120,7 @@ export function onKeyDown(e: KeyboardEvent) {
             break;
         case KEY.SPACE:
             if (player.canShoot) {
-                player.isShooting = true;
+                player.shoot(true);
             }
             break;
     }
@@ -149,7 +149,7 @@ export function onKeyUp(e: KeyboardEvent) {
             player.moveBack(false);
             break;
         case KEY.SPACE:
-            player.isShooting = false;
+            player.shoot(false);
             break;
     }
 }

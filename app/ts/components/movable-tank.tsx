@@ -1,9 +1,7 @@
 import * as React from 'react';
 import { Vector2, Vector3 } from 'three';
 import { observer } from 'mobx-react';
-import { Store as html } from '~/views/html/store';
 import { Store as movable } from './movable/store';
-import { Store as camera } from './camera/store';
 import { getSign } from '~/utils';
 import { Position } from '~/types';
 import { IStore as BulletsStore } from './tank/bullet/types';
@@ -13,7 +11,6 @@ import { MAX_SPEED, MIN_SPEED } from '../constants';
 import { STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from './tank/constants';
 
 
-const BORDER_PERCENT = 0.5;
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
@@ -31,6 +28,7 @@ type Offset = { left: number, right: number };
 interface Props {
     name: string;
     store: PlayerStore;
+    onPositionUpdate?: (p: Position) => void;
 }
 
 @observer
@@ -46,10 +44,10 @@ export class MovableTank extends React.Component<Props> {
 
     componentDidMount() {
         const { store } = this.props;
-        const onEveryTick = getOnEveryTick(this.props.store);
+        const onEveryTick = getOnEveryTick(this.props.store, this.props.onPositionUpdate);
         movable.add({
             onEveryTick: (deltaTime: number) => {
-                if (this.bullets && store.canShoot && store.isShooting) {
+                if (this.bullets && store.canShoot && store.isShooting()) {
                     this.bullets.add();
                     store.canShoot = false;
                     setTimeout(() => store.canShoot = true, 200);
@@ -84,7 +82,9 @@ export class MovableTank extends React.Component<Props> {
     }
 }
 
-const getOnEveryTick = (store: PlayerStore) => (deltaTime: number, offset: Offset) => {
+const getOnEveryTick = (
+    store: PlayerStore, onPositionUpdate?: (p: Position) => void
+) => (deltaTime: number, offset: Offset) => {
     // change position by velocity
     if (store.isMoving()) {
         store.velocity.add(getMovingAcceleration(store.moving, store.state.rotation));
@@ -107,7 +107,7 @@ const getOnEveryTick = (store: PlayerStore) => (deltaTime: number, offset: Offse
                 x: store.state.position.x + store.velocity.x * deltaTime,
                 y: store.state.position.y + store.velocity.y * deltaTime
             },
-            onPlayerPositionUpdate
+            onPositionUpdate
         );
     }
     // calc track offset if we're moving
@@ -162,25 +162,4 @@ function getMovingAcceleration({ up, down }: VertDirection, rot: number): Vector
 
 function getRotationAcceleration({ left, right }: HorDirection): number {
     return right ? -ROT_SPEED_ACC : (left ? ROT_SPEED_ACC : 0);
-}
-
-function onPlayerPositionUpdate(p: Position) {
-    const { position } = camera.state;
-    const { windowWidth, windowHeight } = html.state;
-    const xBorder = camera.state.zoom * BORDER_PERCENT;
-    const yBorder = xBorder * windowHeight / windowWidth;
-    const dx = p.x - position.x;
-    const dy = p.y - position.y;
-    const diff = {
-        x: Math.abs(dx) > xBorder ? (dx > 0 ? dx - xBorder : dx + xBorder) : 0,
-        y: Math.abs(dy) > yBorder ? (dy > 0 ? dy - yBorder : dy + yBorder) : 0
-    };
-    if (diff.x === 0 && diff.y === 0) {
-        return;
-    }
-    camera.updatePositionBy({
-        x: diff.x,
-        y: diff.y,
-        z: 0
-    });
 }

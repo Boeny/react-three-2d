@@ -1,5 +1,7 @@
 import { Vector2 } from 'three';
 import { observable, runInAction } from 'mobx';
+import { Store as movable } from '../movable/store';
+import { getDifficultyLevel } from '~/utils';
 import { IStore, Position, State } from './types';
 
 
@@ -8,7 +10,12 @@ export const Store: IStore = getPlayerStore({
     rotation: Math.PI / 2
 });
 
-export function getPlayerStore(state: State): IStore {
+export function getPlayerStore(state: State, scenario?: (level: number) => void): IStore {
+    if (scenario) {
+        movable.add({
+            onEveryTick: () => scenario(getDifficultyLevel())
+        });
+    }
     return {
         moving: observable({
             up: false,
@@ -21,7 +28,7 @@ export function getPlayerStore(state: State): IStore {
         state: observable(state),
         velocity: new Vector2(),
         rotSpeed: 0,
-        isShooting: false,
+        _isShooting: false,
         canShoot: true,
         setPosition(p: Position, after?: (p: Position) => void) {
             runInAction(() => {
@@ -66,11 +73,17 @@ export function getPlayerStore(state: State): IStore {
                 this.moving.down = v;
             });
         },
+        shoot(v: boolean) {
+            this._isShooting = v;
+        },
         isMoving(): boolean {
             return this.moving.up || this.moving.down;
         },
         isRotating(): boolean {
             return this.rotating.right || this.rotating.left;
+        },
+        isShooting(): boolean {
+            return this._isShooting;
         }
     };
 }

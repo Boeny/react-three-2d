@@ -24,7 +24,7 @@ export interface IStore {
     rotating: HorDirection;
     velocity: Vector2;
     rotSpeed: number;
-    isShooting: boolean;
+    _isShooting: boolean;
     canShoot: boolean;
     state: State;
     setPosition: (p: Position, after?: (p: Position) => void) => void;
@@ -33,6 +33,8 @@ export interface IStore {
     rotateRight: (v: boolean) => void;
     moveForward: (v: boolean) => void;
     moveBack: (v: boolean) => void;
+    shoot: (v: boolean) => void;
     isMoving: () => boolean;
     isRotating: () => boolean;
+    isShooting: () => boolean;
 }

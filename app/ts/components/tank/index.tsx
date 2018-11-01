@@ -5,7 +5,7 @@ import { IStore as BulletsStore } from './bullet/types';
 import { Cube } from '../cube';
 import { Track } from './track';
 import { Bullets } from './bullet';
-import { BASEMENT_LENGTH, TRACK_DISTANCE, EMPTY_VECTOR3 } from './constants';
+import { BASEMENT_LENGTH, TRACK_DISTANCE, EMPTY_VECTOR3, BASEMENT_WIDTH } from './constants';
 
 
 const BASEMENT_DEPTH = 0.75;
@@ -77,7 +77,7 @@ function Basement(props: BaseProps) {
             <Cube
                 position={EMPTY_VECTOR3}
                 width={BASEMENT_LENGTH}
-                height={2}
+                height={BASEMENT_WIDTH}
                 depth={BASEMENT_DEPTH}
                 color={'#dddddd'}
             />
