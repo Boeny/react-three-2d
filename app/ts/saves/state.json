@@ -1,11 +1,4 @@
 {
-    "state": {
-        "currentCoo": "",
-        "mode": 0,
-        "showNegative": false,
-        "showStack": false,
-        "selectedObjectPosition": null
-    },
     "camera": {
         "zoom": 30,
         "position": {

@@ -2,13 +2,15 @@ import * as React from 'react';
 import { Vector2, Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store as movable } from './movable/store';
-import { getSign } from '~/utils';
+import { getSign, getDirection } from '~/utils';
 import { Position } from '~/types';
 import { IStore as BulletsStore } from './tank/bullet/types';
 import { VertDirection, HorDirection, IStore as PlayerStore } from './player/types';
 import { Tank } from './tank';
 import { MAX_SPEED, MIN_SPEED } from '../constants';
-import { STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from './tank/constants';
+import {
+    STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE, BASEMENT_LENGTH
+} from './tank/constants';
 
 
 const SHOOTING_DELAY = 2000; // 5-6 sec
@@ -48,6 +50,7 @@ export class MovableTank extends React.Component<Props> {
         const { store } = this.props;
         const onEveryTick = getOnEveryTick(this.props.store, this.props.onPositionUpdate);
         movable.add({
+            state: this.props.store.state,
             onEveryTick: (deltaTime: number) => {
                 if (this.bullets && store.canShoot && store.isShooting()) {
                     this.bullets.add();
@@ -104,13 +107,22 @@ const getOnEveryTick = (
         length = 0;
     }
     if (length > 0) {
-        store.setPosition(
-            {
-                x: store.state.position.x + store.velocity.x * deltaTime,
-                y: store.state.position.y + store.velocity.y * deltaTime
-            },
-            onPositionUpdate
+        // check if next position will cross any object
+        const nextPosition = new Vector2(
+            store.state.position.x + store.velocity.x * deltaTime,
+            store.state.position.y + store.velocity.y * deltaTime
         );
+        if (
+            movable.data.some(({ state }) => !!state && cross(
+                new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
+            ) && !console.log(cross(
+                new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
+            )))
+        ) {
+            store.velocity = new Vector2();
+        } else {
+            store.setPosition(nextPosition, onPositionUpdate);
+        }
     }
     // calc track offset if we're moving
     let deltaOffset = Math.round(length * STEPS_IN_UNIT * deltaTime);
@@ -157,11 +169,14 @@ function decreaseSpeed(vel: number, acc: number): number {
     return vel > acc || vel < -acc ? Math.abs(vel - acc) : 0;
 }
 
-function getMovingAcceleration({ up, down }: VertDirection, rot: number): Vector2 {
-    return (new Vector2(Math.cos(rot), Math.sin(rot)))
-        .multiplyScalar(up ? ACCELERATION : (down ? -ACCELERATION : 0));
+function getMovingAcceleration({ up, down }: VertDirection, rotation: number): Vector2 {
+    return getDirection(rotation).multiplyScalar(up ? ACCELERATION : (down ? -ACCELERATION : 0));
 }
 
 function getRotationAcceleration({ left, right }: HorDirection): number {
     return right ? -ROT_SPEED_ACC : (left ? ROT_SPEED_ACC : 0);
+}
+
+function cross(p1: Vector2, p2: Vector2, radius: number): boolean {
+    return Math.abs(p1.x - p2.x) < radius && Math.abs(p1.y - p2.y) < radius;
 }

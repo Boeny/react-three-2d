@@ -1,18 +1,16 @@
 import { Vector2 } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
-import { Store as events } from '~/components/events/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector, toWorldVector, save } from '~/utils';
-import { getCollider } from '~/components/colliders/utils';
-import { IStore as IBodyStore } from '~/components/body/types';
 import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 
 
 let dragStartScreenVector: Vector2 | null = null;
 let dragStartPoint: Vector2 | null = null;
 // let dragStartObject: Intersection | null = null;
+let mouseDragMode = false;
 
 export function onWheel(e: MouseWheelEvent) {
     e.preventDefault();
@@ -42,8 +40,8 @@ export function onMouseDown(e: MouseEvent) {
 export function onMouseUp(e: MouseEvent) {
     switch (e.button) {
         case MOUSE.left:
-            if (events.mouseDragMode) {
-                events.setMouseDragMode(false);
+            if (mouseDragMode) {
+                mouseDragMode = false;
             } else {
                 /*if (dragStartPoint) {
                     entities.select(dragStartPoint.clone());
@@ -78,7 +76,7 @@ export function onMouseMove(e: MouseEvent) {
         dragStartScreenVector = screenVector;
         return;
     }
-    events.setMouseDragMode(true);
+    mouseDragMode = true;
     const v = toWorldVector(screenVector);
     const diff = dragStartPoint.clone().sub(v);
     camera.updatePositionBy({ x: diff.x, y: diff.y, z: 0 });
@@ -155,40 +153,8 @@ export function onKeyUp(e: KeyboardEvent) {
 }
 
 export function onAnimate() {
-    for (let i = 0; i < movable.bodies.length; i += 1) {
-        const body = movable.bodies[i];
-        if (movable.isBody(body)) {
-            checkCollision(body, 'x');
-            checkCollision(body, 'y');
-            body.onEveryTick && body.onEveryTick(body);
-        } else {
-            body.onEveryTick(1);
-        }
-    }
-}
-
-function checkCollision(body: IBodyStore, coo: 'x' | 'y') {
-    const velocity = body.velocity[coo];
-    if (velocity === 0) {
-        return;
-    }
-    const collider = coo === 'x' ?
-        getCollider(body.position.x + velocity, body.position.y) :
-        getCollider(body.position.x, body.position.y + velocity);
-    const velocityVector = coo === 'x' ? new Vector2(velocity, 0) : new Vector2(0, velocity);
-    if (collider) {
-        body.onCollide && body.onCollide(collider);
-        collider.onCollide && collider.onCollide(body);
-        if (collider.isMovable) {
-            collider.setVelocity(velocity, coo);
-            // body.changePosition(velocityVector);
-            // body.setVelocity(0, coo);
-        } else {
-            body.setVelocity(0, coo);
-        }
-    } else {// free way
-        body.onUnCollide && body.onUnCollide();
-        body.updatePositionBy(velocityVector);
-        body.setVelocity(0, coo);
+    for (let i = 0; i < movable.data.length; i += 1) {
+        const item = movable.data[i];
+        item.onEveryTick(1);
     }
 }

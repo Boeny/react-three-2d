@@ -11,8 +11,7 @@ export interface BulletType {
 export interface IStore {
     state: { data: BulletType[] };
     initPosition: Vector3;
-    parentVelocity: Vector3;
-    direction: Vector3;
+    velocity: Vector3;
     rotation: Vector3;
     init: (props: InitialParams) => void;
     add: () => void;

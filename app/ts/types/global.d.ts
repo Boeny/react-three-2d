@@ -41,27 +41,21 @@ declare namespace JSX {
 
 declare module 'react3';
 
-declare interface PositionProps {
-    position: THREE.Vector2;
-}
-
-declare interface ColorProps {
-    color: string;
-}
-
 declare interface Coobject<T> {
     [coo: string]: T | undefined;
 }
 
 declare module "*.json" {
+    import { Position3 } from '~/types';
     // data.json
     export const data: Coobject<number>;
-    export const stack: string[];
-    export const local: Coobject<Coobject<number>>;
-    export const nextState: any;
     // state.json
-    export const state: any;
-    export const camera: any;
+    export const camera: {
+        zoom: number;
+        position: Position3;
+        rotation: Position3;
+        translation: Position3;
+    };
 }
 
 declare interface Window {

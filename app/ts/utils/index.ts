@@ -4,7 +4,7 @@ import {
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '~/components/camera/store';
 import { Position } from '~/types';
-import { COLORS, FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME, DIFFICULTY_LEVEL } from '~/constants';
+import { FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME, DIFFICULTY_LEVEL } from '~/constants';
 
 
 export function getMaterialParams(color?: string, texture?: Texture) {
@@ -97,10 +97,6 @@ export function isBordered(n: number, border: number): boolean {
     return n > -border && n < border;
 }
 
-export function boolColor(v: boolean): string {
-    return v ? COLORS.TRUE : COLORS.FALSE;
-}
-
 export function getRandomArrayIndex<T>(array: T[]): number {
     return Math.floor(Math.random() * (array.length - 1));
 }
@@ -131,4 +127,12 @@ export function save() {
 
 export function getDifficultyLevel(): number {
     return DIFFICULTY_LEVEL.veryEasy;
+}
+
+export function getDirection(angle: number): Vector2 {
+    return new Vector2(Math.cos(angle), Math.sin(angle));
+}
+
+export function getDirection3(angle: number): Vector3 {
+    return new Vector3(Math.cos(angle), Math.sin(angle), 0);
 }

@@ -1,11 +1,13 @@
-import { IStore as IBodyStore } from '../body/types';
+import { State } from '../player/types';
 
-export { IBodyStore };
-export type MovableStore = IBodyStore | { onEveryTick: (deltaTime: number) => void };
+
+export interface MovableStore {
+    state?: State;
+    onEveryTick: (deltaTime: number) => void;
+}
 
 export interface IStore {
-    bodies: MovableStore[];
+    data: MovableStore[];
     add: (el: MovableStore) => void;
     del: (el: MovableStore) => void;
-    isBody: (el: MovableStore) => el is IBodyStore;
 }

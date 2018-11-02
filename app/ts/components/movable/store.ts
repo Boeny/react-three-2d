@@ -1,17 +1,13 @@
-import { IStore, MovableStore, IBodyStore } from './types';
+import { IStore, MovableStore } from './types';
 
 
 export const Store: IStore = {
-    bodies: [],
+    data: [],
     add(el: MovableStore) {
-        this.bodies.push(el);
+        this.data.push(el);
     },
     del(el: MovableStore) {
-        const i = this.bodies.indexOf(el);
-        this.bodies.splice(i, 1);
-    },
-    isBody(el: MovableStore): el is IBodyStore {
-        return el.hasOwnProperty('velocity') && el.hasOwnProperty('position')
-            && el.hasOwnProperty('setVelocity') && el.hasOwnProperty('updatePositionBy');
+        const i = this.data.indexOf(el);
+        this.data.splice(i, 1);
     }
 };

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Vector3, Euler } from 'three';
+import { getDirection3 } from '~/utils';
 import { Position } from '~/types';
 import { IStore as BulletsStore } from './bullet/types';
 import { Cube } from '../cube';
@@ -26,33 +27,26 @@ interface Props {
 }
 
 export function Tank(props: Props) {
-    const { name, velocity, trackOffset, onBulletsRef } = props;
+    const { name, rotation, velocity, trackOffset, onBulletsRef } = props;
     const position = new Vector3(props.position.x, props.position.y, 0);
-    const towerPosition = position.clone().add(TOWER_OFFSET);
-    const rotation = new Euler(0, 0, props.rotation);
-
-    const length = 1 + BARREL_LENGTH / 2;
-    const barrelRelativePosition = new Vector3(
-        length * Math.cos(props.rotation),
-        length * Math.sin(props.rotation),
-        0
-    );
+    const eulerAngle = new Euler(0, 0, rotation);
+    const barrelRelativePosition = getDirection3(rotation).multiplyScalar(1 + BARREL_LENGTH / 2);
     return (
         <group name={name}>
             <Basement
                 position={position}
-                rotation={rotation}
+                rotation={eulerAngle}
                 trackOffset={trackOffset}
             />
             <Tower
-                position={towerPosition}
-                rotation={rotation}
+                position={position.clone().add(TOWER_OFFSET)}
+                rotation={eulerAngle}
             />
             <Bullets
                 position={barrelRelativePosition.clone().add(position)}
                 velocity={velocity}
                 direction={barrelRelativePosition.clone()}
-                rotation={new Vector3(0, 0, props.rotation)}
+                rotation={new Vector3(0, 0, rotation)}
                 onRef={onBulletsRef}
             />
         </group>

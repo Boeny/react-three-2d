@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { Store as movable } from '../movable/store';
-// import { getDifficultyLevel } from '~/utils';
+import { getDirection } from '~/utils';
 import { Store as player, PlayerStore } from '../player/store';
 import { Position } from '~/types';
 import { IStore } from '../player/types';
@@ -27,14 +27,9 @@ export class SmallTank extends React.Component<Props> {
     }
 
     rotateTo(target: Position, position: Position): number {
-        const direction = new Vector2(
-            target.x - position.x,
-            target.y - position.y
-        ).normalize();
-        let rotation = Math.acos(direction.x);
-        if (direction.x < 0) {
-            rotation += Math.PI / 2;
-        }
+        const direction = new Vector2(target.x, target.y)
+            .sub(new Vector2(position.x, position.y)).normalize();
+        const rotation = Math.acos(direction.x);
         return direction.y > 0 ? rotation : -rotation;
     }
 
@@ -59,7 +54,7 @@ const getVeryEasySimpleTankScenario = (store: IStore) => () => {
         player.state.position.y - store.state.position.y
     );
     const directionToPlayer = distanceToPlayer.clone().normalize();
-    const direction = new Vector2(Math.cos(store.state.rotation), Math.sin(store.state.rotation));
+    const direction = getDirection(store.state.rotation);
     // if diff between directions is bigger some radius - rotating
     const distance = distanceToPlayer.length();
     const shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * BASEMENT_WIDTH / distance;
@@ -82,7 +77,7 @@ export const getEasySimpleTankScenario = (store: IStore) => () => {
         player.state.position.y - store.state.position.y
     );
     const directionToPlayer = distanceToPlayer.clone().normalize();
-    const direction = new Vector2(Math.cos(store.state.rotation), Math.sin(store.state.rotation));
+    const direction = getDirection(store.state.rotation);
     // if diff between directions is bigger some radius - rotating
     const distance = distanceToPlayer.length();
     const shouldRotate = directionToPlayer.clone().sub(direction).length() > 0.5 * BASEMENT_WIDTH / distance;

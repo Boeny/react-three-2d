@@ -13,14 +13,13 @@ export class Store implements IStore {
     state: IStore['state'] = { data: [] };
 
     initPosition = new Vector3();
-    parentVelocity = new Vector3();
-    direction = new Vector3();
+    velocity = new Vector3();
     rotation = new Vector3();
 
     init({ position, velocity, direction, rotation }: InitialParams) {
         this.initPosition = position.clone();
-        this.parentVelocity = velocity.clone();
-        this.direction = direction.clone().normalize();
+        this.velocity = direction.clone().normalize().multiplyScalar(INITIAL_BULLET_SPEED)
+            .add(velocity);
         this.rotation = rotation.clone();
     }
 
@@ -28,9 +27,8 @@ export class Store implements IStore {
     add() {
         this.state.data.push({
             position: this.initPosition.clone(),
-            velocity: this.direction.clone().multiplyScalar(INITIAL_BULLET_SPEED)
-                .add(this.parentVelocity),
-            rotation: this.rotation,
+            velocity: this.velocity.clone(),
+            rotation: this.rotation.clone(),
             rotVelocity: new Vector3()
         });
     }
