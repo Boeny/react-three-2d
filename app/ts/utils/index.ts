@@ -136,3 +136,8 @@ export function getDirection(angle: number): Vector2 {
 export function getDirection3(angle: number): Vector3 {
     return new Vector3(Math.cos(angle), Math.sin(angle), 0);
 }
+
+export function getAngle(cos: number, sin: number): number {
+    const angle = Math.acos(cos);
+    return sin > 0 ? angle : -angle;
+}

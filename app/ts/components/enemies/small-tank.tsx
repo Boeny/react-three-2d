@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
 import { Store as movable } from '../movable/store';
-import { getDirection } from '~/utils';
+import { getDirection, getAngle } from '~/utils';
 import { Store as player, PlayerStore } from '../player/store';
 import { Position } from '~/types';
 import { IStore } from '../player/types';
@@ -10,6 +10,7 @@ import { BASEMENT_WIDTH } from '../tank/constants';
 
 
 interface Props {
+    name: string;
     position: Position;
 }
 
@@ -27,10 +28,11 @@ export class SmallTank extends React.Component<Props> {
     }
 
     rotateTo(target: Position, position: Position): number {
-        const direction = new Vector2(target.x, target.y)
-            .sub(new Vector2(position.x, position.y)).normalize();
-        const rotation = Math.acos(direction.x);
-        return direction.y > 0 ? rotation : -rotation;
+        const direction = new Vector2(
+            target.x - position.x,
+            target.y - position.y
+        ).normalize();
+        return getAngle(direction.x, direction.y);
     }
 
     componentDidMount() {
@@ -40,7 +42,7 @@ export class SmallTank extends React.Component<Props> {
     render() {
         return (
             <MovableTank
-                name={'enemy'}
+                name={this.props.name}
                 store={this.store}
             />
         );

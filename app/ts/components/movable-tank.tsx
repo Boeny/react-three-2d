@@ -47,9 +47,10 @@ export class MovableTank extends React.Component<Props> {
     }
 
     componentDidMount() {
-        const { store } = this.props;
-        const onEveryTick = getOnEveryTick(this.props.store, this.props.onPositionUpdate);
+        const { name, store, onPositionUpdate } = this.props;
+        const onEveryTick = getOnEveryTick(name, store, onPositionUpdate);
         movable.add({
+            name,
             state: this.props.store.state,
             onEveryTick: (deltaTime: number) => {
                 if (this.bullets && store.canShoot && store.isShooting()) {
@@ -88,45 +89,51 @@ export class MovableTank extends React.Component<Props> {
 }
 
 const getOnEveryTick = (
-    store: PlayerStore, onPositionUpdate?: (p: Position) => void
+    currentName: string, store: PlayerStore, onPositionUpdate?: (p: Position) => void
 ) => (deltaTime: number, offset: Offset) => {
+    const direction = getDirection(store.state.rotation);
     // change position by velocity
     if (store.isMoving()) {
-        store.velocity.add(getMovingAcceleration(store.moving, store.state.rotation));
+        store.velocity.add(getMovingAcceleration(store.moving, direction));
     }
-    let length = store.velocity.length();
+    let speed = store.velocity.length();
     if (store.velocity.x !== 0 || store.velocity.y !== 0) {
-        length = decreaseSpeed(length, DECELERATION);
-        store.velocity.normalize().multiplyScalar(length);
+        speed = decreaseSpeed(speed, DECELERATION);
+        store.velocity.normalize().multiplyScalar(speed);
     }
-    if (length > MAX_MOVE_SPEED) {
+    if (speed > MAX_MOVE_SPEED) {
         store.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
-        length = MAX_MOVE_SPEED;
-    } else if (length < MIN_MOVE_SPEED) {
+        speed = MAX_MOVE_SPEED;
+    } else if (speed < MIN_MOVE_SPEED) {
         store.velocity = new Vector2();
-        length = 0;
+        speed = 0;
     }
-    if (length > 0) {
+    if (speed > 0) {
         // check if next position will cross any object
         const nextPosition = new Vector2(
             store.state.position.x + store.velocity.x * deltaTime,
             store.state.position.y + store.velocity.y * deltaTime
         );
         if (
-            movable.data.some(({ state }) => !!state && cross(
-                new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
-            ) && !console.log(cross(
-                new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
-            )))
+            movable.data.every(({ name, state }) => {
+                if (state === undefined || name === undefined || name === currentName) {
+                    return true;
+                }
+                return cross(
+                    new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
+                ) === false;
+            })
         ) {
-            store.velocity = new Vector2();
-        } else {
             store.setPosition(nextPosition, onPositionUpdate);
+        } else {
+            const cos = store.velocity.dot(direction) / speed;
+            store.velocity = (Math.acos(cos) < Math.PI / 2 ? direction : direction.multiplyScalar(-1))
+                .multiplyScalar(cos * speed);
         }
     }
     // calc track offset if we're moving
-    let deltaOffset = Math.round(length * STEPS_IN_UNIT * deltaTime);
-    if (length > 0) {
+    let deltaOffset = Math.round(speed * STEPS_IN_UNIT * deltaTime);
+    if (speed > 0) {
         if (store.moving.up) {
             deltaOffset = STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK;
         }
@@ -137,24 +144,24 @@ const getOnEveryTick = (
         store.rotSpeed += getRotationAcceleration(store.rotating);
     }
     const sign = getSign(store.rotSpeed);
-    length = Math.abs(store.rotSpeed);
+    speed = Math.abs(store.rotSpeed);
     if (store.rotSpeed !== 0) {
-        length = decreaseSpeed(length, ROT_SPEED_DEC);
-        store.rotSpeed = sign * length;
+        speed = decreaseSpeed(speed, ROT_SPEED_DEC);
+        store.rotSpeed = sign * speed;
     }
-    if (length > MAX_ROT_SPEED) {
+    if (speed > MAX_ROT_SPEED) {
         store.rotSpeed = MAX_ROT_SPEED * sign;
-        length = MAX_ROT_SPEED;
-    } else if (length < MIN_ROT_SPEED) {
+        speed = MAX_ROT_SPEED;
+    } else if (speed < MIN_ROT_SPEED) {
         store.rotSpeed = 0;
-        length = 0;
+        speed = 0;
     }
-    if (length > 0) {
+    if (speed > 0) {
         store.setRotation(store.state.rotation + store.rotSpeed * deltaTime);
     }
     // calc track offset if we're rotating
-    deltaOffset = Math.round(Math.tan(length * deltaTime) * TRACK_DISTANCE * STEPS_IN_UNIT);
-    if (length > 0) {
+    deltaOffset = Math.round(Math.tan(speed * deltaTime) * TRACK_DISTANCE * STEPS_IN_UNIT);
+    if (speed > 0) {
         if (store.rotating.left) {
             offset.left = (offset.left + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
             offset.right = (offset.right + deltaOffset) % STEPS_IN_SINGLE_TRACK;
@@ -169,8 +176,8 @@ function decreaseSpeed(vel: number, acc: number): number {
     return vel > acc || vel < -acc ? Math.abs(vel - acc) : 0;
 }
 
-function getMovingAcceleration({ up, down }: VertDirection, rotation: number): Vector2 {
-    return getDirection(rotation).multiplyScalar(up ? ACCELERATION : (down ? -ACCELERATION : 0));
+function getMovingAcceleration({ up, down }: VertDirection, direction: Vector2): Vector2 {
+    return direction.multiplyScalar(up ? ACCELERATION : (down ? -ACCELERATION : 0));
 }
 
 function getRotationAcceleration({ left, right }: HorDirection): number {
