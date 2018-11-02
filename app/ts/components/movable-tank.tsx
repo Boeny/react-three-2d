@@ -11,6 +11,8 @@ import { MAX_SPEED, MIN_SPEED } from '../constants';
 import { STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE } from './tank/constants';
 
 
+const SHOOTING_DELAY = 2000; // 5-6 sec
+
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
@@ -50,7 +52,7 @@ export class MovableTank extends React.Component<Props> {
                 if (this.bullets && store.canShoot && store.isShooting()) {
                     this.bullets.add();
                     store.canShoot = false;
-                    setTimeout(() => store.canShoot = true, 200);
+                    setTimeout(() => store.canShoot = true, SHOOTING_DELAY);
                 }
                 onEveryTick(deltaTime, this.offset);
             }

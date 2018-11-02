@@ -110072,6 +110072,7 @@ var utils_1 = __webpack_require__(25);
 var tank_1 = __webpack_require__(280);
 var constants_1 = __webpack_require__(39);
 var constants_2 = __webpack_require__(35);
+var SHOOTING_DELAY = 2000;
 var MAX_MOVE_SPEED = constants_1.MAX_SPEED / 2;
 var MIN_MOVE_SPEED = 0;
 var ACCELERATION = constants_1.MIN_SPEED * 1.5;
@@ -110106,7 +110107,7 @@ var MovableTank = /** @class */ (function (_super) {
                 if (_this.bullets && store.canShoot && store.isShooting()) {
                     _this.bullets.add();
                     store.canShoot = false;
-                    setTimeout(function () { return store.canShoot = true; }, 200);
+                    setTimeout(function () { return store.canShoot = true; }, SHOOTING_DELAY);
                 }
                 onEveryTick(deltaTime, _this.offset);
             }
@@ -142011,10 +142012,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(9);
 tslib_1.__exportStar(__webpack_require__(112), exports);
 tslib_1.__exportStar(__webpack_require__(279), exports);
-tslib_1.__exportStar(__webpack_require__(284), exports);
+var enemies_1 = __webpack_require__(284);
+exports.Enemies = enemies_1.Enemies;
 tslib_1.__exportStar(__webpack_require__(286), exports);
 tslib_1.__exportStar(__webpack_require__(287), exports);
-tslib_1.__exportStar(__webpack_require__(288), exports);
+var audio_1 = __webpack_require__(288);
+exports.AudioSource = audio_1.AudioSource;
 
 
 /***/ }),
@@ -142317,11 +142320,15 @@ exports.Store = Store;
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __webpack_require__(6);
 var small_tank_1 = __webpack_require__(285);
+exports.Store = {
+    data: [
+        { x: -50, y: 25 },
+        { x: 50, y: 25 },
+        { x: 0, y: -50 }
+    ]
+};
 function Enemies() {
-    return (React.createElement("group", { name: 'enemies' },
-        React.createElement(small_tank_1.SmallTank, { position: { x: -50, y: 25 } }),
-        React.createElement(small_tank_1.SmallTank, { position: { x: 50, y: 25 } }),
-        React.createElement(small_tank_1.SmallTank, { position: { x: 0, y: -50 } })));
+    return (React.createElement("group", { name: 'enemies' }, exports.Store.data.map(function (p, i) { return (React.createElement(small_tank_1.SmallTank, { position: p, key: i })); })));
 }
 exports.Enemies = Enemies;
 
@@ -142628,7 +142635,7 @@ module.exports = {"local":{},"stack":[],"data":{},"nextState":{"data":{}}}
 /* 292 */
 /***/ (function(module, exports) {
 
-module.exports = {"state":{"currentCoo":"","mode":0,"showNegative":false,"showStack":false,"selectedObjectPosition":null},"camera":{"zoom":28,"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"translation":{"x":0,"y":0,"z":0}}}
+module.exports = {"state":{"currentCoo":"","mode":0,"showNegative":false,"showStack":false,"selectedObjectPosition":null},"camera":{"zoom":30,"position":{"x":0,"y":0,"z":0},"rotation":{"x":0,"y":0,"z":0},"translation":{"x":0,"y":0,"z":0}}}
 
 /***/ }),
 /* 293 */
