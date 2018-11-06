@@ -9,11 +9,12 @@ import { VertDirection, HorDirection, IStore as PlayerStore } from './player/typ
 import { Tank } from './tank';
 import { MAX_SPEED, MIN_SPEED } from '../constants';
 import {
-    STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE, BASEMENT_LENGTH
+    STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE, BASEMENT_LENGTH, BASEMENT_WIDTH
 } from './tank/constants';
 
 
 const SHOOTING_DELAY = 2000; // 5-6 sec
+const MIN_DISTANCE = new Vector2(BASEMENT_LENGTH, BASEMENT_WIDTH).length();
 
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
@@ -119,9 +120,7 @@ const getOnEveryTick = (
                 if (state === undefined || name === undefined || name === currentName) {
                     return true;
                 }
-                return cross(
-                    new Vector2(state.position.x, state.position.y), nextPosition, BASEMENT_LENGTH
-                ) === false;
+                return cross(new Vector2(state.position.x, state.position.y), nextPosition) === false;
             })
         ) {
             store.setPosition(nextPosition, onPositionUpdate);
@@ -185,6 +184,6 @@ function getRotationAcceleration({ left, right }: HorDirection): number {
     return right ? -ROT_SPEED_ACC : (left ? ROT_SPEED_ACC : 0);
 }
 
-function cross(p1: Vector2, p2: Vector2, radius: number): boolean {
-    return Math.abs(p1.x - p2.x) < radius && Math.abs(p1.y - p2.y) < radius;
+function cross(p1: Vector2, p2: Vector2): boolean {
+    return p1.clone().sub(p2).length() < MIN_DISTANCE;
 }
