@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Vector2, Vector3 } from 'three';
 import { observer } from 'mobx-react';
 import { Store as movable } from './movable/store';
-import { getSign, getDirection } from '~/utils';
+import { getSign, getDirection, getAngle } from '~/utils';
 import { Position } from '~/types';
 import { IStore as BulletsStore } from './tank/bullet/types';
 import { VertDirection, HorDirection, IStore as PlayerStore } from './player/types';
@@ -126,9 +126,10 @@ const getOnEveryTick = (
         ) {
             store.setPosition(nextPosition, onPositionUpdate);
         } else {
-            const cos = store.velocity.dot(direction) / speed;
-            store.velocity = (Math.acos(cos) < Math.PI / 2 ? direction : direction.multiplyScalar(-1))
-                .multiplyScalar(cos * speed);
+            const dot = store.velocity.clone().dot(direction);
+            const velDir = store.velocity.clone().normalize();
+            const angle = Math.abs(getAngle(direction.x, direction.y) - getAngle(velDir.x, velDir.y));
+            store.velocity = direction.multiplyScalar(getSign(Math.PI / 2 - angle) * dot);
         }
     }
     // calc track offset if we're moving
