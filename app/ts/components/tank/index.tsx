@@ -6,7 +6,7 @@ import { IStore as BulletsStore } from './bullet/types';
 import { Cube } from '../cube';
 import { Track } from './track';
 import { Bullets } from './bullet';
-import { BASEMENT_LENGTH, TRACK_DISTANCE, EMPTY_VECTOR3, BASEMENT_WIDTH } from './constants';
+import { BASEMENT_LENGTH, TRACK_DISTANCE, BASEMENT_WIDTH } from './constants';
 
 
 const BASEMENT_DEPTH = 0.75;
@@ -63,25 +63,26 @@ const LEFT_TRACK_POSITION = new Vector3(0, -TRACK_DISTANCE, 0.5);
 
 function Basement(props: BaseProps) {
     const { position, rotation, trackOffset } = props;
+    // const direction = getDirection3(rotation.z);
     return (
-        <group
-            position={position}
-            rotation={rotation}
-        >
+        <group>
             <Cube
-                position={EMPTY_VECTOR3}
+                position={position}
                 width={BASEMENT_LENGTH}
                 height={BASEMENT_WIDTH}
                 depth={BASEMENT_DEPTH}
                 color={'#dddddd'}
+                rotation={rotation}
             />
             <Track
-                position={RIGTH_TRACK_POSITION}
+                position={position.clone().add(RIGTH_TRACK_POSITION)}
                 offset={trackOffset.right}
+                rotation={rotation}
             />
             <Track
-                position={LEFT_TRACK_POSITION}
+                position={position.clone().add(LEFT_TRACK_POSITION)}
                 offset={trackOffset.left}
+                rotation={rotation}
             />
         </group>
     );
@@ -98,30 +99,30 @@ const TOWER_HATCH_POSITION = new Vector3(-0.16, 0.16, 0.25);
 function Tower(props: TowerProps) {
     const { position, rotation } = props;
     return (
-        <group
-            position={position}
-            rotation={rotation}
-        >
+        <group>
             <Cube
-                position={EMPTY_VECTOR3}
+                position={position}
                 width={1}
                 height={0.9}
                 depth={0.5}
                 color={'#888888'}
+                rotation={rotation}
             />
             <Cube // barrel
-                position={BARREL_OFFSET}
+                position={position.clone().add(BARREL_OFFSET)}
                 width={BARREL_LENGTH}
                 height={0.25}
                 depth={0.25}
                 color={'#777777'}
+                rotation={rotation}
             />
             <Cube // hatch
-                position={TOWER_HATCH_POSITION}
+                position={position.clone().add(TOWER_HATCH_POSITION)}
                 width={0.375}
                 height={0.375}
                 depth={0.0625}
                 color={'#555555'}
+                rotation={rotation}
             />
         </group>
     );

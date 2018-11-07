@@ -1,15 +1,25 @@
 import * as React from 'react';
+import { createArray } from '~/utils';
 import { SmallTank } from './small-tank';
+import { Union } from '../csg';
 
 
-const OFFSET = 70;
+const RADIUS = 40;
+const COUNT = 1;
+const ANGLE = 2 * Math.PI / COUNT;
+
 
 export function Enemies() {
     return (
-        <group name={'enemies'}>
-            <SmallTank name={'small1'} position={{ x: -OFFSET, y: OFFSET / 2 }} />
-            <SmallTank name={'small2'} position={{ x: OFFSET, y: OFFSET / 2 }} />
-            <SmallTank name={'small3'} position={{ x: 0, y: -OFFSET }} />
-        </group>
+        <Union components={createArray(COUNT).map(i => (
+            <SmallTank
+                key={i}
+                name={`small${i}`}
+                position={{
+                    x: RADIUS * Math.cos(i * ANGLE),
+                    y: RADIUS * Math.sin(i * ANGLE)
+                }}
+            />
+        ))} />
     );
 }

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Vector3, DataTexture, RGBFormat } from 'three';
+import { Vector3, DataTexture, RGBFormat, Euler } from 'three';
 import { Quad } from '../quad';
 import { BASEMENT_LENGTH, STEPS_IN_SINGLE_TRACK, STEPS_IN_WHOLE_TRACK_COUNT } from './constants';
 
@@ -11,6 +11,7 @@ const GAP_COLOR = { r: 200, g: 200, b: 200 };
 
 interface BaseProps {
     position: Vector3;
+    rotation: Euler;
     offset: number;
 }
 
@@ -19,7 +20,7 @@ export class Track extends React.Component<BaseProps> {
     texture: DataTexture = getDefaultData();
 
     render() {
-        const { offset, position } = this.props;
+        const { offset, position, rotation } = this.props;
         this.texture.needsUpdate = true;
         this.texture.offset.x = offset / STEPS_IN_WHOLE_TRACK_COUNT;
         return (
@@ -28,6 +29,7 @@ export class Track extends React.Component<BaseProps> {
                 height={TRACK_WIDTH}
                 position={position}
                 texture={this.texture}
+                rotation={rotation}
             />
         );
     }

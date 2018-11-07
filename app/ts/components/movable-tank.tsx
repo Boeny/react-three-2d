@@ -13,7 +13,7 @@ import {
 } from './tank/constants';
 
 
-const SHOOTING_DELAY = 2000; // 5-6 sec
+const SHOOTING_DELAY = 2000; // 6-8 sec
 const MIN_DISTANCE = new Vector2(BASEMENT_LENGTH, BASEMENT_WIDTH).length();
 
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
