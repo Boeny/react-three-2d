@@ -49,3 +49,7 @@ export enum DIFFICULTY_LEVEL {
     veryHard,
     nightmare
 }
+
+export const MAX_MOVABLE_COUNT = 5;
+
+export const MAX_DISTANCE = 100;

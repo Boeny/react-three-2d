@@ -141,3 +141,21 @@ export function getAngle(cos: number, sin: number): number {
     const angle = Math.acos(cos);
     return sin > 0 ? angle : -angle;
 }
+
+export function add(p1: Position, p2: Position): Position {
+    return {
+        x: p1.x + p2.x,
+        y: p1.y + p2.y
+    };
+}
+
+export function sub(p1: Position, p2: Position): Position {
+    return {
+        x: p1.x - p2.x,
+        y: p1.y - p2.y
+    };
+}
+
+export function length(p: Position): number {
+    return Math.sqrt(p.x * p.x + p.y * p.y);
+}
