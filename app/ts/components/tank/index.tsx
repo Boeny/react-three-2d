@@ -23,11 +23,12 @@ interface Props {
     rotation: number;
     velocity: Vector3;
     trackOffset: Offset;
+    towerRebound: number; // inversed vector length
     onBulletsRef: (b: BulletsStore | null) => void;
 }
 
 export function Tank(props: Props) {
-    const { name, rotation, velocity, trackOffset, onBulletsRef } = props;
+    const { name, rotation, velocity, trackOffset, onBulletsRef, towerRebound } = props;
     const position = new Vector3(props.position.x, props.position.y, 0);
     const eulerAngle = new Euler(0, 0, rotation);
     const barrelRelativePosition = getDirection3(rotation).multiplyScalar(1 + BARREL_LENGTH / 2);
@@ -39,11 +40,11 @@ export function Tank(props: Props) {
                 trackOffset={trackOffset}
             />
             <Tower
-                position={position.clone().add(TOWER_OFFSET)}
+                position={position.clone().add(TOWER_OFFSET).add(getDirection3(rotation).multiplyScalar(-towerRebound))}
                 rotation={eulerAngle}
             />
             <Bullets
-                position={barrelRelativePosition.clone().add(position)}
+                position={barrelRelativePosition.clone().add(position).add(TOWER_OFFSET)}
                 velocity={velocity}
                 direction={barrelRelativePosition.clone()}
                 rotation={new Vector3(0, 0, rotation)}
