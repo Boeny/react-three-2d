@@ -4,7 +4,7 @@ import { Store as player } from '~/components/player/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector, toWorldVector, save, sub, length } from '~/utils';
-import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED, MAX_DISTANCE, MAX_MOVABLE_COUNT } from '~/constants';
+import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED, MAX_DISTANCE, MIN_DISTANCE, MAX_MOVABLE_COUNT } from '~/constants';
 
 
 let dragStartScreenVector: Vector2 | null = null;
@@ -156,7 +156,8 @@ export function onAnimate() {
     const chance = Math.random() * MAX_DISTANCE;
     for (let i = 0, count = 0; i < movable.data.length && count < MAX_MOVABLE_COUNT; i += 1) {
         const item = movable.data[i];
-        if (!item.state || length(sub(item.state.position, player.state.position)) < chance) {
+        const distance = item.state ? length(sub(item.state.position, player.state.position)) : 0;
+        if (!item.state || distance <= MIN_DISTANCE || distance < chance) {
             item.onEveryTick(1);
             count += 1;
         }
