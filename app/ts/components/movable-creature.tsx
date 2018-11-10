@@ -4,24 +4,18 @@ import { observer } from 'mobx-react';
 import { Store as movable } from './movable/store';
 import { getSign, getDirection, sub, length, add } from '~/utils';
 import { Position } from '~/types';
-import { IStore as BulletsStore } from './tank/bullet/types';
 import { VertDirection, HorDirection, IStore as PlayerStore } from './player/types';
-import { Tank } from './tank';
+import { Creature } from './creature';
 import { MAX_SPEED, MIN_SPEED } from '../constants';
-import {
-    STEPS_IN_UNIT, STEPS_IN_SINGLE_TRACK, TRACK_DISTANCE, BASEMENT_LENGTH, BASEMENT_WIDTH
-} from './tank/constants';
 
 
-const SHOOTING_DELAY = 500; // 5-6 sec
-const MIN_DISTANCE = new Vector2(BASEMENT_LENGTH, BASEMENT_WIDTH).length();
-
+const MIN_DISTANCE = 1;
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
 const DECELERATION = MIN_SPEED * 1.05;
 
-const REBOUND_INITIAL_SPEED = MIN_SPEED * 2;
+// const REBOUND_INITIAL_SPEED = MIN_SPEED * 2;
 const REBOUND_ACCELERATION = MIN_SPEED * 0.5;
 const MAX_REBOUND = 0.15;
 
@@ -32,8 +26,6 @@ const ROT_SPEED_ACC = DEGREE * 1.25;
 const ROT_SPEED_DEC = DEGREE * 1.05;
 
 
-type Offset = { left: number, right: number };
-
 interface Props {
     name: string;
     store: PlayerStore;
@@ -41,44 +33,26 @@ interface Props {
 }
 
 interface State {
-    towerRebound: number;
+    headRebound: number;
 }
 
 @observer
-export class MovableTank extends React.Component<Props, State> {
+export class MovableCreature extends React.Component<Props, State> {
 
-    bullets: BulletsStore | null = null;
-    offset: Offset = { left: 0, right: 0 };
-    state: State = { towerRebound: 0 };
+    state: State = { headRebound: 0 };
     towerReboundingSpeed = 0;
-
-    constructor(props: Props) {
-        super(props);
-        this.setOffset();
-    }
 
     componentDidMount() {
         const { name, store, onPositionUpdate } = this.props;
-        const shooting = this.getShooting(store);
         const onEveryTick = getOnEveryTick(name, store, onPositionUpdate);
         movable.add({
             name,
             state: this.props.store.state,
-            onEveryTick: (deltaTime: number) => {
-                shooting();
+            onEveryTick: () => {
                 this.towerRebounding();
-                onEveryTick(deltaTime, this.offset);
+                onEveryTick();
             }
         });
-    }
-
-    getShooting = (store: PlayerStore) => () => {
-        if (this.bullets && store.canShoot && store.isShooting()) {
-            this.bullets.add();
-            store.canShoot = false;
-            setTimeout(() => store.canShoot = true, SHOOTING_DELAY);
-            this.towerReboundingSpeed = REBOUND_INITIAL_SPEED;
-        }
     }
 
     towerRebounding = () => {
@@ -88,42 +62,31 @@ export class MovableTank extends React.Component<Props, State> {
         if (this.towerReboundingSpeed < 0) {
             this.towerReboundingSpeed -= REBOUND_ACCELERATION;
         }
-        const nextRebound = this.state.towerRebound + this.towerReboundingSpeed;
+        const nextRebound = this.state.headRebound + this.towerReboundingSpeed;
         if (nextRebound < 0) {
             this.towerReboundingSpeed = 0;
-            this.setState({ towerRebound: 0 });
+            this.setState({ headRebound: 0 });
             return;
         }
         if (nextRebound > MAX_REBOUND) {
             this.towerReboundingSpeed = -this.towerReboundingSpeed;
-            this.setState({ towerRebound: MAX_REBOUND });
+            this.setState({ headRebound: MAX_REBOUND });
             return;
         }
-        this.setState({ towerRebound: nextRebound });
-    }
-
-    setOffset = () => {
-        this.offset.left = Math.random() * 3;
-        this.offset.right = this.offset.left - 1;
-    }
-
-    setBullets = (bullets: BulletsStore | null) => {
-        this.bullets = bullets;
+        this.setState({ headRebound: nextRebound });
     }
 
     render() {
         const { store, name } = this.props;
         const { state, velocity } = store;
-        const { towerRebound } = this.state;
+        const { headRebound } = this.state;
         return (
-            <Tank
+            <Creature
                 name={name}
                 position={state.position}
                 rotation={state.rotation}
-                trackOffset={this.offset}
                 velocity={new Vector3(velocity.x, velocity.y, 0)}
-                towerRebound={towerRebound}
-                onBulletsRef={this.setBullets}
+                headRebound={headRebound}
             />
         );
     }
@@ -131,7 +94,7 @@ export class MovableTank extends React.Component<Props, State> {
 
 const getOnEveryTick = (
     currentName: string, store: PlayerStore, onPositionUpdate?: (p: Position) => void
-) => (_: number, offset: Offset) => {
+) => () => {
     // change position by velocity
     if (store.isMoving()) {
         store.velocity.add(getMovingAcceleration(store.moving, getDirection(store.state.rotation)));
@@ -147,14 +110,6 @@ const getOnEveryTick = (
     } else if (speed < MIN_MOVE_SPEED) {
         store.velocity = new Vector2();
         speed = 0;
-    }
-    // calc track offset if we're moving
-    let deltaOffset = Math.round(speed * STEPS_IN_UNIT);
-    if (speed > 0) {
-        if (store.moving.up) {
-            deltaOffset = STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK;
-        }
-        offset.left = offset.right = (offset.left + deltaOffset) % STEPS_IN_SINGLE_TRACK;
     }
     if (speed > 0) {
         // check if next position crosses some object
@@ -192,17 +147,6 @@ const getOnEveryTick = (
     } else if (speed < MIN_ROT_SPEED) {
         store.rotSpeed = 0;
         speed = 0;
-    }
-    // calc track offset if we're rotating
-    deltaOffset = Math.round(Math.tan(speed) * TRACK_DISTANCE * STEPS_IN_UNIT);
-    if (speed > 0) {
-        if (store.rotating.left) {
-            offset.left = (offset.left + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
-            offset.right = (offset.right + deltaOffset) % STEPS_IN_SINGLE_TRACK;
-        } else {
-            offset.right = (offset.right + (STEPS_IN_SINGLE_TRACK - deltaOffset % STEPS_IN_SINGLE_TRACK)) % STEPS_IN_SINGLE_TRACK;
-            offset.left = (offset.left + deltaOffset) % STEPS_IN_SINGLE_TRACK;
-        }
     }
     if (speed > 0) {
         store.setRotation(store.state.rotation + store.rotSpeed);

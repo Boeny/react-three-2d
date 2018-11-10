@@ -1,40 +1,23 @@
 import * as React from 'react';
-import { Vector3, DataTexture, RGBFormat } from 'three';
 import { observer } from 'mobx-react';
 import { observable } from 'mobx';
-// import { Position } from '~/types';
 import { Quad } from './quad';
-import { STEPS_IN_UNIT } from './tank/constants';
+import { EMPTY_VECTOR3 } from '~/constants';
 
 
-const MAP_WIDTH = 200;
-const TEX_WIDTH = 10;
-const STEPS = TEX_WIDTH * STEPS_IN_UNIT;
-const TEX_SIZE = STEPS * STEPS;
-const POSITION = new Vector3();
+const MAP_WIDTH = 50;
+const TEX_SIZE = MAP_WIDTH * MAP_WIDTH;
 
-const TRAIL_COLOR = { r: 56, g: 30, b: 8 };
-
-/*
-function getGrassColor() {
-    return {
-        r: Math.random() * 20,
-        g: Math.random() * 150 + 50,
-        b: Math.random() * 50
-    };
-}
-*/
 
 function getDirtColor() {
-    const deltaGreen = 10;
     return {
-        r: TRAIL_COLOR.r / 2,
-        g: Math.random() * deltaGreen * 2 + TRAIL_COLOR.g / 2 - deltaGreen,
-        b: TRAIL_COLOR.b
+        r: 0,
+        g: 0,
+        b: 0
     };
 }
 
-const Store = observable({
+export const Store = observable({
     data: getDefaultData()
 });
 
@@ -55,26 +38,17 @@ export const Map = observer(() => {
     return (
         <Quad
             name={'map'}
-            position={POSITION}
+            position={EMPTY_VECTOR3}
             width={MAP_WIDTH}
             height={MAP_WIDTH}
-            texture={getTextureData(Store.data)}
+            color={'#cccccc'}
         />
     );
 });
-
+/*
 function getTextureData(data: Uint32Array): DataTexture {
     const texture = new DataTexture(data, STEPS, STEPS, RGBFormat);
     texture.needsUpdate = true;
     return texture;
 }
-/*
-export const updateMap = action((data: Position[]) => { // positions in units
-    data.map(position => {
-        const stride = (position.y * STEPS + position.x) * 3 * STEPS_IN_UNIT;
-        Store.data[stride] = color.r;
-        Store.data[stride + 1] = color.g;
-        Store.data[stride + 2] = color.b;
-    });
-});
 */

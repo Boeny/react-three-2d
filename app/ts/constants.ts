@@ -1,3 +1,4 @@
+import { Vector3 } from 'three';
 
 
 export const ROOT_ELEMENT_ID = 'root';
@@ -53,3 +54,5 @@ export enum DIFFICULTY_LEVEL {
 export const MAX_MOVABLE_COUNT = 5;
 
 export const MAX_DISTANCE = 100;
+
+export const EMPTY_VECTOR3 = new Vector3();

@@ -117,8 +117,8 @@ export function onKeyDown(e: KeyboardEvent) {
             }
             break;
         case KEY.SPACE:
-            if (player.canShoot) {
-                player.shoot(true);
+            if (player.canStrike) {
+                player.strike(true);
             }
             break;
     }
@@ -147,7 +147,7 @@ export function onKeyUp(e: KeyboardEvent) {
             player.moveBack(false);
             break;
         case KEY.SPACE:
-            player.shoot(false);
+            player.strike(false);
             break;
     }
 }

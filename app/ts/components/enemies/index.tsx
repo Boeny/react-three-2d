@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SmallTank } from './small-tank';
+import { Enemy } from './enemy';
 
 
 const OFFSET = 70;
@@ -7,9 +7,7 @@ const OFFSET = 70;
 export function Enemies() {
     return (
         <group name={'enemies'}>
-            <SmallTank name={'small1'} position={{ x: -OFFSET, y: OFFSET / 2 }} />
-            <SmallTank name={'small2'} position={{ x: OFFSET, y: OFFSET / 2 }} />
-            <SmallTank name={'small3'} position={{ x: 0, y: -OFFSET }} />
+            <Enemy name={'small1'} position={{ x: -OFFSET, y: OFFSET / 2 }} />
         </group>
     );
 }
