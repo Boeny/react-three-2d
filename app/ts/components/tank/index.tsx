@@ -40,8 +40,10 @@ export function Tank(props: Props) {
                 trackOffset={trackOffset}
             />
             <Tower
-                position={position.clone().add(TOWER_OFFSET).add(getDirection3(rotation).multiplyScalar(-towerRebound))}
+                position={position.clone().add(TOWER_OFFSET)
+                    .add(getDirection3(rotation).multiplyScalar(-towerRebound))}
                 rotation={eulerAngle}
+                rebound={towerRebound}
             />
             <Bullets
                 position={barrelRelativePosition.clone().add(position).add(TOWER_OFFSET)}
@@ -55,7 +57,9 @@ export function Tank(props: Props) {
 }
 
 
-interface BaseProps extends TowerProps {
+interface BaseProps {
+    position: Vector3;
+    rotation: Euler;
     trackOffset: Offset;
 }
 
@@ -92,12 +96,13 @@ function Basement(props: BaseProps) {
 interface TowerProps {
     position: Vector3;
     rotation: Euler;
+    rebound: number;
 }
 
 const TOWER_HATCH_POSITION = new Vector3(-0.16, 0.16, 0.25);
 
 function Tower(props: TowerProps) {
-    const { position, rotation } = props;
+    const { position, rotation, rebound } = props;
     return (
         <group
             position={position}
@@ -112,7 +117,7 @@ function Tower(props: TowerProps) {
             />
             <Cube // barrel
                 position={BARREL_OFFSET}
-                width={BARREL_LENGTH}
+                width={BARREL_LENGTH - 2 * rebound}
                 height={0.25}
                 depth={0.25}
                 color={'#777777'}
