@@ -3,8 +3,8 @@ import { Store as camera } from '~/components/camera/store';
 import { Store as player } from '~/components/player/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
-import { getMouseVector, toWorldVector, save, sub, length } from '~/utils';
-import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED, MAX_DISTANCE, MAX_MOVABLE_COUNT } from '~/constants';
+import { getMouseVector, toWorldVector, save } from '~/utils';
+import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
 
 
 let dragStartScreenVector: Vector2 | null = null;
@@ -153,12 +153,7 @@ export function onKeyUp(e: KeyboardEvent) {
 }
 
 export function onAnimate() {
-    const chance = Math.random() * MAX_DISTANCE;
-    for (let i = 0, count = 0; i < movable.data.length && count < MAX_MOVABLE_COUNT; i += 1) {
-        const item = movable.data[i];
-        if (!item.state || length(sub(item.state.position, player.state.position)) < chance) {
-            item.onEveryTick(1);
-            count += 1;
-        }
+    for (let i = 0; i < movable.data.length; i += 1) {
+        movable.data[i].onEveryTick(1);
     }
 }

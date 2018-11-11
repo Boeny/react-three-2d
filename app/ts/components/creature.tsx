@@ -3,12 +3,20 @@ import { Vector3, Euler } from 'three';
 import { getDirection3 } from '~/utils';
 import { Position } from '~/types';
 import { Cube } from './cube';
-import { EMPTY_VECTOR3 } from '~/constants';
 
 
-const BASEMENT_DEPTH = 2;
-const HEAD_OFFSET = new Vector3(0, 0, BASEMENT_DEPTH);
-const LEG_DISTANCE = 1;
+const BODY_DEPTH = 2;
+const LEGS_DEPTH = BODY_DEPTH;
+const BODY_OFFSET = new Vector3(0, 0, LEGS_DEPTH + BODY_DEPTH / 2);
+const HEAD_OFFSET = new Vector3(0, 0, LEGS_DEPTH + BODY_DEPTH + 0.5);
+
+const HANDS_OFFSET = new Vector3(0, 0, LEGS_DEPTH + BODY_DEPTH - 0.5);
+const RIGTH_ARM_POSITION = new Vector3(1, 1, 0);
+const LEFT_ARM_POSITION = new Vector3(1, -1, 0);
+
+const LEGS_OFFSET = new Vector3(0, 0, 0.5);
+const RIGTH_LEG_POSITION = new Vector3(0, 1, 0);
+const LEFT_LEG_POSITION = new Vector3(0, -1, 0);
 
 
 interface Props {
@@ -42,11 +50,8 @@ export function Creature(props: Props) {
 
 interface BaseProps {
     position: Vector3;
-    rotation: Euler;
+    rotation?: Euler;
 }
-
-const RIGTH_LEG_POSITION = new Vector3(0, LEG_DISTANCE, 0.5);
-const LEFT_LEG_POSITION = new Vector3(0, -LEG_DISTANCE, 0.5);
 
 function Body(props: BaseProps) {
     const { position, rotation } = props;
@@ -56,47 +61,74 @@ function Body(props: BaseProps) {
             rotation={rotation}
         >
             <Cube
-                position={EMPTY_VECTOR3}
+                position={BODY_OFFSET}
                 width={1}
                 height={1}
-                depth={BASEMENT_DEPTH}
-                color={'#dddddd'}
+                depth={BODY_DEPTH}
+                color={'#ffffff'}
             />
+            <Hands position={HANDS_OFFSET} />
+            <Legs position={LEGS_OFFSET} />
+        </group>
+    );
+}
+
+
+interface HeadProps extends BaseProps {
+    rebound: number;
+}
+
+function Head(props: HeadProps) {
+    return (
+        <Cube
+            {...props}
+            width={1}
+            height={1}
+            depth={1}
+            color={'#999999'}
+        />
+    );
+}
+
+
+function Legs(props: BaseProps) {
+    return (
+        <group {...props} >
             <Cube
                 position={RIGTH_LEG_POSITION}
                 width={1}
                 height={1}
                 depth={1}
-                color={'#dddddd'}
+                color={'#888888'}
             />
             <Cube
                 position={LEFT_LEG_POSITION}
                 width={1}
                 height={1}
                 depth={1}
-                color={'#dddddd'}
+                color={'#888888'}
             />
         </group>
     );
 }
 
-
-interface TowerProps {
-    position: Vector3;
-    rotation: Euler;
-    rebound: number;
-}
-
-function Head(props: TowerProps) {
-    const { position, rotation } = props;
+function Hands(props: BaseProps) {
     return (
-        <Cube
-            position={position}
-            rotation={rotation}
-            width={1}
-            height={1}
-            depth={1}
-            color={'#888888'}
-        />
+        <group {...props} >
+            <Cube
+                position={RIGTH_ARM_POSITION}
+                width={1}
+                height={1}
+                depth={1}
+                color={'#888888'}
+            />
+            <Cube
+                position={LEFT_ARM_POSITION}
+                width={1}
+                height={1}
+                depth={1}
+                color={'#888888'}
+            />
+        </group>
     );
 }

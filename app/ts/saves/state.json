@@ -1,19 +1,19 @@
 {
     "camera": {
-        "zoom": 20,
+        "zoom": 10,
         "position": {
             "x": 0,
             "y": 0,
             "z": 0
         },
         "rotation": {
-            "x": 0,
+            "x": 0.8,
             "y": 0,
             "z": 0
         },
         "translation": {
             "x": 0,
-            "y": 0,
+            "y": -2,
             "z": 0
         }
     }

@@ -51,8 +51,4 @@ export enum DIFFICULTY_LEVEL {
     nightmare
 }
 
-export const MAX_MOVABLE_COUNT = 5;
-
-export const MAX_DISTANCE = 100;
-
 export const EMPTY_VECTOR3 = new Vector3();
