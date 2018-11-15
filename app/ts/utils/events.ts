@@ -152,8 +152,13 @@ export function onKeyUp(e: KeyboardEvent) {
     }
 }
 
+let time = performance.now();
+let deltaTime = 0;
+
 export function onAnimate() {
+    deltaTime = performance.now() - time;
+    time += deltaTime;
     for (let i = 0; i < movable.data.length; i += 1) {
-        movable.data[i].onEveryTick(1);
+        movable.data[i].onEveryTick(deltaTime);
     }
 }

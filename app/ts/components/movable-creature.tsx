@@ -6,11 +6,10 @@ import { getSign, getDirection, sub, length, add } from '~/utils';
 import { Position } from '~/types';
 import { VertDirection, HorDirection, IStore as PlayerStore } from './player/types';
 import { Creature } from './creature';
-import { MAX_SPEED, MIN_SPEED } from '../constants';
+import { MIN_SPEED } from '../constants';
 
 
 const MIN_DISTANCE = 1;
-const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
 const DECELERATION = MIN_SPEED * 1.05;
@@ -48,9 +47,9 @@ export class MovableCreature extends React.Component<Props, State> {
         movable.add({
             name,
             state: this.props.store.state,
-            onEveryTick: () => {
+            onEveryTick: deltaTime => {
                 this.towerRebounding();
-                onEveryTick();
+                onEveryTick(deltaTime);
             }
         });
     }
@@ -94,20 +93,17 @@ export class MovableCreature extends React.Component<Props, State> {
 
 const getOnEveryTick = (
     currentName: string, store: PlayerStore, onPositionUpdate?: (p: Position) => void
-) => () => {
+) => (deltaTime: number) => {
     // change position by velocity
     if (store.isMoving()) {
         store.velocity.add(getMovingAcceleration(store.moving, getDirection(store.state.rotation)));
     }
     let speed = store.velocity.length();
     if (store.velocity.x !== 0 || store.velocity.y !== 0) {
-        speed = decreaseSpeed(speed, DECELERATION);
+        speed = decreaseSpeed(speed, DECELERATION * deltaTime);
         store.velocity.normalize().multiplyScalar(speed);
     }
-    if (speed > MAX_MOVE_SPEED) {
-        store.velocity.normalize().multiplyScalar(MAX_MOVE_SPEED);
-        speed = MAX_MOVE_SPEED;
-    } else if (speed < MIN_MOVE_SPEED) {
+    if (speed < MIN_MOVE_SPEED) {
         store.velocity = new Vector2();
         speed = 0;
     }
