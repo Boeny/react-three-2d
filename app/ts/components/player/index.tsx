@@ -4,7 +4,6 @@ import { Store as camera } from '../camera/store';
 import { Store } from '../player/store';
 import { Position } from '~/types';
 import { Camera, Props as CameraProps } from '../camera';
-import { MovableTank } from '../movable-tank';
 
 
 const BORDER_PERCENT = 0.5;
@@ -12,14 +11,7 @@ const BORDER_PERCENT = 0.5;
 
 export function Player(props: CameraProps) {
     return (
-        <group>
-            <Camera {...props} />
-            <MovableTank
-                name={'player'}
-                store={Store}
-                onPositionUpdate={onPositionUpdate}
-            />
-        </group>
+        <Camera {...props} />
     );
 }
 

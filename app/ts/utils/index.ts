@@ -80,11 +80,6 @@ export function toScreenVector(worldVector: Vector2): Vector2 {
     );
 }
 
-export function createArray(count: number): number[] {
-    return (Array as any as { from: (a: { length: number }) => any[] })
-        .from({ length: count }).map((_, i) => i);
-}
-
 export function clampByMin(n: number, min: number): number {
     return n < min ? min : n;
 }
