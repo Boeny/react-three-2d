@@ -4,7 +4,7 @@ import { IStore } from './types';
 
 export const Store: IStore = {
     canvas: null,
-    state: observable({
+    state: observable.object({
         content: null,
         position: { x: 0, y: 0 },
         windowWidth: window.innerWidth,

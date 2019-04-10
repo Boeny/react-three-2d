@@ -4,7 +4,7 @@ import {
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '~/components/camera/store';
 import { Position } from '~/types';
-import { FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME, DIFFICULTY_LEVEL } from '~/constants';
+import { FLOAT_MIN_DIFF_TO_BE_EQUAL, SHOW_AS_WIREFRAME } from '~/constants';
 
 
 export function getMaterialParams(color?: string, texture?: Texture) {

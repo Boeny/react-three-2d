@@ -8,7 +8,7 @@ import { ZOOM_SCREEN_DELTA, CAMERA_FAR, CAMERA_NEAR, CAMERA_INIT_ZOOM } from './
 
 export const Store: IStore = {
     instance: null,
-    state: observable({
+    state: observable.object({
         zoom: CAMERA_INIT_ZOOM,
         position: { x: 0, y: 0, z: 0 },
         rotation: { x: 0, y: 0, z: 0 },
