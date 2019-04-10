@@ -26,11 +26,9 @@ export class PlayerStore implements IStore {
 
     velocity = new Vector2();
     rotSpeed = 0;
-    canShoot = true;
-    private isShootingPrivate = false;
 
-    constructor(state: State) {
-        this.setState(state);
+    constructor(state?: State) {
+        state && this.setState(state);
     }
 
     @action
@@ -83,17 +81,12 @@ export class PlayerStore implements IStore {
         }
     }
 
-    shoot(v: boolean) {
-        this.isShootingPrivate = v;
-    }
     isMoving(): boolean {
         return this.moving.up || this.moving.down;
     }
+
     isRotating(): boolean {
         return this.rotating.right || this.rotating.left;
-    }
-    isShooting(): boolean {
-        return this.isShootingPrivate;
     }
 }
 

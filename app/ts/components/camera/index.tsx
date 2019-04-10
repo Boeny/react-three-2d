@@ -29,9 +29,7 @@ const CameraComponent = observer(() => {
 });
 
 
-export type Props = State;
-
-export function Camera(props: Props) {
+export function Camera(props: State) {
     return (
         <MountAndInit
             component={<CameraComponent />}

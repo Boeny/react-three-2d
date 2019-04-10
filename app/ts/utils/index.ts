@@ -28,6 +28,9 @@ export function getSelectedObject(position: Vector3, direction: Vector3): Inters
     raycaster.far = direction.length();
     raycaster.set(position.clone(), direction.clone().normalize());
     const scene = camera.instance.parent;
+    if (!scene) {
+        return null;
+    }
     const enemies = scene.getObjectByName('enemies') as Object3D | undefined;
     const map = scene.getObjectByName('map');
     const player = scene.getObjectByName('player');
@@ -39,7 +42,7 @@ export function getSelectedObject(position: Vector3, direction: Vector3): Inters
     return result && result[0] || null;
 }
 
-export function getSelectedObjectFromCamera(screenVector: Vector2): Intersection | null {
+export function getSelectedObjectFromCamera(screenVector: Vector2, objectName: string): Intersection | null {
     if (camera.instance === null) {
         return null;
     }
@@ -50,7 +53,12 @@ export function getSelectedObjectFromCamera(screenVector: Vector2): Intersection
         },
         camera.instance
     );
-    return raycaster.intersectObjects(camera.instance.parent.getObjectByName('local-map').children)[0] || null;
+    const { parent } = camera.instance;
+    if (parent === null) {
+        return null;
+    }
+    const object = parent.getObjectByName(objectName);
+    return object && raycaster.intersectObjects(object.children)[0] || null;
 }
 
 export function getMouseVector(e: any): Vector2 {
@@ -118,10 +126,6 @@ export function save() {
     console.log(JSON.stringify({
         camera: camera.state
     }));
-}
-
-export function getDifficultyLevel(): number {
-    return DIFFICULTY_LEVEL.veryEasy;
 }
 
 export function getDirection(angle: number): Vector2 {
