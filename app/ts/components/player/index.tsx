@@ -27,7 +27,7 @@ export const Player = observer((props: CameraProps) => {
     return (
         <Camera {...props} />
     );
-});;
+});
 
 const onEveryTick = (store: PlayerStore) => (deltaTime: number) => {
     // change position by velocity

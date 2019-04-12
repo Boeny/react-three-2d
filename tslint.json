@@ -30,6 +30,8 @@
       true,
       "as-needed",
       { "requireForBlockBody": false }
-    ]
+    ],
+    "no-consecutive-blank-lines": false,
+    "no-boolean-literal-compare": false
   }
 }
