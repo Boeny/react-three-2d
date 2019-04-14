@@ -28,11 +28,28 @@ const Component = observer(() => {
 
 export class Html extends React.Component {
 
+    input: HTMLInputElement | null = null;
+
     componentDidMount() {
         window.removeEventListener('resize', () => Store.setSize());
     }
 
+    setInput = (el: HTMLInputElement | null) => {
+        this.input = el;
+    }
+
+    onFileSelect = () => {
+        if (this.input) {
+            console.log(this.input.files[0].name);
+        }
+    }
+
     render() {
-        return <Component />;
+        return (
+            <React.Fragment>
+                <input type="file" ref={this.setInput} onChange={this.onFileSelect} />
+               <Component />
+            </React.Fragment>
+        );
     }
 }

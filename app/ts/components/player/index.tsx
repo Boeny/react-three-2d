@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Vector2 } from 'three';
-import { observer } from 'mobx-react';
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '../camera/store';
 import { Store as movable } from '../movable/store';
@@ -12,7 +11,6 @@ import { MAX_SPEED, MIN_SPEED } from '~/constants';
 import { VertDirection, Position } from './types';
 
 
-
 const BORDER_PERCENT = 0.5;
 const MAX_MOVE_SPEED = MAX_SPEED / 2;
 const MIN_MOVE_SPEED = 0;
@@ -20,14 +18,12 @@ const ACCELERATION = MIN_SPEED * 1.5;
 const DECELERATION = MIN_SPEED * 1.05;
 
 
-export const Player = observer((props: CameraProps) => {
-    React.useEffect(() => {
-        movable.add({ onEveryTick: onEveryTick(new PlayerStore()) });
-    });
+export function Player(props: CameraProps) {
+    movable.add({ onEveryTick: onEveryTick(new PlayerStore()) });
     return (
         <Camera {...props} />
     );
-});;
+}
 
 const onEveryTick = (store: PlayerStore) => (deltaTime: number) => {
     // change position by velocity
