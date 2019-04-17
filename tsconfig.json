@@ -5,8 +5,7 @@
         "noUnusedParameters": true,
         "noUnusedLocals": true,
         "noEmit": false,
-        "target": "ES6",
-        "module": "esnext",
+        "target": "ES5",
         "typeRoots" : [
             ".app/ts/types"
         ],
@@ -38,6 +37,7 @@
     "exclude": [
         "./app/ts/**/*.test.ts",
         "./app/ts/**/*.test.tsx",
-        "docs"
+        "docs",
+        "vendor"
     ]
 }

@@ -39,9 +39,6 @@ export class Html extends React.Component {
     }
 
     onFileSelect = () => {
-        if (this.input) {
-            console.log(this.input.files[0].name);
-        }
     }
 
     render() {
