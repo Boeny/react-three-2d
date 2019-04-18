@@ -55,7 +55,7 @@ module.exports = {
     },
     plugins: [
         new ExtractTextPlugin("main.css"),
-        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/)
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en-us|en-ca|en-gb|ru/)
     ],
     // watch: true
 };

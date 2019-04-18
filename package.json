@@ -40,7 +40,7 @@
     "webpack-bundle-analyzer": "^2.9.2"
   },
   "dependencies": {
-    "lodash": "^4.17.4",
+    "lodash": "^4.17.5",
     "mobx": "^5.9.4",
     "mobx-react": "^5.4.3",
     "react": "^16.8.6",

@@ -11,3 +11,15 @@ fix(
     '_react2.default.Component), _class.propTypes = {',
     '_react2.default.Component), _class.propTypes = {onKeyDown: _propTypes2.default.func,onKeyUp: _propTypes2.default.func,onMouseDown: _propTypes2.default.func,onMouseUp: _propTypes2.default.func,onClick: _propTypes2.default.func,onWheel: _propTypes2.default.func,onMouseMove: _propTypes2.default.func,'
 );
+
+fix(
+    './node_modules/@types/lodash/index.d.ts',
+    'isWeakMap<K, V>(value?: any): value is WeakMap<K, V>;',
+    'isWeakMap<K extends object, V>(value?: any): value is WeakMap<K, V>;'
+);
+
+fix(
+    './node_modules/@types/lodash/index.d.ts',
+    'isWeakSet<T>(value?: any): value is WeakSet<T>;',
+    'isWeakSet<T extends object>(value?: any): value is WeakSet<T>;'
+);
