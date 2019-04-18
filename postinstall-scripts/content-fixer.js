@@ -8,9 +8,6 @@ function fixFile(path, wrongContent, correctContent) {
     } catch (err) {
         return console.log(`Error while reading file: ${err.toString()}`);
     }
-    if (data.match(wrongContent).length === 0) {
-        return console.log(`File ${path} has already fixed!`);
-    }
     data = data.replace(wrongContent, correctContent);
     try {
         fs.writeFileSync(path, data);
