@@ -15,7 +15,9 @@ module.exports = {
         extensions: ['*', '.tsx', '.ts', '.js', '.styl', '.css'],
         alias: {
             '~': path.resolve(__dirname, './app/ts'),
-            'react3': path.resolve(__dirname, './node_modules/react-three-renderer')
+            'react3': path.resolve(__dirname, './node_modules/react-three-renderer'),
+            'lodash': path.resolve(__dirname, './node_modules/lodash'),
+            'es6-promise': path.resolve(__dirname, './node_modules/es6-promise')
         }
     },
     module: {

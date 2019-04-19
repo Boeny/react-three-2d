@@ -14,7 +14,8 @@
         "baseUrl": "./app/",
         "paths": {
             "~/*": ["ts/*"]
-        }
+        },
+        "lib": ["es6", "dom"]
     },
     "compileOnSave": false,
     "formatCodeOptions": {

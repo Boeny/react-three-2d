@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { Vector3, Vector2, Font } from 'three';
+import { Font } from 'three';
+import { Mesh, MeshProps } from './mesh';
 
 
-interface Props {
-    position: Vector2;
+
+interface Props extends MeshProps {
     text: string;
     font: string;
 }
 
 export function Text(props: Props) {
-    const { position, text, font } = props;
+    const { text, font, ...rest } = props;
     return (
-        <mesh position={new Vector3(position.x, position.y, 0)}>
+        <Mesh {...rest}>
             <textGeometry
                 text={text}
                 font={new Font(font)}
@@ -20,6 +21,6 @@ export function Text(props: Props) {
                 curveSegments={1}
                 bevelEnabled={false}
             />
-        </mesh>
+        </Mesh>
     );
 }
