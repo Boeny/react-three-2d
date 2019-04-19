@@ -23,12 +23,29 @@ function onFileSelect(file: File, handler: (content: ArrayBuffer) => void) {
 }
 
 function parseContent(buffer: ArrayBuffer) {
-    setMapData(getCelestiaStarsInfo(new DataView(buffer)).slice(0, 100).map(convertStarToSphere));
+    setMapData(
+        getCelestiaStarsInfo(new DataView(buffer)).filter(filterByDistance)
+            .map(convertStarToSphere).filter(excludeZero)
+    );
+}
+
+function filterByDistance(item: Star): boolean {
+    return checkPosition(item.position.x) && checkPosition(item.position.y) && checkPosition(item.position.z);
+}
+
+function excludeZero(item: Sphere): boolean {
+    return item.position.x !== 0 || item.position.y !== 0 || item.position.z !== 0;
 }
 
 function convertStarToSphere(star: Star): Sphere {
     return {
-        radius: 1,
-        position: star.position
+        radius: 10,
+        position: { x: Math.round(star.position.x), y: Math.round(star.position.y), z: Math.round(star.position.z) }
     };
+}
+
+const MAX_DISTANCE = 1000;
+
+function checkPosition(n: number): boolean {
+    return n <= MAX_DISTANCE && n >= -MAX_DISTANCE;
 }

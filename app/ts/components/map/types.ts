@@ -1,9 +1,9 @@
-import { Vector3 } from 'three';
+import { Position3 } from '~/types';
 
 
 export interface Sphere {
     radius: number;
-    position: Vector3;
+    position: Position3;
 }
 
 export interface IStore {

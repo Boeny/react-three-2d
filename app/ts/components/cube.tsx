@@ -2,10 +2,12 @@ import * as React from 'react';
 import { Mesh, MeshProps } from './mesh';
 
 
+const WIDTH = 1;
+
 interface Props extends MeshProps {
-    width: number;
-    height: number;
-    depth: number;
+    width?: number;
+    height?: number;
+    depth?: number;
 }
 
 export function Cube(props: Props) {
@@ -13,9 +15,9 @@ export function Cube(props: Props) {
     return (
         <Mesh {...rest} >
             <boxGeometry
-                width={width}
-                height={height}
-                depth={depth}
+                width={width || WIDTH}
+                height={height || WIDTH}
+                depth={depth || WIDTH}
                 widthSegments={1}
                 heightSegments={1}
                 depthSegments={1}

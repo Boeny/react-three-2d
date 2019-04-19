@@ -3,7 +3,7 @@ import * as React3 from 'react3';
 import * as events from '~/utils/events';
 import { Vector3, BasicShadowMap } from 'three';
 import { Store as html } from '~/views/html/store';
-import { Player } from '~/components';
+import { Player, Map } from '~/components';
 import { savedData } from '~/saves';
 
 
@@ -33,6 +33,7 @@ export function React3View() {
                     intensity={0.5}
                 />
                 <Player {...camera} />
+                <Map />
             </scene>
         </React3>
     );

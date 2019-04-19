@@ -154,6 +154,6 @@ let time = (new Date()).getTime();
 export function onAnimate() {
     const now = (new Date()).getTime();
     const delta = (now - time) / 1000;
-    movable.data.forEach(item => item.onEveryTick(delta));
+    movable.data.forEach(item => item.onEveryTick(1));
     time = now;
 }

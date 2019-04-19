@@ -23,8 +23,8 @@ export function getCelestiaStarsInfo(dataView: DataView): Star[] {
     console.log('number of records:', dataView.getUint32(index));
     index += 4;
     // 4-byte catalog number (32) 0=Sol
-    console.log('catalog number:', dataView.getUint32(index));
-    index += 4;
+    // console.log('catalog number:', dataView.getUint32(index));
+    // index += 4;
     const result: Star[] = [];
     while (index < dataView.byteLength + 20) {
         const item = new Star();
