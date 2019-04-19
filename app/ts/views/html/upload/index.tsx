@@ -9,13 +9,7 @@ export function UploadFile() {
     return (
         <input
             type="file"
-            ref={el => {
-                input = el;
-                if (el) {
-                    debugger;
-                    el.click();
-                }
-            }}
+            ref={el => input = el}
             onChange={() => input && input.files && input.files[0]
                 && onFileSelect(input.files[0], parseContent)}
         />
@@ -29,7 +23,7 @@ function onFileSelect(file: File, handler: (content: ArrayBuffer) => void) {
 }
 
 function parseContent(buffer: ArrayBuffer) {
-    setMapData(getCelestiaStarsInfo(new DataView(buffer)).map(convertStarToSphere));
+    setMapData(getCelestiaStarsInfo(new DataView(buffer)).slice(0, 100).map(convertStarToSphere));
 }
 
 function convertStarToSphere(star: Star): Sphere {

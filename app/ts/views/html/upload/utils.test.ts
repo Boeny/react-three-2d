@@ -9,7 +9,7 @@ describe('Util functions for star catalog', () => {
     it('should return correct spectral class', () => {
         expect(getSpectralClass(0x0426)).to.deep.equal({
             type: StarTypes.normal,
-            spectralClass: 'G2V'
+            spectralClass: { type: 'G', subType: '2', luminosity: 'V' }
         });
     });
     it('should return upper byte', () => {

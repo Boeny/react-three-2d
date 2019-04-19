@@ -23,7 +23,7 @@
                 "singleline": "never"
             }
         ],
-        "max-line-length": [true, 140],
+        "max-line-length": [true, 120],
         "ter-arrow-parens": [
             true,
             "as-needed",

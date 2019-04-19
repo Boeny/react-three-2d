@@ -44,7 +44,7 @@ export class Star {
     position = new Vector3();
     absMagnitude = 0;
     type: StarTypes = StarTypes.normal;
-    spectral = { type: 0, subType: 0, luminosity: 0 };
+    spectral = { type: '', subType: '', luminosity: '' };
 
     toString(): string {
         return [
@@ -54,13 +54,7 @@ export class Star {
             `z-coordinate in light years: ${this.position.z}`,
             `absolute magnitude * 256: ${this.absMagnitude}`,
             `type: ${getStarType(this.type)}`,
-            `spectral class: ${
-                getSpectralType(this.type, this.spectral.type)
-            }${
-                getSpectralSubType(this.type, this.spectral.subType)
-            }${
-                getLuminocityClass(this.type, this.spectral.luminosity)
-            }`
+            `spectral class: ${this.spectral.type}${this.spectral.subType}${this.spectral.luminosity}`
         ].join('\r\n');
     }
 }
@@ -98,7 +92,11 @@ export function getSpectralClass(n: number) {
     const L = getLowerHalfOfByte(SL); // luminosity class (K=normal)
     return {
         type: K,
-        spectralClass: { type: T, subType: S, luminosity: L }
+        spectralClass: {
+            type: getSpectralType(K, T),
+            subType: getSpectralSubType(K, S),
+            luminosity: getLuminocityClass(K, L)
+        }
     };
 }
 
