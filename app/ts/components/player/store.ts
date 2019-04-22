@@ -90,7 +90,7 @@ export class PlayerStore implements IStore {
     }
 }
 
-export const Store: IStore = new PlayerStore({
+export const PlayerStaticStore: IStore = new PlayerStore({
     position: { x: 0, y: 0 },
     rotation: Math.PI / 2
 });

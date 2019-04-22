@@ -3,29 +3,32 @@ import { Vector2 } from 'three';
 import { Store as html } from '~/views/html/store';
 import { Store as camera } from '../camera/store';
 import { Store as movable } from '../movable/store';
+import { PlayerStaticStore } from './store';
 import { getDirection, add } from '~/utils';
-import { PlayerStore } from './store';
+import { VertDirection, Position, IStore } from './types';
 import { State as CameraProps } from '../camera/types';
 import { Camera } from '../camera';
+import { MountAndInit } from '../mount-and-init';
 import { MAX_SPEED, MIN_SPEED } from '~/constants';
-import { VertDirection, Position } from './types';
 
 
 const BORDER_PERCENT = 0.5;
-const MAX_MOVE_SPEED = MAX_SPEED / 2;
+const MAX_MOVE_SPEED = MAX_SPEED;
 const MIN_MOVE_SPEED = 0;
 const ACCELERATION = MIN_SPEED * 1.5;
 const DECELERATION = MIN_SPEED * 1.05;
 
 
 export function Player(props: CameraProps) {
-    movable.add({ onEveryTick: onEveryTick(new PlayerStore()) });
     return (
-        <Camera {...props} />
+        <MountAndInit
+            component={<Camera {...props} />}
+            onMount={() => movable.add({ onEveryTick: onEveryTick(PlayerStaticStore) })}
+        />
     );
 }
 
-const onEveryTick = (store: PlayerStore) => (deltaTime: number) => {
+const onEveryTick = (store: IStore) => (deltaTime: number) => {
     // change position by velocity
     if (store.isMoving()) {
         store.velocity.add(getMovingAcceleration(
@@ -38,22 +41,11 @@ const onEveryTick = (store: PlayerStore) => (deltaTime: number) => {
     if (store.velocity.x !== 0 || store.velocity.y !== 0) {
         speed = decreaseSpeed(speed, DECELERATION * deltaTime);
     }
-    speed = clampSpeed(speed, MIN_MOVE_SPEED * deltaTime, MAX_MOVE_SPEED * deltaTime);
     store.velocity.normalize().multiplyScalar(speed);
     if (speed > 0) {
         store.setPosition(add(store.state.position, store.velocity), onPositionUpdate);
     }
 };
-
-function clampSpeed(speed: number, min: number, max: number): number {
-    if (speed > max) {
-        return max;
-    }
-    if (speed < min) {
-        return 0;
-    }
-    return speed;
-}
 
 function decreaseSpeed(vel: number, acc: number): number {
     return vel > acc || vel < -acc ? Math.abs(vel - acc) : 0;

@@ -7,4 +7,4 @@ export const SPECTRAL_TYPES = [
     ['DA', 'DB', 'DC', 'DO', 'DQ', 'DZ', 'unknown D', 'DX']
 ];
 
-export const LUM_CLASS = ['Ia-O', 'Ia', 'Ib', 'II', 'III', 'IV', 'V', 'VI (sd)'];
+export const LUM_CLASSES = ['Ia-O', 'Ia', 'Ib', 'II', 'III', 'IV', 'V', 'VI (sd)'];

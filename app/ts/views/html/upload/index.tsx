@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { setMapData } from '~/components/map/store';
-import { getCelestiaStarsInfo, Star } from './utils';
+import { getBinaryInfo, Star, getTextInfo } from './utils';
 import { Sphere } from '~/components/map/types';
 
 
@@ -11,22 +11,42 @@ export function UploadFile() {
             type="file"
             ref={el => input = el}
             onChange={() => input && input.files && input.files[0]
-                && onFileSelect(input.files[0], parseContent)}
+                && onFileSelect(input.files[0], applyContent)}
         />
     );
 }
 
-function onFileSelect(file: File, handler: (content: ArrayBuffer) => void) {
+function getExt(fileName: string): string {
+    const arr = fileName.split('.');
+    return arr[arr.length - 1];
+}
+
+function onFileSelect(file: File, handler: (content: Star[]) => void) {
+    if (getExt(file.name) === 'txt') {
+        onTextFileSelect(file, handler);
+    } else {
+        onBinaryFileSelect(file, handler);
+    }
+}
+
+function onBinaryFileSelect(file: File, handler: (content: Star[]) => void) {
     const reader = new FileReader();
-    reader.onload = e => e.target && handler((e.target as any).result);
+    reader.onload = e => e.target && handler(
+        getBinaryInfo(new DataView((e.target as any).result))
+    );
     reader.readAsArrayBuffer(file);
 }
 
-function parseContent(buffer: ArrayBuffer) {
-    setMapData(
-        getCelestiaStarsInfo(new DataView(buffer)).filter(filterByDistance)
-            .map(convertStarToSphere).filter(excludeZero)
+function onTextFileSelect(file: File, handler: (content: Star[]) => void) {
+    const reader = new FileReader();
+    reader.onload = e => e.target && handler(
+        getTextInfo((e.target as any).result)
     );
+    reader.readAsText(file);
+}
+
+function applyContent(data: Star[]) {
+    setMapData(data.filter(filterByDistance).map(convertStarToSphere).filter(excludeZero));
 }
 
 function filterByDistance(item: Star): boolean {
@@ -44,7 +64,7 @@ function convertStarToSphere(star: Star): Sphere {
     };
 }
 
-const MAX_DISTANCE = 1000;
+const MAX_DISTANCE = 100;
 
 function checkPosition(n: number): boolean {
     return n <= MAX_DISTANCE && n >= -MAX_DISTANCE;

@@ -26,9 +26,9 @@ export const KEY: KEYS = {
     ENTER: 'Enter'
 };
 
-export const MAX_SPEED = 1;
+export const MAX_SPEED = 100;
 
-export const MIN_SPEED = 0.01;
+export const MIN_SPEED = 1;
 
 export const SHOW_AS_WIREFRAME: boolean = false;
 

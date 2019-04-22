@@ -1,6 +1,6 @@
 import { Vector2 } from 'three';
 import { Store as camera } from '~/components/camera/store';
-import { Store as player } from '~/components/player/store';
+import { PlayerStaticStore as player } from '~/components/player/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
 import { getMouseVector, toWorldVector, save } from '~/utils';
@@ -154,6 +154,6 @@ let time = (new Date()).getTime();
 export function onAnimate() {
     const now = (new Date()).getTime();
     const delta = (now - time) / 1000;
-    movable.data.forEach(item => item.onEveryTick(1));
+    movable.data.forEach(item => item.onEveryTick(delta));
     time = now;
 }

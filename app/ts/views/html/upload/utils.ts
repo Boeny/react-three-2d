@@ -1,12 +1,71 @@
 import { Vector3 } from 'three';
-import { STAR_TYPES, SPECTRAL_TYPES, LUM_CLASS } from './constants';
+import { STAR_TYPES, SPECTRAL_TYPES, LUM_CLASSES } from './constants';
 
+
+export function getTextInfo(text: string) {
+    return text.replace('\r', '').split('\n').filter(s => s !== '').map(getTextStarInfo);
+}
+
+function getTextStarInfo(row: string): Star {
+    const data = row.replace('  ', ' ').split(' ');
+    const result = new Star();
+    result.catalogNumber = parseNumber(data[0]);
+    result.position = new Vector3(parseNumber(data[1]), parseNumber(data[2]), parseNumber(data[3]));
+    result.absMagnitude = parseNumber(data[4]);
+    const { type, spectralClass } = getSpectralClassFromText(data[5]);
+    result.type = type;
+    result.spectral = spectralClass;
+    return result;
+}
+
+function parseNumber(str: string): number {
+    return parseInt(str.replace('+', ''), 10) || 0;
+}
+
+function getSpectralClassFromText(spectralClass: string)  {
+    if (spectralClass.includes('/')) {
+        return {
+            type: StarTypes.normal,
+            spectralClass: {
+                type: 'unknown',
+                subType: spectralClass,
+                luminosity: ''
+            }
+        };
+    }
+    const dwarfType = SPECTRAL_TYPES[StarTypes.dwarf].filter(s => spectralClass.includes(s))[0] || null;
+    if (dwarfType) {
+        return {
+            type: StarTypes.dwarf,
+            spectralClass: {
+                type: dwarfType,
+                subType: spectralClass.replace(dwarfType, ''),
+                luminosity: ''
+            }
+        };
+    }
+    const luminosity = spectralClass.includes('sd') ? 'VI (sd)' :
+        LUM_CLASSES.filter(s => spectralClass.includes(s))[0] || '';
+    let other = spectralClass.replace('.', '');
+    if (luminosity) {
+        other = other.replace(luminosity, '');
+    }
+    const type = SPECTRAL_TYPES[StarTypes.normal].filter(s => other.includes(s))[0] || '';
+    return {
+        type: StarTypes.normal,
+        spectralClass: {
+            type,
+            luminosity,
+            subType: type ? other.replace(type, '') : other
+        }
+    };
+}
 
 function range(count: number): number[] {
     return Array.apply(null, Array(count)).map((_, i) => i);
 }
 
-export function getCelestiaStarsInfo(dataView: DataView): Star[] {
+export function getBinaryInfo(dataView: DataView): Star[] {
     let index = 0;
     // 8-byte string (64)
     const msg = range(8).map((_, i) => String.fromCharCode(dataView.getUint8(i))).join('');
@@ -23,8 +82,8 @@ export function getCelestiaStarsInfo(dataView: DataView): Star[] {
     console.log('number of records:', dataView.getUint32(index));
     index += 4;
     // 4-byte catalog number (32) 0=Sol
-    // console.log('catalog number:', dataView.getUint32(index));
-    // index += 4;
+    console.log('catalog number:', dataView.getUint32(index));
+    index += 4;
     const result: Star[] = [];
     while (index < dataView.byteLength + 20) {
         const item = new Star();
@@ -65,13 +124,14 @@ function getStarInfo(dataView: DataView, start: number, result: Star) {
     result.catalogNumber = dataView.getUint32(offset);
     offset += 4;
     // 4-byte floating point (32)
-    result.position.x = dataView.getFloat32(offset);
+    const x = dataView.getFloat32(offset);
     offset += 4;
     // 4-byte floating point (32)
-    result.position.y = dataView.getFloat32(offset);
+    const y = dataView.getFloat32(offset);
     offset += 4;
     // 4-byte floating point (32)
-    result.position.z = dataView.getFloat32(offset);
+    const z = dataView.getFloat32(offset);
+    result.position = new Vector3(x, y, z);
     offset += 4;
     // 2-byte signed integer (16)
     result.absMagnitude = dataView.getInt16(offset);
@@ -130,7 +190,7 @@ function getSpectralSubType(starType: StarTypes, spectralSubType: number): strin
 }
 
 function getLuminocityClass(starType: StarTypes, luminocity: number): string {
-    return starType === StarTypes.normal ? getArrayElement(LUM_CLASS, luminocity, 'unknown') : '';
+    return starType === StarTypes.normal ? getArrayElement(LUM_CLASSES, luminocity, 'unknown') : '';
 }
 
 export function getUpperByte(n: number): number {
