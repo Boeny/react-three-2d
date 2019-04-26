@@ -60,7 +60,7 @@ function excludeZero(item: Sphere): boolean {
 function convertStarToSphere(star: Star): Sphere {
     return {
         radius: 10,
-        position: { x: Math.round(star.position.x), y: Math.round(star.position.y), z: Math.round(star.position.z) }
+        position: { x: star.position.x, y: star.position.y, z: star.position.z }
     };
 }
 

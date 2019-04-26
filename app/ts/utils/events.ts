@@ -90,12 +90,12 @@ export function onKeyDown(e: KeyboardEvent) {
         case KEY.LEFT:
         case 'a':
         case 'ф':
-            player.rotateLeft(true);
+            player.moveLeft(true);
             break;
         case KEY.RIGHT:
         case 'd':
         case 'в':
-            player.rotateRight(true);
+            player.moveRight(true);
             break;
         case KEY.UP:
         case 'w':
@@ -103,9 +103,7 @@ export function onKeyDown(e: KeyboardEvent) {
             player.moveForward(true);
             break;
         case KEY.DOWN:
-            if (!e.ctrlKey) {
-                player.moveBack(true);
-            }
+            player.moveBack(true);
             break;
         case 's':
         case 'ы':
@@ -116,8 +114,6 @@ export function onKeyDown(e: KeyboardEvent) {
                 player.moveBack(true);
             }
             break;
-        case KEY.SPACE:
-            break;
     }
 }
 
@@ -126,12 +122,12 @@ export function onKeyUp(e: KeyboardEvent) {
         case KEY.LEFT:
         case 'a':
         case 'ф':
-            player.rotateLeft(false);
+            player.moveLeft(false);
             break;
         case KEY.RIGHT:
         case 'd':
         case 'в':
-            player.rotateRight(false);
+            player.moveRight(false);
             break;
         case KEY.UP:
         case 'w':
@@ -142,8 +138,6 @@ export function onKeyUp(e: KeyboardEvent) {
         case 's':
         case 'ы':
             player.moveBack(false);
-            break;
-        case KEY.SPACE:
             break;
     }
 }

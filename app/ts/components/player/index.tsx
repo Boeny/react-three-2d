@@ -4,19 +4,16 @@ import { Store as html } from '~/views/html/store';
 import { Store as camera } from '../camera/store';
 import { Store as movable } from '../movable/store';
 import { PlayerStaticStore } from './store';
-import { getDirection, add } from '~/utils';
-import { VertDirection, Position, IStore } from './types';
+import { add } from '~/utils';
+import { Position, IStore, Direction } from './types';
 import { State as CameraProps } from '../camera/types';
 import { Camera } from '../camera';
 import { MountAndInit } from '../mount-and-init';
-import { MAX_SPEED, MIN_SPEED } from '~/constants';
 
 
-const BORDER_PERCENT = 0.5;
-const MAX_MOVE_SPEED = MAX_SPEED;
-const MIN_MOVE_SPEED = 0;
-const ACCELERATION = MIN_SPEED * 1.5;
-const DECELERATION = MIN_SPEED * 1.05;
+const BORDER_PERCENT = 0.01;
+const ACCELERATION = 3;
+const DECELERATION = 1.5;
 
 
 export function Player(props: CameraProps) {
@@ -29,13 +26,8 @@ export function Player(props: CameraProps) {
 }
 
 const onEveryTick = (store: IStore) => (deltaTime: number) => {
-    // change position by velocity
     if (store.isMoving()) {
-        store.velocity.add(getMovingAcceleration(
-            store.moving,
-            getDirection(store.state.rotation),
-            ACCELERATION * deltaTime
-        ));
+        store.velocity.add(getDirection(store.moving).multiplyScalar(ACCELERATION * deltaTime));
     }
     let speed = store.velocity.length();
     if (store.velocity.x !== 0 || store.velocity.y !== 0) {
@@ -43,20 +35,36 @@ const onEveryTick = (store: IStore) => (deltaTime: number) => {
     }
     store.velocity.normalize().multiplyScalar(speed);
     if (speed > 0) {
-        store.setPosition(add(store.state.position, store.velocity), onPositionUpdate);
+        const position = add(store.state.position, store.velocity);
+        store.setPosition(position);
+        cameraPositionUpdate(position);
     }
 };
+
+function getDirection({ up, down, left, right }: Direction): Vector2 {
+    let x = 0;
+    if (right) {
+        x += 1;
+    }
+    if (left) {
+        x -= 1;
+    }
+    let y = 0;
+    if (up) {
+        y += 1;
+    }
+    if (down) {
+        y -= 1;
+    }
+    return (new Vector2(x, y)).normalize();
+}
 
 function decreaseSpeed(vel: number, acc: number): number {
     return vel > acc || vel < -acc ? Math.abs(vel - acc) : 0;
 }
 
-function getMovingAcceleration({ up, down }: VertDirection, direction: Vector2, acc: number): Vector2 {
-    return direction.multiplyScalar(up ? acc : (down ? -acc : 0));
-}
 
-
-function onPositionUpdate(p: Position) {
+function cameraPositionUpdate(p: Position) {
     const { position } = camera.state;
     const { windowWidth, windowHeight } = html.state;
     const xBorder = camera.state.zoom * BORDER_PERCENT;

@@ -26,10 +26,6 @@ export const KEY: KEYS = {
     ENTER: 'Enter'
 };
 
-export const MAX_SPEED = 100;
-
-export const MIN_SPEED = 1;
-
 export const SHOW_AS_WIREFRAME: boolean = false;
 
 export const WIDTH_SCALE = 1;
@@ -51,7 +47,3 @@ export enum DIFFICULTY_LEVEL {
 }
 
 export const MAX_MOVABLE_COUNT = 1500;
-
-export const MAX_DISTANCE = 100;
-
-export const MIN_DISTANCE = 80;

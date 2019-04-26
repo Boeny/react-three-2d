@@ -1,7 +1,5 @@
 import { Vector2 } from 'three';
 import { observable, action } from 'mobx';
-// import { Store as movable } from '../movable/store';
-// import { getDifficultyLevel } from '~/utils';
 import { IStore, Position, State } from './types';
 
 
@@ -9,7 +7,9 @@ export class PlayerStore implements IStore {
     @observable
     moving = {
         up: false,
-        down: false
+        down: false,
+        left: false,
+        right: false
     };
 
     @observable
@@ -37,14 +37,8 @@ export class PlayerStore implements IStore {
     }
 
     @action
-    setPosition(p: Position, after?: (p: Position) => void) {
+    setPosition(p: Position) {
         this.state.position = p;
-        after && after(p);
-    }
-
-    @action
-    setRotation(v: number) {
-        this.state.rotation = v;
     }
 
     @action
@@ -62,12 +56,6 @@ export class PlayerStore implements IStore {
     }
 
     @action
-    rotate(v: 'left' | 'right' | 'none') {
-        this.rotating.left = v === 'left';
-        this.rotating.right = v === 'right';
-    }
-
-    @action
     moveForward(v: boolean) {
         if (this.moving.up !== v) {
             this.moving.up = v;
@@ -81,8 +69,24 @@ export class PlayerStore implements IStore {
         }
     }
 
+    @action
+    moveRight(v: boolean) {
+        if (this.moving.right === v) {
+            return;
+        }
+        this.moving.right = v;
+    }
+
+    @action
+    moveLeft(v: boolean) {
+        if (this.moving.left === v) {
+            return;
+        }
+        this.moving.left = v;
+    }
+
     isMoving(): boolean {
-        return this.moving.up || this.moving.down;
+        return this.moving.up || this.moving.down || this.moving.left || this.moving.right;
     }
 
     isRotating(): boolean {
