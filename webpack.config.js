@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const poststylus = require('poststylus');
 
 module.exports = {
     context: __dirname,
@@ -8,7 +9,7 @@ module.exports = {
         'app': './app/ts/main.tsx'
     },
     output: {
-        path: path.join(__dirname, "docs"),
+        path: path.join(__dirname, 'docs'),
         filename: '[name].js'
     },
     resolve: {
@@ -23,41 +24,36 @@ module.exports = {
     module: {
         rules: [
             {
-                enforce: 'pre',
                 test: /\.tsx?$/,
+                enforce: 'pre',
                 use: 'tslint-loader',
                 exclude: /(node_modules)/
             },
             {
                 test: /\.ts(x?)$/,
-                use: 'ts-loader',
+                loader: 'ts-loader',
                 exclude: /(node_modules)/
             },
             {
                 test: /\.styl$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader', 'stylus-loader']
-                }),
-                exclude: /(node_modules)/
-            },
-            {
-                test: /\.css/,
-                use: ['style-loader', 'css-loader']
-            },
-            {
-                test: /\.css$/,
-                use: ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: ['css-loader', 'postcss-loader']
-                }),
+                use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'stylus-loader'],
                 exclude: /(node_modules)/
             }
         ]
     },
     plugins: [
-        new ExtractTextPlugin("main.css"),
-        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en-us|en-ca|en-gb|ru/)
-    ],
-    // watch: true
+        new MiniCssExtractPlugin({
+            filename: 'main.css',
+            allChunks: true
+        }),
+        new webpack.LoaderOptionsPlugin({
+            debug: false,
+            options: {
+                resolve: {},
+                stylus: {
+                    use: [poststylus(['autoprefixer', 'rucksack-css'])]
+                }
+            }
+        })
+    ]
 };
