@@ -1,58 +1,49 @@
-import { observable, runInAction } from 'mobx';
-import { Vector2 } from 'three';
+import { observable, action } from 'mobx';
 import { IStore } from './types';
 
 
-export const Store: IStore = {
-    moving: observable({
+class PlayerStore implements IStore {
+
+    @observable
+    moving = {
         left: false,
         right: false,
         up: false,
         down: false
-    }),
-    position: observable({ x: 0, y: 0 }),
-    init(v: Vector2) {
-        this.setPosition(v.x, v.y);
-    },
+    };
+
+    @observable
+    position = { x: 0, y: 0 };
+
+    @action
     setPosition(x: number, y: number) {
-        runInAction(() => {
-            this.position.x = x;
-            this.position.y = y;
-        });
-    },
+        this.position.x = x;
+        this.position.y = y;
+    }
+
+    @action
     moveRight(v: boolean) {
-        if (this.moving.right === v) {
-            return;
-        }
-        runInAction(() => {
-            this.moving.right = v;
-        });
-    },
+        this.moving.right = v;
+    }
+
+    @action
     moveLeft(v: boolean) {
-        if (this.moving.left === v) {
-            return;
-        }
-        runInAction(() => {
-            this.moving.left = v;
-        });
-    },
+        this.moving.left = v;
+    }
+
+    @action
     moveUp(v: boolean) {
-        if (this.moving.up === v) {
-            return;
-        }
-        runInAction(() => {
-            this.moving.up = v;
-        });
-    },
+        this.moving.up = v;
+    }
+
+    @action
     moveDown(v: boolean) {
-        if (this.moving.down === v) {
-            return;
-        }
-        runInAction(() => {
-            this.moving.down = v;
-        });
-    },
-    isMoving(): boolean {
+        this.moving.down = v;
+    }
+
+    get isMoving(): boolean {
         return this.moving.right || this.moving.left || this.moving.up || this.moving.down;
     }
-};
+}
+
+export const playerStore = new PlayerStore();

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Vector3 } from 'three';
 import { observer } from 'mobx-react';
-import { Store } from './store';
+import { cameraStore } from './store';
 
 
 export const Camera = observer((props: PositionProps) => {
-    const { zoom, position } = Store.state;
+    const { zoom, position } = cameraStore;
     return (
         <perspectiveCamera
             name={'camera'}

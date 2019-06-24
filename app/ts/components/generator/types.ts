@@ -8,11 +8,10 @@ export interface Position {
 }
 
 export interface IStore {
-    timer: number;
-    state: { tick: boolean };
+    tick: boolean;
     position: Position;
-    setPosition: (v: Position) => void;
-    timerAfterTickStart: () => boolean;
+    readonly isTimerAfterTickStart: boolean;
+    setPosition: (x: number, y: number) => void;
     updateTimer: () => void;
     setTick: (tick: boolean) => void;
 }

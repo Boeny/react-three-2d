@@ -10,8 +10,7 @@ export interface State {
     position: Position;
 }
 
-export interface IStore {
-    state: State;
+export interface IStore extends State {
     setZoom: (newZoom: number) => void;
     setPosition: (v: Position) => void;
 }

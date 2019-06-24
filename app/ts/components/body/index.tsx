@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { Store as movable } from '../movable/store';
-import { getStore, InitialParams } from './store';
-import { IStore } from './types';
+import { BodyStore } from './store';
+import { IStore, InitialParams } from './types';
 import { Particle, ParticleCollider } from '../particle';
 
 
@@ -11,7 +11,7 @@ interface ConnectedProps {
 }
 
 const Connected = observer((props: ConnectedProps) => {
-    const { position, state } = props.store;
+    const { position, color } = props.store;
     // hack to observe this
     position.x;
     position.y;
@@ -19,7 +19,7 @@ const Connected = observer((props: ConnectedProps) => {
         <Particle
             zIndex={1}
             position={position}
-            color={state.color}
+            color={color}
         />
     );
 });
@@ -27,13 +27,13 @@ const Connected = observer((props: ConnectedProps) => {
 
 const ConnectedCollider = observer((props: ConnectedProps) => {
     const { store } = props;
-    const { position, state } = store;
+    const { position, color } = store;
     return (
         <ParticleCollider
             zIndex={1}
             store={store}
             position={{ x: position.x, y: position.y }}// to update collider coo
-            color={state.color}
+            color={color}
         />
     );
 });
@@ -57,7 +57,21 @@ export class Body extends React.Component<Props, State> {
     delMovable: () => void = () => undefined;
 
     componentDidMount() {
-        const store = getStore(this.props);
+        const store = new BodyStore(
+            this.props.isMovable,
+            this.props.onCollide,
+            this.props.onUnCollide,
+            this.props.onEveryTick,
+            this.props.onPositionChange,
+            this.props.onVelocityChange
+        );
+        store.setName(this.props.name);
+        store.setColor(this.props.color);
+        store.setPosition(this.props.position);
+        if (this.props.velocity) {
+            store.setVelocity(this.props.velocity.x, 'x');
+            store.setVelocity(this.props.velocity.y, 'y');
+        }
         if (this.props.isMovable) {
             movable.add(store);
             this.delMovable = () => {

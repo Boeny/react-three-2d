@@ -41,3 +41,14 @@ declare module 'react3';
 declare interface PositionProps {
     position: THREE.Vector2;
 }
+
+declare interface IThreeEvents {
+    onClick?(e: MouseEvent): void;
+    onWheel?(e: MouseWheelEvent): void;
+    onMouseDown?(e: MouseEvent): void;
+    onMouseUp?(e: MouseEvent): void;
+    onMouseMove?(e: MouseEvent): void;
+    onKeyDown?(e: KeyboardEvent): void;
+    onKeyUp?(e: KeyboardEvent): void;
+    onAnimate(): void;
+}

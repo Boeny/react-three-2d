@@ -13,11 +13,9 @@ interface Moving {
     down: boolean;
 }
 
-export interface IStore extends CommonParams {
-    state: {
-        color: string,
-        name: string | JSX.Element | null;
-    };
+export interface IStore {
+    color: string;
+    name: string | JSX.Element | null;
     position: Position;
     velocity: Vector2;
     setColor: (color: string) => void;
@@ -25,17 +23,23 @@ export interface IStore extends CommonParams {
     setPosition: (v: Position) => void;
     setVelocity: (v: number, coo: 'x' | 'y') => void;
     changePosition: (v: Vector2, withCollider?: boolean) => void;
-    signal: (s: Signal) => void;
+    isMovable?: boolean;
+    onEveryTick?: (body: IStore) => void;
+    onCollide?: (collider: IStore) => void;
+    onUnCollide?: () => void;
 }
 
-export interface CommonParams {
+export interface InitialParams {
+    color: string;
+    position: Vector2;
+    velocity?: Vector2;
+    name?: string | JSX.Element;
     isMovable?: boolean;
     onEveryTick?: (body: IStore) => void;
     onPositionChange?: (v: Position) => void;
     onVelocityChange?: (v: Vector2) => void;
     onCollide?: (collider: IStore) => void;
     onUnCollide?: () => void;
-    onSignal?: (body: IStore, signal: Signal) => void;
 }
 
 export type Signal = Partial<Moving>;

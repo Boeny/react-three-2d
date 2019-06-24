@@ -1,57 +1,57 @@
-import { observable, runInAction } from 'mobx';
+import { observable, action, reaction } from 'mobx';
 import { Vector2 } from 'three';
-import { IStore, CommonParams, Position, Signal } from './types';
+import { IStore, Position } from './types';
 
 
-export interface InitialParams extends CommonParams {
-    color: string;
-    position: Vector2;
-    velocity?: Vector2;
-    name?: string | JSX.Element;
-}
+export class BodyStore implements IStore {
 
-export function getStore({ name, position, color, velocity, ...common }: InitialParams): IStore {
-    return {
-        ...common,
-        state: observable({
-            color,
-            name: name || null
-        }),
-        position: observable({
-            x: position.x,
-            y: position.y
-        }),
-        velocity: velocity || new Vector2(),
-        setColor(color: string) {
-            runInAction(() => {
-                this.state.color = color;
-            });
-        },
-        setName(name?: string | JSX.Element) {
-            runInAction(() => {
-                this.state.name = name || null;
-            });
-        },
-        setPosition(v: Position) {
-            runInAction(() => {
-                this.position.x = v.x;
-                this.position.y = v.y;
-                this.onPositionChange && this.onPositionChange(this.position);
-            });
-        },
-        setVelocity(v: number, coo: 'x' | 'y') {
-            this.velocity[coo] = v;
-            this.onVelocityChange && this.onVelocityChange(this.velocity);
-        },
-        changePosition(v: Vector2) {
-            runInAction(() => {
-                this.position.x += v.x;
-                this.position.y += v.y;
-                this.onPositionChange && this.onPositionChange(this.position);
-            });
-        },
-        signal(s: Signal) {
-            this.onSignal && this.onSignal(this, s);
-        }
-    };
+    constructor(
+        public isMovable?: boolean,
+        public onCollide?: (collider: IStore) => void,
+        public onUnCollide?: () => void,
+        public onEveryTick?: (body: IStore) => void,
+        onPositionChange?: (v: Position) => void,
+        onVelocityChange?: (v: Vector2) => void
+    ) {
+        onPositionChange && reaction(() => this.position, onPositionChange);
+        onVelocityChange && reaction(() => this.velocity, onVelocityChange);
+    }
+
+    @observable
+    color: string = '';
+
+    @observable
+    name: JSX.Element | string | null = null;
+
+    @observable
+    position = { x: 0, y: 0 };
+
+    velocity: Vector2 = new Vector2();
+
+    @action
+    setColor(color: string) {
+        this.color = color;
+    }
+
+    @action
+    setName(name ?: string | JSX.Element) {
+        this.name = name || null;
+    }
+
+    @action
+    setPosition(v: Position) {
+        this.position.x = v.x;
+        this.position.y = v.y;
+    }
+
+    @action
+    setVelocity(v: number, coo: 'x' | 'y') {
+        this.velocity[coo] = v;
+    }
+
+    @action
+    changePosition(v: Vector2) {
+        this.position.x += v.x;
+        this.position.y += v.y;
+    }
 }

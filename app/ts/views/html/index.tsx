@@ -10,17 +10,10 @@ export const Html = observer(() => {
         return null;
     }
     return (
-        <div style={{
-            position: 'fixed',
-            color: '#454545',
-            background: '#ffffff',
-            border: '1px solid #454545',
-            top: '50%',
-            left: '50%',
-            padding: '3px 10px',
-            marginLeft: (WIDTH_SCALE - 30 * 7.6) / 2 - 10,
-            marginTop: -46
-        }} >
+        <div
+            className="loader"
+            style={{ marginLeft: (WIDTH_SCALE - 30 * 7.6) / 2 - 10 }}
+        >
             {content}
         </div>
     );

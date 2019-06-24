@@ -2,9 +2,9 @@ import * as React from 'react';
 import * as constants from '../camera/constants';
 import { Vector2 } from 'three';
 import { observer } from 'mobx-react';
-import { Store as camera } from '../camera/store';
-import { Store } from './store';
-import { IStore } from './types';
+import { cameraStore } from '../camera/store';
+import { eventsStore } from '~/utils/events';
+import { State } from './types';
 import { Box } from '../box';
 import { Body } from '../body';
 import { Constants } from '../constants-container';
@@ -29,12 +29,12 @@ const Content = ((props: PositionProps) => {
     const { position } = props;
     return (
         <group>
-            {(Object.keys(Store.state) as (keyof IStore['state'])[]).map((name, i) => (
+            {(Object.keys(eventsStore) as (keyof State)[]).map((name, i) => (
                 <Mode
                     key={i}
                     position={(new Vector2(i, 7)).add(position)}
                     field={name}
-                    state={Store.state}
+                    state={eventsStore}
                 />
             ))}
             <CameraProps
@@ -53,7 +53,7 @@ export const CameraProps = observer((props: PositionProps) => {
     return (
         <Body
             hasCollider={true}
-            name={<span>zoom = <b>{camera.state.zoom}</b></span>}
+            name={<span>zoom = <b>{cameraStore.zoom}</b></span>}
             color={'#6bd6f1'}
             position={props.position}
         />
