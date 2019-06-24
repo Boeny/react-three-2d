@@ -9,7 +9,7 @@ module.exports = {
         'app': './app/ts/main.tsx'
     },
     output: {
-        path: path.join(__dirname, 'docs'),
+        path: path.join(__dirname, 'public'),
         filename: '[name].js'
     },
     resolve: {
