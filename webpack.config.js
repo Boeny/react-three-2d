@@ -8,7 +8,7 @@ module.exports = {
         'app': './app/ts/main.tsx'
     },
     output: {
-        path: path.join(__dirname, "docs"),
+        path: path.join(__dirname, "public"),
         filename: '[name].js'
     },
     resolve: {
@@ -57,5 +57,5 @@ module.exports = {
         new ExtractTextPlugin("main.css"),
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en/)
     ],
-    // watch: true
+    watch: true
 };
