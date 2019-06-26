@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "webpack -p",
-    "build:dev": "npm run test && webpack",
+    "build:dev": "webpack",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"baseUrl\": \"./app\", \"paths\": { \"~/*\": [\"ts/*\"] }, \"jsx\": \"react\", \"lib\": [\"es6\", \"dom\"] }' mocha --reporter spec --require ts-node/register 'app/ts/**/*.test.ts'",
     "postinstall": "node ./postinstall-scripts/index.js"
   },

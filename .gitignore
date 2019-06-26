@@ -34,7 +34,7 @@ Thumbs.db
 tmp/
 
 # Brunch output folder.
-/public/
+public/app.js
 
 # temp folder for uploads etc.
 temp/

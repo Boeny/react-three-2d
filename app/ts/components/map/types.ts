@@ -1,3 +1,4 @@
+import { Object3D } from 'three';
 import { Position3 } from '~/types';
 
 
@@ -8,4 +9,5 @@ export interface Sphere {
 
 export interface IStore {
     data: Sphere[];
+    selected: Object3D | null;
 }

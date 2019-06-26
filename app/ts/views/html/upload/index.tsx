@@ -21,28 +21,28 @@ function getExt(fileName: string): string {
     return arr[arr.length - 1];
 }
 
-function onFileSelect(file: File, handler: (content: Star[]) => void) {
-    if (getExt(file.name) === 'txt') {
-        onTextFileSelect(file, handler);
+function onFileSelect(file: File, handler: (stars: Star[]) => void) {
+    const reader = new FileReader();
+    const isText = getExt(file.name) === 'txt';
+    reader.onload = e => {
+        if (!e.target) {
+            return;
+        }
+        const result = (e.target as any).result;
+        let stars: Star[] = [];
+        try {
+            stars = isText ? getTextInfo(result) : getBinaryInfo(new DataView(result));
+        } catch (e) {
+            console.warn(e.message);
+            stars = [];
+        }
+        handler(stars);
+    };
+    if (isText) {
+        reader.readAsText(file);
     } else {
-        onBinaryFileSelect(file, handler);
+        reader.readAsArrayBuffer(file);
     }
-}
-
-function onBinaryFileSelect(file: File, handler: (content: Star[]) => void) {
-    const reader = new FileReader();
-    reader.onload = e => e.target && handler(
-        getBinaryInfo(new DataView((e.target as any).result))
-    );
-    reader.readAsArrayBuffer(file);
-}
-
-function onTextFileSelect(file: File, handler: (content: Star[]) => void) {
-    const reader = new FileReader();
-    reader.onload = e => e.target && handler(
-        getTextInfo((e.target as any).result)
-    );
-    reader.readAsText(file);
 }
 
 function applyContent(data: Star[]) {

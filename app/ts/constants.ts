@@ -28,22 +28,4 @@ export const KEY: KEYS = {
 
 export const SHOW_AS_WIREFRAME: boolean = false;
 
-export const WIDTH_SCALE = 1;
-
-export const MOUSE_DRAG_MODE_ENABLED: boolean = false;
-
-export const SHOW_COLLIDERS: boolean = false;
-
 export const FLOAT_MIN_DIFF_TO_BE_EQUAL = 0.0001;
-
-export enum DIFFICULTY_LEVEL {
-    demo,
-    veryEasy,
-    easy,
-    middle,
-    hard,
-    veryHard,
-    nightmare
-}
-
-export const MAX_MOVABLE_COUNT = 1500;

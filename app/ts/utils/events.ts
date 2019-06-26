@@ -1,74 +1,58 @@
-import { Vector2 } from 'three';
+import { Vector2, Intersection } from 'three';
 import { Store as camera } from '~/components/camera/store';
 import { PlayerStaticStore as player } from '~/components/player/store';
+import { selectObject } from '~/components/map/store';
 import { Store as movable } from '~/components/movable/store';
 import { Store as html } from '~/views/html/store';
-import { getMouseVector, toWorldVector, save } from '~/utils';
-import { MOUSE, KEY, MOUSE_DRAG_MODE_ENABLED } from '~/constants';
+import { getMouseVector, save, getSelectedObjectFromCamera } from '~/utils';
+import { MOUSE, KEY } from '~/constants';
 
 
 let dragStartScreenVector: Vector2 | null = null;
-let dragStartPoint: Vector2 | null = null;
-// let dragStartObject: Intersection | null = null;
-let mouseDragMode = false;
+let dragStartObject: Intersection | null = null;
 
 export function onWheel(e: MouseWheelEvent) {
     e.preventDefault();
     camera.updateZoomBy(e.deltaY);
 }
 
+const ENABLED_MOUSE_BUTTONS = [MOUSE.left, MOUSE.right];
+
 export function onMouseDown(e: MouseEvent) {
+    if (ENABLED_MOUSE_BUTTONS.indexOf(e.button) === -1) {
+        return;
+    }
+    if (!camera.instance) {
+        return;
+    }
+    html.setCursor('pointer');
+    e.preventDefault();
+    const screenPos = getMouseVector(e);
     switch (e.button) {
         case MOUSE.left:
-            if (camera.instance) {
-                html.setCursor('pointer');
-                dragStartScreenVector = getMouseVector(e);
-                /*if (mode === 1) {
-                    dragStartPoint = toWorldVector(dragStartScreenVector);
-                } else {
-                    dragStartObject = getSelectedObjectFromCamera(dragStartScreenVector);
-                }*/
-            }
+            dragStartObject = getSelectedObjectFromCamera(screenPos, 'star');
+            selectObject(dragStartObject ? dragStartObject.object : null);
             break;
         case MOUSE.right:
-            break;
-        case MOUSE.wheel:
+            dragStartScreenVector = screenPos;
             break;
     }
 }
 
 export function onMouseUp(e: MouseEvent) {
+    if (ENABLED_MOUSE_BUTTONS.indexOf(e.button) === -1) {
+        return;
+    }
+    html.setCursor('default');
     switch (e.button) {
-        case MOUSE.left:
-            if (mouseDragMode) {
-                mouseDragMode = false;
-            } else {
-                /*if (dragStartPoint) {
-                    entities.select(dragStartPoint.clone());
-                }
-                if (dragStartObject) {
-                    entities.selectObject(dragStartObject.object);
-                } else if (entities.state.selectedObjectPosition !== null) {
-                    entities.selectObject(null);
-                }*/
-            }
-            html.setCursor('default');
-            dragStartPoint = null;
-            // dragStartObject = null;
-            dragStartScreenVector = null;
-            break;
         case MOUSE.right:
-            break;
-        case MOUSE.wheel:
+            dragStartScreenVector = null;
             break;
     }
 }
 
 export function onMouseMove(e: MouseEvent) {
-    if (
-        MOUSE_DRAG_MODE_ENABLED === false || dragStartPoint === null
-        || dragStartScreenVector === null || camera.instance === null
-    ) {
+    if (dragStartScreenVector === null || camera.instance === null) {
         return;
     }
     const screenVector = getMouseVector(e);
@@ -76,11 +60,8 @@ export function onMouseMove(e: MouseEvent) {
         dragStartScreenVector = screenVector;
         return;
     }
-    mouseDragMode = true;
-    const v = toWorldVector(screenVector);
-    const diff = dragStartPoint.clone().sub(v);
+    const diff = screenVector.clone().sub(dragStartScreenVector);
     camera.updatePositionBy({ x: diff.x, y: diff.y, z: 0 });
-    dragStartPoint = v;
     dragStartScreenVector = screenVector;
 }
 

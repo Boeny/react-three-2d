@@ -7,12 +7,15 @@ import { Cube } from '../cube';
 
 
 export const Map = observer(() => {
+    const { data, selected } = Store;
     return (
         <group>
             <Cube position={new Vector3()} />
-            {toJS(Store.data).map((item, i) => (
+            {toJS(data).map((item, i) => (
                 <Cube
                     key={i}
+                    name={String(i)}
+                    color={selected !== null && selected.name === String(i) ? 'red' : 'white'}
                     position={new Vector3(item.position.x, item.position.y, item.position.z)}
                 />
             ))}
